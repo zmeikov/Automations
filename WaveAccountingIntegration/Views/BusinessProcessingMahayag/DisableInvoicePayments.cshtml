@@ -1,0 +1,271 @@
+﻿@model IEnumerable<WaveAccountingIntegration.Models.Invoice>
+
+@{
+	ViewBag.Title = "DisableInvoicePayments";
+
+	string Message = ViewBag.Message;
+}
+
+<h2>DisableInvoicePayments</h2>
+
+<div>
+	@{
+		Html.RenderPartial("Pre", Message);
+	}
+</div>
+
+<p>
+	Invoices processed
+</p>
+<table class="table">
+	<tr>
+		<th>
+			@Html.DisplayNameFor(model => model.url)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.subhead)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.footer)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.po_so_number)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.memo)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.invoice_date)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.invoice_number_label)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.invoice_number)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.exchange_rate)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.invoice_total)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.invoice_tax_total)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.invoice_amount_paid)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.invoice_amount_due)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.due_date)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.last_payment_date)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.status)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.disable_credit_card_payments)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.disable_bank_payments)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.readonly_url)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.pdf_url)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.items_url)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.payments_url)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.last_sent)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.last_sent_via)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.last_viewed)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.date_created)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.date_modified)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.source_type)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.source_url)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.item_title)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.description_title)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.quantity_title)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.price_title)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.amount_title)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.hide_item)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.hide_description)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.hide_quantity)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.hide_price)
+		</th>
+		<th>
+			@Html.DisplayNameFor(model => model.hide_amount)
+		</th>
+		<th></th>
+	</tr>
+
+@foreach (var item in Model) {
+	<tr>
+		<td>
+			@Html.DisplayFor(modelItem => item.url)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.subhead)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.footer)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.po_so_number)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.memo)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.invoice_date)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.invoice_number_label)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.invoice_number)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.exchange_rate)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.invoice_total)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.invoice_tax_total)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.invoice_amount_paid)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.invoice_amount_due)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.due_date)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.last_payment_date)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.status)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.disable_credit_card_payments)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.disable_bank_payments)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.readonly_url)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.pdf_url)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.items_url)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.payments_url)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.last_sent)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.last_sent_via)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.last_viewed)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.date_created)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.date_modified)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.source_type)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.source_url)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.item_title)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.description_title)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.quantity_title)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.price_title)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.amount_title)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.hide_item)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.hide_description)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.hide_quantity)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.hide_price)
+		</td>
+		<td>
+			@Html.DisplayFor(modelItem => item.hide_amount)
+		</td>
+		<td>
+		@*
+			@Html.ActionLink("Edit", "Edit", new {id = item.id}) |
+			@Html.ActionLink("Details", "Details", new {id = item.id}) |
+			@Html.ActionLink("Delete", "Delete", new {id = item.id})
+		*@
+		</td>
+	</tr>
+}
+
+</table>
