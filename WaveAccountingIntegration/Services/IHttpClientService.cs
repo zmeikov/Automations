@@ -7,12 +7,14 @@ using System.Threading.Tasks;
 
 namespace WaveAccountingIntegration.Services
 {
-    public interface IHttpClientService : IDisposable
-    {
-        Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent httpContent);
-        Task<HttpResponseMessage> GetAsync(string requestUri);
-        Task<HttpResponseMessage> DeleteAsync(string requestUri);
-        Task<HttpResponseMessage> PutAsync(string requestUri, HttpContent httpContent);
-        Task<HttpResponseMessage> PatchAsync(string requestUri, HttpContent httpContent);
-    }
+	public interface IHttpClientService : IDisposable
+	{
+		Task<HttpResponseMessage> SendAsync(HttpRequestMessage message);
+
+		Task<HttpResponseMessage> PostAsync(string requestUri, HttpContent httpContent);
+		Task<HttpResponseMessage> GetAsync(string requestUri);		
+		Task<HttpResponseMessage> DeleteAsync(string requestUri);
+		Task<HttpResponseMessage> PutAsync(string requestUri, HttpContent httpContent);
+		Task<HttpResponseMessage> PatchAsync(string requestUri, HttpContent httpContent);
+	}
 }

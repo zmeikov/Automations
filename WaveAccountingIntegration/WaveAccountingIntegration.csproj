@@ -216,10 +216,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CustomerSettingsService.cs" />
     <Compile Include="Services\FileSettingsServiceService.cs" />
+    <Compile Include="Services\HeadersParser.cs" />
     <Compile Include="Services\HttpClientService.cs" />
     <Compile Include="Services\HttpClientServiceFactory.cs" />
     <Compile Include="Services\ICustomerSettingsService.cs" />
     <Compile Include="Services\IFileSettingsService.cs" />
+    <Compile Include="Services\IHeadersParser.cs" />
     <Compile Include="Services\IHttpClientService.cs" />
     <Compile Include="Services\IHttpClientServiceFactory.cs" />
     <Compile Include="Services\IRestService.cs" />
@@ -227,6 +229,7 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="App_Data\RequestHeaders.txt" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="favicon.ico" />
@@ -289,6 +292,7 @@
     <Content Include="Views\Shared\Pre.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\ConsolidateInvoices.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\SetCustomerDefaults.cshtml" />
+    <Content Include="Views\BusinessProcessingMahayag\RefreshBankConnections.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

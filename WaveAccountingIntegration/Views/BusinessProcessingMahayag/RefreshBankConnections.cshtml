@@ -1,0 +1,60 @@
+﻿@model IEnumerable<WaveAccountingIntegration.Models.Connected_Site>
+
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>RefreshBankConnections</title>
+</head>
+<body>
+    
+    <table class="table">
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.latest_update_time)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.is_owner)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.created)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.has_unmapped_accounts)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.site_account_id)
+            </th>
+            <th></th>
+        </tr>
+    
+    @foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.latest_update_time)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.is_owner)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.created)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.has_unmapped_accounts)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.site_account_id)
+            </td>
+            <td>
+            </td>
+        </tr>
+    }
+    
+    </table>
+</body>
+</html>

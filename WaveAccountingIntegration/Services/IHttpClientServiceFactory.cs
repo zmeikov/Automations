@@ -10,5 +10,6 @@ namespace WaveAccountingIntegration.Services
     public interface IHttpClientServiceFactory
     {
         IHttpClientService Create(string baseApiUrl, AuthenticationHeaderValue authenticationHeader = null, string accept = "application/json");
+        IHttpClientService Create(string baseApiUrl, Dictionary<string, string> headers);
     }
 }

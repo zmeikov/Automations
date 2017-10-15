@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
@@ -11,146 +12,174 @@ using WebGrease;
 
 namespace WaveAccountingIntegration.Services
 {
-    public class RestService : IRestService
-    {
-        private readonly IHttpClientServiceFactory _httpClientServiceFactory;
-        private AuthenticationHeaderValue _authenticationHeader;
+	public class RestService : IRestService
+	{
+		private readonly IHttpClientServiceFactory _httpClientServiceFactory;
+		private AuthenticationHeaderValue _authenticationHeader;
 
-        public RestService(IHttpClientServiceFactory httpClientServiceFactory)
-        {
-            _httpClientServiceFactory = httpClientServiceFactory;
-        }
+		public RestService(IHttpClientServiceFactory httpClientServiceFactory)
+		{
+			_httpClientServiceFactory = httpClientServiceFactory;
+		}
 
-        public void SetAuthorizationHeader(string scheme, string parameter)
-        {
-            _authenticationHeader = new AuthenticationHeaderValue(scheme, parameter);
-        }
+		public void SetAuthorizationHeader(string scheme, string parameter)
+		{
+			_authenticationHeader = new AuthenticationHeaderValue(scheme, parameter);
+		}
 
-        public RestResult<T> Post<T>(string url)
-        {
-            return Post<T, string>(url, string.Empty);
-        }
+		public RestResult<T> Post<T>(string url, Dictionary<string, string> headers = null)
+		{
+			return Post<T, string>(url, string.Empty);
+		}
 
-        public RestResult<T> Post<T, TContent>(string url, TContent body)
-        {
-            RestResult<T> result;
+		public RestResult<T> Post<T, TContent>(string url, TContent body, Dictionary<string, string> headers = null)
+		{
+			RestResult<T> result;
+			var httpContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
 
-            using (var httpClient = _httpClientServiceFactory.Create(url, _authenticationHeader))
-            {
-                var httpContent = new StringContent(JsonConvert.SerializeObject(body),Encoding.UTF8, "application/json");
+			if (headers == null)
+			{
+				using (var httpClient = _httpClientServiceFactory.Create(url, _authenticationHeader))
+				{
+					var response = httpClient.PostAsync(string.Empty, httpContent).Result;
+					result = GetResult<T>(response);
+				}
+			}
+			else
+			{
+				using (var httpClient = _httpClientServiceFactory.Create(url, headers))
+				{
+					var response = httpClient.PostAsync(string.Empty, httpContent).Result;
+					result = GetResult<T>(response);
 
-                var response = httpClient.PostAsync(string.Empty, httpContent).Result;
-                result = GetResult<T>(response);
-            }
+				}
+			}
 
-            return result;
-        }
+			
 
-        public RestResult<T> Get<T>(string url)
-        {
-            RestResult<T> result;
+			return result;
+		}
 
-            using (var httpClient = _httpClientServiceFactory.Create(url, _authenticationHeader))
-            {
-                var response = httpClient.GetAsync(string.Empty).Result;
-                result = GetResult<T>(response);
+		public RestResult<T> Get<T>(string url)
+		{
+			RestResult<T> result;
 
-            }
+			using (var httpClient = _httpClientServiceFactory.Create(url, _authenticationHeader))
+			{
+				var response = httpClient.GetAsync(string.Empty).Result;
+				result = GetResult<T>(response);
 
-            return result;
-        }
+			}
 
-        public RestResult<T> Delete<T>(string url)
-        {
-            RestResult<T> result;
+			return result;
+		}
 
-            using (var httpClient = _httpClientServiceFactory.Create(url, _authenticationHeader))
-            {
-                var response = httpClient.DeleteAsync(string.Empty).Result;
+		public RestResult<T> Get<T>(string url, Dictionary<string, string> headers)
+		{
+			RestResult<T> result;
 
-                result = GetResult<T>(response);
-            }
+			using (var httpClient = _httpClientServiceFactory.Create(url, headers))
+			{
 
-            return result;
-        }
+				var response = httpClient.GetAsync(string.Empty).Result;
+				result = GetResult<T>(response);
 
-        public RestResult<T> Patch<T, TContent>(string url, TContent body)
-        {
-            RestResult<T> result;
+			}
 
-            using (var httpClient = _httpClientServiceFactory.Create(url, _authenticationHeader))
-            {
-                var httpContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+			return result;
+		}
 
-                var response = httpClient.PatchAsync(string.Empty, httpContent).Result;
+		public RestResult<T> Delete<T>(string url)
+		{
+			RestResult<T> result;
 
-                result = GetResult<T>(response);
+			using (var httpClient = _httpClientServiceFactory.Create(url, _authenticationHeader))
+			{
+				var response = httpClient.DeleteAsync(string.Empty).Result;
 
-            }
+				result = GetResult<T>(response);
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        public RestResult<string> Put<TContent>(string url, TContent body)
-        {
-            RestResult<string> result;
+		public RestResult<T> Patch<T, TContent>(string url, TContent body)
+		{
+			RestResult<T> result;
 
-            using (var httpClient = _httpClientServiceFactory.Create(url, _authenticationHeader))
-            {
-                var httpContent = new StringContent(JsonConvert.SerializeObject(body));
-                
-                var response = httpClient.PutAsync(string.Empty, httpContent).Result;
+			using (var httpClient = _httpClientServiceFactory.Create(url, _authenticationHeader))
+			{
+				var httpContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+
+				var response = httpClient.PatchAsync(string.Empty, httpContent).Result;
+
+				result = GetResult<T>(response);
+
+			}
+
+			return result;
+		}
+
+		public RestResult<string> Put<TContent>(string url, TContent body)
+		{
+			RestResult<string> result;
+
+			using (var httpClient = _httpClientServiceFactory.Create(url, _authenticationHeader))
+			{
+				var httpContent = new StringContent(JsonConvert.SerializeObject(body));
+				
+				var response = httpClient.PutAsync(string.Empty, httpContent).Result;
 
 
-                var content = response.Content.ReadAsStringAsync().Result;
-                result = new RestResult<string>
-                {
-                    StatusCode = (int)response.StatusCode
-                };
+				var content = response.Content.ReadAsStringAsync().Result;
+				result = new RestResult<string>
+				{
+					StatusCode = (int)response.StatusCode
+				};
 
-                if (result.IsSuccessStatusCode)
-                {
-                    result.Result = content;
-                }
-                else
-                {
-                    result.ErrorMessage = content;
-                }
+				if (result.IsSuccessStatusCode)
+				{
+					result.Result = content;
+				}
+				else
+				{
+					result.ErrorMessage = content;
+				}
 
-            }
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        private RestResult<T> GetResult<T>(HttpResponseMessage response)
-        {
-            var content = response.Content.ReadAsStringAsync().Result;
+		private RestResult<T> GetResult<T>(HttpResponseMessage response)
+		{
+			var content = response.Content.ReadAsStringAsync().Result;
 
-            var result = new RestResult<T>
-            {
-                StatusCode = (int)response.StatusCode
-            };
+			var result = new RestResult<T>
+			{
+				StatusCode = (int)response.StatusCode
+			};
 
-            if (result.IsSuccessStatusCode)
-            {
-                result.Result = JsonConvert.DeserializeObject<T>(content);
-            }
-            else
-            {
-                result.ErrorMessage = content;
-            }
+			if (result.IsSuccessStatusCode)
+			{
+				result.Result = JsonConvert.DeserializeObject<T>(content);
+			}
+			else
+			{
+				result.ErrorMessage = content;
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-    }
+	}
 
-    public enum RestAction
-    {
-        POST,
-        PUT,
-        DELETE,
-        GET,
-        PATCH
-    }
+	public enum RestAction
+	{
+		POST,
+		PUT,
+		DELETE,
+		GET,
+		PATCH
+	}
 }

@@ -1,5 +1,6 @@
 ﻿@{
 	ViewBag.Title = "Home Page";
+	Layout = null;
 }
 @*
 <div class="jumbotron">
@@ -30,6 +31,7 @@
 	</div>
 </div>
 *@
+<p>@Html.ActionLink("InvoiceProcessing/RefreshBankConnections", "RefreshBankConnections", "BusinessProcessingMahayag")</p>
 <p>@Html.ActionLink("InvoiceProcessing/SetCustomerDefaults", "SetCustomerDefaults", "BusinessProcessingMahayag")</p>
 <p>@Html.ActionLink("InvoiceProcessing/ConsolidateInvoices", "ConsolidateInvoices", "BusinessProcessingMahayag")</p>
 <p>@Html.ActionLink("InvoiceProcessing/ChargeLateFees", "ChargeLateFees", "BusinessProcessingMahayag")</p>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace WaveAccountingIntegration.Models
 {
@@ -105,6 +106,7 @@ namespace WaveAccountingIntegration.Models
 		public string code { get; set; }
 		public string symbol { get; set; }
 		public string name { get; set; }
+		public string plural { get; set; }
 	}
 
 	public class Invoice_Currency
@@ -190,6 +192,7 @@ namespace WaveAccountingIntegration.Models
 	{
 		public string name { get; set; }
 		public string slug { get; set; }
+		public string code { get; set; }
 	}
 
 	public class Country
@@ -329,6 +332,150 @@ namespace WaveAccountingIntegration.Models
 		public object[] taxes { get; set; }
 	}
 
+
+
+
+	public class User
+	{
+		public string id { get; set; }
+		public string url { get; set; }
+		public string first_name { get; set; }
+		public string last_name { get; set; }
+		public List<Email> emails { get; set; }
+		public DateTime date_created { get; set; }
+		public DateTime date_modified { get; set; }
+		public DateTime last_login { get; set; }
+	}
+
+	public class Email
+	{
+		public string email { get; set; }
+		public bool is_verified { get; set; }
+		public bool is_default { get; set; }
+	}
+
+
+
+	public class Connected_Site
+	{
+		public int id { get; set; }
+		public List<Contentservice_Set> contentservice_set { get; set; }
+		public Yodlee_Site yodlee_site { get; set; }
+		public string latest_update_time { get; set; }
+		public Connected_Site_State connected_site_state { get; set; }
+		public bool is_owner { get; set; }
+		public DateTime created { get; set; }
+		public bool has_unmapped_accounts { get; set; }
+		public int site_account_id { get; set; }
+	}
+
+	public class Yodlee_Site
+	{
+		public int id { get; set; }
+		public string display_name { get; set; }
+		public string base_url { get; set; }
+		public List<string> site_container_types { get; set; }
+	}
+
+	public class Connected_Site_State
+	{
+		public string state { get; set; }
+		public string description { get; set; }
+		public object user_message { get; set; }
+		public bool state_is_error { get; set; }
+	}
+
+	public class Contentservice_Set
+	{
+		public int id { get; set; }
+		public List<Account_Set> account_set { get; set; }
+	}
+
+	public class Account_Set
+	{
+		public int id { get; set; }
+		public string display_name { get; set; }
+		public string short_display_name { get; set; }
+		public string account_number { get; set; }
+		public string account_holder { get; set; }
+		public bool aggregating { get; set; }
+		public string balance { get; set; }
+		public string currency { get; set; }
+		public string currency_code_with_symbol { get; set; }
+		public object start_date { get; set; }
+		public int payment_account_pk { get; set; }
+		public string business { get; set; }
+		public string account_state { get; set; }
+	}
+
+
+	#region businesses
+
+	public class Business
+	{
+		public string id { get; set; }
+		public string url { get; set; }
+		public string company_name { get; set; }
+		public Primary_Currency primary_currency { get; set; }
+		public bool is_owner { get; set; }
+		public bool is_default_business { get; set; }
+		public bool is_personal { get; set; }
+		public string business_group { get; set; }
+		public string business_group_display { get; set; }
+		public string business_type { get; set; }
+		public string business_type_display { get; set; }
+		public string organization_type { get; set; }
+		public string organization_type_display { get; set; }
+		public string address1 { get; set; }
+		public string address2 { get; set; }
+		public string city { get; set; }
+		public Province province { get; set; }
+		public Country country { get; set; }
+		public string postal_code { get; set; }
+		public string timezone_id { get; set; }
+		public string phone_number { get; set; }
+		public string mobile_phone_number { get; set; }
+		public string toll_free_phone_number { get; set; }
+		public string fax_number { get; set; }
+		public string website { get; set; }
+		public DateTime date_created { get; set; }
+		public DateTime date_modified { get; set; }
+		public App[] apps { get; set; }
+		public string scopes { get; set; }
+		public Attribs attribs { get; set; }
+		public Invoice_Sending_Emails[] invoice_sending_emails { get; set; }
+	}
+
+	public class Primary_Currency
+	{
+		public string url { get; set; }
+		public string code { get; set; }
+		public string symbol { get; set; }
+		public string name { get; set; }
+		public string plural { get; set; }
+	}
+
+
+	public class Attribs
+	{
+		public string eligible_payment_service { get; set; }
+	}
+
+	public class App
+	{
+		public string app_name { get; set; }
+		public string href { get; set; }
+	}
+
+	public class Invoice_Sending_Emails
+	{
+		public string email { get; set; }
+		public bool _default { get; set; }
+		public bool is_collaborator { get; set; }
+		public bool verified { get; set; }
+	}
+
+	#endregion
 
 
 }
