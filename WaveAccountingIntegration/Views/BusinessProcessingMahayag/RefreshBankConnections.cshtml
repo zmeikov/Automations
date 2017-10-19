@@ -1,60 +1,54 @@
 ﻿@model IEnumerable<WaveAccountingIntegration.Models.Connected_Site>
 
 @{
-    Layout = null;
+	Layout = null;
 }
 
 <!DOCTYPE html>
 
 <html>
 <head>
-    <meta name="viewport" content="width=device-width" />
-    <title>RefreshBankConnections</title>
+	<meta name="viewport" content="width=device-width" />
+	<title>RefreshBankConnections</title>
 </head>
 <body>
-    
-    <table class="table">
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.latest_update_time)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.is_owner)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.created)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.has_unmapped_accounts)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.site_account_id)
-            </th>
-            <th></th>
-        </tr>
-    
-    @foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.latest_update_time)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.is_owner)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.created)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.has_unmapped_accounts)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.site_account_id)
-            </td>
-            <td>
-            </td>
-        </tr>
-    }
-    
-    </table>
+	
+	<table class="table">
+		<tr>
+			<th>
+				prevoius_update_time<br />
+
+				@Html.DisplayNameFor(model => model.created)<br />
+
+				@Html.DisplayNameFor(model => model.site_account_id)<br />
+			</th>
+			<th>Info</th>
+		</tr>
+	
+	@foreach (var item in Model) {
+		<tr>
+			<td>
+				@Html.DisplayFor(modelItem => item.latest_update_time)<br />
+
+				@Html.DisplayFor(modelItem => item.created)<br />
+
+				@Html.DisplayFor(modelItem => item.site_account_id)<br />
+			</td>
+			<td>
+				@Html.DisplayFor(modelItem => item.yodlee_site.display_name) <br />
+				@foreach (var cs in item.contentservice_set)
+				{
+					foreach (var accountSet in cs.account_set)
+					{
+						var info = $"[{accountSet.display_name}],${accountSet.balance}. <br />";
+						@Html.Raw(info);
+					}
+				}
+
+			</td>
+		</tr>
+	}
+	
+	</table>
 </body>
 </html>

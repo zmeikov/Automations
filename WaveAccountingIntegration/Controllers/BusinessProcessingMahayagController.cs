@@ -13,21 +13,14 @@ namespace WaveAccountingIntegration.Controllers
 	{
 		public ActionResult RefreshBankConnections()
 		{
-			List<Connected_Site> refreshedSites = new List<Connected_Site>();
+			var refreshedSites = new List<Connected_Site>();
 
 			//refresh personal
 			var connectedPersonalSites = _restService.Get<List<Connected_Site>>(
 				$"https://integrations.waveapps.com/{_appAppSettings.PersonalGuid}/bank/connected-sites-widget", _headers).Result;
 			foreach (var site in connectedPersonalSites)
 			{
-				var refreshResult = _restService.Post<string, object>(
-					$"https://integrations.waveapps.com/{_appAppSettings.PersonalGuid}/bank/refresh-accounts/{site.id}", null, _headers);
-
-				if (refreshResult.IsSuccessStatusCode)
-				{
-					refreshedSites.Add(site);
-					Thread.Sleep(2500);
-				}
+				RefreshSiteAndAddToDictionary(_appAppSettings.PersonalGuid, site, ref refreshedSites);
 			}
 
 
@@ -40,19 +33,24 @@ namespace WaveAccountingIntegration.Controllers
 
 				foreach (var site in connectedSites)
 				{
-					var refreshResult = _restService.Post<string, object>(
-						$"https://integrations.waveapps.com/{business.id}/bank/refresh-accounts/{site.id}", null, _headers);
-
-					if (refreshResult.IsSuccessStatusCode)
-					{
-						refreshedSites.Add(site);
-						Thread.Sleep(2500);
-					}
+					RefreshSiteAndAddToDictionary(business.id, site, ref refreshedSites);
 				}
 			}
 
 			ViewBag.Message = "RefreshBankConnections";
 			return View(refreshedSites);
+		}
+
+		void RefreshSiteAndAddToDictionary(string Guid, Connected_Site site, ref List<Connected_Site> dict)
+		{
+			var refreshResult = _restService.Post<string, object>(
+				$"https://integrations.waveapps.com/{Guid}/bank/refresh-accounts/{site.id}", null, _headers);
+
+			if (refreshResult.Result == "Successfully started refreshing connected site")
+			{
+				dict.Add(site);
+				Thread.Sleep(1500);
+			}
 		}
 
 		public ActionResult SetCustomerDefaults()
