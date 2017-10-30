@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Mvc;
 using Newtonsoft.Json;
 using WaveAccountingIntegration.Models;
@@ -11,46 +12,80 @@ namespace WaveAccountingIntegration.Controllers
 {
 	public class BusinessProcessingMahayagController : BaseController
 	{
+
+		public ActionResult EvictionDocs(int id)
+		{
+			var customerStatement = new Dictionary<Customer, Transaction_History>();
+
+			var customer = _restService.Get<Customer>(
+				$"https://api.waveapps.com/businesses/{_appAppSettings.MahayagBusinessGuid}/customers/{id}/").Result;
+
+			var statement = _restService.Get<TransactionHistory>(
+				$"https://api.waveapps.com/businesses/{_appAppSettings.MahayagBusinessGuid}/customers/{id}/statements/transaction-history/").Result;
+
+			var trxHistory = statement.transaction_history.FirstOrDefault();
+
+			if (trxHistory != null)
+				customerStatement.Add(customer, trxHistory);
+
+			return View(customerStatement);
+		}
+
+		public ActionResult LateCustomers()
+		{
+			var allCustomers = _restService.Get<List<Customer>>(
+				$"https://api.waveapps.com/businesses/{_appAppSettings.MahayagBusinessGuid}/customers/").Result;
+
+			var activeCustomers = allCustomers.Where(x => x.active && !x.name.StartsWith("XX"));
+
+			var allCustomerStatements = new Dictionary<Customer, Transaction_History>();
+
+			Parallel.ForEach(activeCustomers, (customer) =>
+			{
+				var statement = _restService.Get<TransactionHistory>(
+						$"https://api.waveapps.com/businesses/{_appAppSettings.MahayagBusinessGuid}/customers/{customer.id}/statements/transaction-history/")
+					.Result;
+
+				var trxHistory = statement.transaction_history.FirstOrDefault();
+
+				if (trxHistory != null)
+					allCustomerStatements.Add(customer, trxHistory);
+			});
+
+			var toReturn = new Dictionary<Customer, Transaction_History>();
+
+			foreach (var keyValuePair in allCustomerStatements.Where(x=>x.Value.ending_balance > 0).OrderByDescending(x => x.Value.ending_balance))
+			{
+				toReturn.Add(keyValuePair.Key, keyValuePair.Value);
+			}
+
+			return View(toReturn);
+		}
+
 		public ActionResult RefreshBankConnections()
 		{
 			var refreshedSites = new List<Connected_Site>();
+			var Guid = _appAppSettings.PersonalGuid;
 
-			//refresh personal
-			var connectedPersonalSites = _restService.Get<List<Connected_Site>>(
-				$"https://integrations.waveapps.com/{_appAppSettings.PersonalGuid}/bank/connected-sites-widget", _headers).Result;
-			foreach (var site in connectedPersonalSites)
+			var connectedSites = _restService.Get<List<Connected_Site>>(
+				$"https://integrations.waveapps.com/{Guid}/bank/connected-sites", _headers).Result;
+			if (connectedSites != null)
 			{
-				RefreshSiteAndAddToDictionary(_appAppSettings.PersonalGuid, site, ref refreshedSites);
-			}
-
-
-			var businesses = _restService.Get<List<Business>>("https://api.waveapps.com/businesses/");
-
-			foreach (var business in businesses.Result)
-			{
-				var connectedSites = _restService.Get<List<Connected_Site>>(
-					$"https://integrations.waveapps.com/{business.id}/bank/connected-sites-widget", _headers).Result;
-
-				foreach (var site in connectedSites)
+				Parallel.ForEach(connectedSites, (site) =>
 				{
-					RefreshSiteAndAddToDictionary(business.id, site, ref refreshedSites);
-				}
+					var refreshResult = _restService.Post<string, object>(
+						$"https://integrations.waveapps.com/{Guid}/bank/refresh-accounts/{site.id}", null, _headers);
+
+					if (refreshResult.Result == "Successfully started refreshing connected site")
+					{
+						refreshedSites.Add(site);
+						Thread.Sleep(250);
+					}
+				});
 			}
 
 			ViewBag.Message = "RefreshBankConnections";
 			return View(refreshedSites);
-		}
-
-		void RefreshSiteAndAddToDictionary(string Guid, Connected_Site site, ref List<Connected_Site> dict)
-		{
-			var refreshResult = _restService.Post<string, object>(
-				$"https://integrations.waveapps.com/{Guid}/bank/refresh-accounts/{site.id}", null, _headers);
-
-			if (refreshResult.Result == "Successfully started refreshing connected site")
-			{
-				dict.Add(site);
-				Thread.Sleep(1500);
-			}
 		}
 
 		public ActionResult SetCustomerDefaults()
@@ -66,15 +101,16 @@ namespace WaveAccountingIntegration.Controllers
 			{
 				var custSettings = _customerSettingsService.ExctractFromCustomerObject(customer);
 
+				var defaultCustSettings = new CustomerSettings()
+				{
+					ChargeLateFee = false,
+					ConsolidateInvoices = true,
+					NextLateFeeChargeDate = DateTime.Today
+				};
+
 				if (custSettings == null)
 				{
-					var defaultCustSettings = new CustomerSettings()
-					{
-						ChargeLateFee = false,
-						ConsolidateInvoices = true,
-						NextLateFeeChargeDate = DateTime.Today
-					};
-
+					//add new default settings to new customer settings
 					customer.shipping_details = new Shipping_details()
 					{
 						delivery_instructions = JsonConvert.SerializeObject(defaultCustSettings),
@@ -97,6 +133,11 @@ namespace WaveAccountingIntegration.Controllers
 
 					processedCsutomers.Add(customer);
 
+				}
+				else
+				{
+					custSettings.ConsolidateInvoices = defaultCustSettings.ConsolidateInvoices;
+					_customerSettingsService.SaveUpdatedCustomerSettings(customer.url, custSettings, _restService);
 				}
 			}
 

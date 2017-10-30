@@ -18,12 +18,23 @@ namespace WaveAccountingIntegration.Services
 				var lineText = sr.ReadLine();
 				if (lineText != null)
 				{
-					var headerName = lineText.Substring(0, lineText.IndexOf(':'));
-					var headerValue = lineText.Substring(lineText.IndexOf(':')+1);
+					try
+					{
+						var headerName = lineText.Substring(0, lineText.IndexOf(':'));
+						var headerValue = lineText.Substring(lineText.IndexOf(':') + 1);
 
-					headers.Add(headerName, headerValue);
+						if (headerName != "accept-encoding")
+							headers.Add(headerName, headerValue);
+					}
+					catch (Exception ex)
+					{
+						
+					}
+					
 				}
 			}
+
+			sr.Close();
 
 			return headers;
 		}

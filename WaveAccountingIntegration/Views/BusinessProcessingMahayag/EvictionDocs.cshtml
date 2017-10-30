@@ -1,0 +1,75 @@
+﻿@model Dictionary<WaveAccountingIntegration.Models.Customer, WaveAccountingIntegration.Models.Transaction_History>
+
+@{
+	//Layout = null;
+
+	var customerId = Model.Keys.First().id;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<title>EvictionDocs</title>
+</head>
+<body>
+
+<table class="table">
+	<tr>
+		<th>
+			customer.name
+		</th>
+		<th>
+			ending_balance
+		</th>
+
+	</tr>
+	
+	@foreach (var item in Model) {
+		<tr>
+			<td>
+				@Html.DisplayFor(modelItem => item.Key.name)
+			</td>
+			<td>
+				$@Html.DisplayFor(modelItem => item.Value.ending_balance)
+			</td>
+		   
+		</tr>
+	}
+	
+</table>
+	
+	
+<table>
+	<tr>
+		<th>
+			Event
+		</th>
+		<th>
+			Date
+		</th>
+		<th>
+			Amount
+		</th>
+	</tr>
+	
+	@foreach (var item in Model.Values.First().events.Where(x=>x.total > 0).OrderByDescending(x=>x.date))
+	{
+		<tr>
+			<td>
+				@Html.DisplayFor(modelItem => item.event_type)
+			</td>
+			<td>
+				@item.date.Value.ToShortDateString()
+			</td>
+			<td>
+				$@Html.DisplayFor(modelItem => item.total)
+			</td>
+
+		</tr>
+	}
+
+</table>
+</body>
+</html>

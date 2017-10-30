@@ -237,11 +237,11 @@ namespace WaveAccountingIntegration.Models
 		public Column_Settings column_settings { get; set; }
 		public string notes { get; set; }
 		public DateTime date_added { get; set; }
-		public int num_generated_to_date { get; set; }
+		public int? num_generated_to_date { get; set; }
 		public RecurringInvoiceCustomer customer { get; set; }
 		public string previous_invoice_date { get; set; }
-		public Line_Items[] line_items { get; set; }
-		public int total { get; set; }
+		public List<Line_Items> line_items { get; set; }
+		public double total { get; set; }
 		public string currency_symbol { get; set; }
 		public string footer { get; set; }
 		public string currency_code { get; set; }
@@ -291,13 +291,13 @@ namespace WaveAccountingIntegration.Models
 		public string timezone_id { get; set; }
 		public object end_date { get; set; }
 		public object repeat_on_day_of_week { get; set; }
-		public int recurrence_interval { get; set; }
+		public int? recurrence_interval { get; set; }
 		public object max_invoices { get; set; }
 		public bool repeat_at_end_of_month { get; set; }
 		public string start_date { get; set; }
 		public string recurrence_unit { get; set; }
 		public object repeat_on_month_of_year { get; set; }
-		public int repeat_on_day_of_month { get; set; }
+		public int? repeat_on_day_of_month { get; set; }
 		public object final_invoice_date { get; set; }
 	}
 
@@ -326,9 +326,9 @@ namespace WaveAccountingIntegration.Models
 	{
 		public int product_id { get; set; }
 		public object sort_order_index { get; set; }
-		public int quantity { get; set; }
+		public double quantity { get; set; }
 		public string description { get; set; }
-		public int price { get; set; }
+		public double price { get; set; }
 		public object[] taxes { get; set; }
 	}
 
@@ -398,18 +398,16 @@ namespace WaveAccountingIntegration.Models
 		public string short_display_name { get; set; }
 		public string account_number { get; set; }
 		public string account_holder { get; set; }
-		public bool aggregating { get; set; }
+		public bool? aggregating { get; set; }
 		public string balance { get; set; }
 		public string currency { get; set; }
 		public string currency_code_with_symbol { get; set; }
-		public object start_date { get; set; }
-		public int payment_account_pk { get; set; }
+		public DateTime? start_date { get; set; }
+		public int? payment_account_pk { get; set; }
 		public string business { get; set; }
 		public string account_state { get; set; }
 	}
 
-
-	#region businesses
 
 	public class Business
 	{
@@ -475,7 +473,41 @@ namespace WaveAccountingIntegration.Models
 		public bool verified { get; set; }
 	}
 
-	#endregion
+
+
+
+	public class TransactionHistory
+	{
+		public List<Transaction_History> transaction_history { get; set; }
+	}
+
+	public class Transaction_History
+	{
+		public double starting_balance { get; set; }
+		public double ending_balance { get; set; }
+		public double payment_balance_for_period { get; set; }
+		public double refund_balance_for_period { get; set; }
+		public double invoice_balance_for_period { get; set; }
+		public Statement_Currency statement_currency { get; set; }
+		public List<Event> events { get; set; }
+	}
+
+	public class Statement_Currency
+	{
+		public string url { get; set; }
+		public string code { get; set; }
+		public string symbol { get; set; }
+		public string name { get; set; }
+	}
+
+	public class Event
+	{
+		public string event_type { get; set; }
+		public DateTime? date { get; set; }
+		public double total { get; set; }
+		public Invoice invoice { get; set; }
+		public Payment payment { get; set; }
+	}
 
 
 }

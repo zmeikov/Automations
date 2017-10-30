@@ -31,8 +31,11 @@
 	</div>
 </div>
 *@
-<p>@Html.ActionLink("InvoiceProcessing/RefreshBankConnections", "RefreshBankConnections", "BusinessProcessingMahayag")</p>
-<p>@Html.ActionLink("InvoiceProcessing/SetCustomerDefaults", "SetCustomerDefaults", "BusinessProcessingMahayag")</p>
-<p>@Html.ActionLink("InvoiceProcessing/ConsolidateInvoices", "ConsolidateInvoices", "BusinessProcessingMahayag")</p>
-<p>@Html.ActionLink("InvoiceProcessing/ChargeLateFees", "ChargeLateFees", "BusinessProcessingMahayag")</p>
-<p>@Html.ActionLink("InvoiceProcessing/DisableInvoicePayments", "DisableInvoicePayments", "BusinessProcessingMahayag")</p>
+<p>@Html.ActionLink("BusinessProcessingMahayagController/LateCustomers", "LateCustomers", "BusinessProcessingMahayag")</p>
+<p>@Html.ActionLink("BusinessProcessingMahayagController/RefreshBankConnections", "RefreshBankConnections", "BusinessProcessingMahayag")</p>
+<p>@Html.ActionLink("BusinessProcessingMahayagController/SetCustomerDefaults", "SetCustomerDefaults", "BusinessProcessingMahayag")</p>
+<p>@Html.ActionLink("BusinessProcessingMahayagController/ConsolidateInvoices", "ConsolidateInvoices", "BusinessProcessingMahayag")</p>
+<p>@Html.ActionLink("BusinessProcessingMahayagController/ChargeLateFees", "ChargeLateFees", "BusinessProcessingMahayag")</p>
+<p>@Html.ActionLink("BusinessProcessingMahayagController/DisableInvoicePayments", "DisableInvoicePayments", "BusinessProcessingMahayag")</p>
+<p></p>
+<p>@Html.Raw("<a href='/elmah.axd'>elmah</a>")</p>
