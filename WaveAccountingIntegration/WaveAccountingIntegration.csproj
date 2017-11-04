@@ -209,6 +209,7 @@
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\BusinessProcessingMahayagController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
+    <Compile Include="Extensions.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -302,8 +303,11 @@
     <Content Include="Views\BusinessProcessingMahayag\RefreshBankConnections.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\LateCustomers.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\EvictionDocs.cshtml" />
+    <None Include="Views\BusinessProcessingMahayag\3DayLate.cshtml" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Content\forms\3DayLate\" />
+  </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
   </ItemGroup>

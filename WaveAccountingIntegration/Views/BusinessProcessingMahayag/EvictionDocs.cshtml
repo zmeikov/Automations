@@ -4,6 +4,15 @@
 	//Layout = null;
 
 	var customerId = Model.Keys.First().id;
+
+	var notices = new List<string>
+	{
+		"3DayLate",
+		"5DayTennantAtWill",
+		"15DayNoCause",
+
+	};
+
 }
 
 <!DOCTYPE html>
@@ -15,6 +24,11 @@
 </head>
 <body>
 
+	@foreach (var notice in notices)
+	{
+		@Html.ActionLink(notice, "EvictionDocs", new{id = customerId, form = notice}) @:||
+	}
+
 <table class="table">
 	<tr>
 		<th>
@@ -25,8 +39,9 @@
 		</th>
 
 	</tr>
-	
-	@foreach (var item in Model) {
+
+	@foreach (var item in Model)
+	{
 		<tr>
 			<td>
 				@Html.DisplayFor(modelItem => item.Key.name)
@@ -34,13 +49,13 @@
 			<td>
 				$@Html.DisplayFor(modelItem => item.Value.ending_balance)
 			</td>
-		   
+
 		</tr>
 	}
-	
+
 </table>
-	
-	
+
+
 <table>
 	<tr>
 		<th>
@@ -53,8 +68,8 @@
 			Amount
 		</th>
 	</tr>
-	
-	@foreach (var item in Model.Values.First().events.Where(x=>x.total > 0).OrderByDescending(x=>x.date))
+
+	@foreach (var item in Model.Values.First().events.Where(x => x.total > 0).OrderByDescending(x => x.date))
 	{
 		<tr>
 			<td>

@@ -161,7 +161,6 @@ namespace WaveAccountingIntegration.Models
 		public class Update_Shipping_Details
 		{
 			public string delivery_instructions { get; set; }
-
 		}
 	}
 

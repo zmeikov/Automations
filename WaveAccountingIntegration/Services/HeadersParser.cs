@@ -23,12 +23,12 @@ namespace WaveAccountingIntegration.Services
 						var headerName = lineText.Substring(0, lineText.IndexOf(':'));
 						var headerValue = lineText.Substring(lineText.IndexOf(':') + 1);
 
-						if (headerName != "accept-encoding")
+						if (!string.IsNullOrWhiteSpace(headerName) && !string.IsNullOrWhiteSpace(headerValue) && headerName != "accept-encoding"  )
 							headers.Add(headerName, headerValue);
 					}
 					catch (Exception ex)
 					{
-						
+						//whoops
 					}
 					
 				}

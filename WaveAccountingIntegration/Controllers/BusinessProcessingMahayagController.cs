@@ -13,13 +13,13 @@ namespace WaveAccountingIntegration.Controllers
 	public class BusinessProcessingMahayagController : BaseController
 	{
 
-		public ActionResult EvictionDocs(int id)
+		public ActionResult EvictionDocs(int id, string form)
 		{
 			var customerStatement = new Dictionary<Customer, Transaction_History>();
 
 			var customer = _restService.Get<Customer>(
 				$"https://api.waveapps.com/businesses/{_appAppSettings.MahayagBusinessGuid}/customers/{id}/").Result;
-
+			
 			var statement = _restService.Get<TransactionHistory>(
 				$"https://api.waveapps.com/businesses/{_appAppSettings.MahayagBusinessGuid}/customers/{id}/statements/transaction-history/").Result;
 
@@ -28,7 +28,13 @@ namespace WaveAccountingIntegration.Controllers
 			if (trxHistory != null)
 				customerStatement.Add(customer, trxHistory);
 
-			return View(customerStatement);
+			if (form == null)
+				return View(customerStatement);
+
+			var address = _appAppSettings.Addresses.FirstOrDefault(x => x.id == customer.name.Substring(0, 4));
+
+			ViewBag.address = address;
+			return View(form, customerStatement);
 		}
 
 		public ActionResult LateCustomers()
