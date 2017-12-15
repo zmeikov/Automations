@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -12,6 +14,90 @@ namespace WaveAccountingIntegration.Controllers
 {
 	public class BusinessProcessingMahayagController : BaseController
 	{
+		public ActionResult SmsAlertLateCustomers(int daysBetweenAlerts = 3)
+		{
+			var lateCustomers = GetLateCustomers();
+			var messages = new ConcurrentBag<string>();
+
+			Parallel.ForEach(lateCustomers, (customerKvp) =>
+			{
+				var customer = customerKvp.Key;
+				var custSettings = _customerSettingsService.ExctractFromCustomerObject(customer);
+
+				var daysSinceLastSmsAlert = (DateTime.Now - (custSettings.LastSmsAlertSent?? DateTime.Now)).Days;
+
+				var minDaysBetweenAlerts = Math.Max(custSettings.CustomDaysBetweenSmsAlerts?? daysBetweenAlerts, daysBetweenAlerts);
+
+				var lastPayment = customerKvp.Value.events.Where(x => x.event_type == "payment").OrderByDescending(x => x.date).First();
+				var lastInvoice = customerKvp.Value.events.Where(x => x.event_type == "invoice" && x.total > 0).OrderByDescending(x => x.date).First();
+
+				var daysSinceLastPayment = (DateTime.Now - (lastPayment.date?? DateTime.Now)).Days;
+
+				if (
+					daysSinceLastSmsAlert >= minDaysBetweenAlerts &&
+					daysSinceLastPayment >= 10 &&
+					lastInvoice.date <= DateTime.Today.Date.AddDays(-10) &&
+					DateTime.Now.Hour > 8 &&
+					custSettings.SendSmsAlerts == true
+				)
+				{
+					//sent alert to name 1
+					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
+					{
+						var name = customer.first_name.ToUpper().Trim();	
+						var body = $"Hello {name}, " +
+						           $"as of today {DateTime.Today.ToUSADateFormat()} " +
+						           $"your balance due is ${customerKvp.Value.ending_balance} " +
+						           $"and your last payment of: ${lastPayment.total} " +
+						           $"was received on: {lastPayment.date.Value.ToUSADateFormat()}. " +
+						           $"You can see your history here: {custSettings.StatementUrl} ." +
+						           $"Please let me know when can you make your next payment." +
+						           $"NOTE: Starting FEB 2018 there will be 2% daily charge for any past due balance!";
+
+
+						messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address1)}");
+						_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appAppSettings);
+					}
+
+					//sent alert to name 2
+					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
+					{
+						var name = customer.last_name.ToUpper().Trim();
+						var body = $"Hello {name}, " +
+						           $"as of today {DateTime.Today.ToUSADateFormat()} " +
+						           $"your balance due is ${customerKvp.Value.ending_balance} " +
+						           $"and your last payment of: ${lastPayment.total} " +
+						           $"was received on: {lastPayment.date.Value.ToUSADateFormat()}. " +
+						           $"You can see your history here: {custSettings.StatementUrl} ." +
+								   $"Please let me know when can you make your next payment." +
+						           $"NOTE: Starting FEB 2018 there will be 2% daily charge for any past due balance!";
+
+
+						messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address2)}");
+						_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appAppSettings);
+
+					}
+
+					custSettings.LastSmsAlertSent = DateTime.Now;
+					_customerSettingsService.SaveUpdatedCustomerSettings(customer.url, custSettings, _restService);
+
+				}
+				else
+				{
+					//skip alert
+					messages.Add($"Skipping SmsAlert LastSmsAlertSent: {(custSettings.LastSmsAlertSent.HasValue ? custSettings.LastSmsAlertSent.Value.ToUSADateFormat() : string.Empty)}, " +
+					             $"minDaysBetweenAlerts: {minDaysBetweenAlerts:00}, " +
+					             $"lastInvoice.date: {lastInvoice.date.Value.ToUSADateFormat()}, " +
+					             $"daysSinceLastPayment: {daysSinceLastPayment}, " +
+					             $"SendSmsAlerts: {custSettings.SendSmsAlerts}, " +
+					             $"for: {customerKvp.Key.name}.");
+				}
+			});
+
+
+			ViewBag.Message = string.Join(Environment.NewLine, messages);
+			return View();
+		}
 
 		public ActionResult EvictionDocs(int id, string form)
 		{
@@ -31,13 +117,18 @@ namespace WaveAccountingIntegration.Controllers
 			if (form == null)
 				return View(customerStatement);
 
-			var address = _appAppSettings.Addresses.FirstOrDefault(x => x.id == customer.name.Substring(0, 4));
+			var address = _appAppSettings.MahayagAddresses.FirstOrDefault(x => x.id == customer.name.Substring(0, 4));
 
 			ViewBag.address = address;
 			return View(form, customerStatement);
 		}
 
 		public ActionResult LateCustomers()
+		{
+			return View(GetLateCustomers());
+		}
+
+		private Dictionary<Customer, Transaction_History> GetLateCustomers()
 		{
 			var allCustomers = _restService.Get<List<Customer>>(
 				$"https://api.waveapps.com/businesses/{_appAppSettings.MahayagBusinessGuid}/customers/").Result;
@@ -60,17 +151,17 @@ namespace WaveAccountingIntegration.Controllers
 
 			var toReturn = new Dictionary<Customer, Transaction_History>();
 
-			foreach (var keyValuePair in allCustomerStatements.Where(x=>x.Value.ending_balance > 0).OrderByDescending(x => x.Value.ending_balance))
+			foreach (var keyValuePair in allCustomerStatements.Where(x => x.Value.ending_balance > 0).OrderByDescending(x => x.Value.ending_balance))
 			{
 				toReturn.Add(keyValuePair.Key, keyValuePair.Value);
 			}
 
-			return View(toReturn);
+			return toReturn;
 		}
 
 		public ActionResult RefreshBankConnections()
 		{
-			var refreshedSites = new List<Connected_Site>();
+			var refreshedSites = new ConcurrentBag<Connected_Site>();
 			var Guid = _appAppSettings.PersonalGuid;
 
 			var connectedSites = _restService.Get<List<Connected_Site>>(
@@ -96,6 +187,8 @@ namespace WaveAccountingIntegration.Controllers
 
 		public ActionResult SetCustomerDefaults()
 		{
+			var  messages =  new ConcurrentBag<string>();
+
 			var processedCsutomers = new List<Customer>();
 
 			var allCustomers = _restService.Get<List<Customer>>(
@@ -103,15 +196,19 @@ namespace WaveAccountingIntegration.Controllers
 
 			var activeCustomersToSetup = allCustomers.Where(x => x.active && !x.name.StartsWith("XX"));
 
-			foreach (var customer in activeCustomersToSetup)
+			Parallel.ForEach(activeCustomersToSetup, (customer) =>
 			{
 				var custSettings = _customerSettingsService.ExctractFromCustomerObject(customer);
 
 				var defaultCustSettings = new CustomerSettings()
 				{
 					ChargeLateFee = false,
+					NextLateFeeChargeDate = DateTime.Today,
 					ConsolidateInvoices = true,
-					NextLateFeeChargeDate = DateTime.Today
+					LastSmsAlertSent = DateTime.Today,
+					CustomDaysBetweenSmsAlerts = 5,
+					SendSmsAlerts = false,
+					StatementUrl = "StatementUrl"
 				};
 
 				if (custSettings == null)
@@ -138,16 +235,31 @@ namespace WaveAccountingIntegration.Controllers
 					}
 
 					processedCsutomers.Add(customer);
+					messages.Add($"Creating new defaults for customer: {customer.name}");
 
 				}
 				else
 				{
-					custSettings.ConsolidateInvoices = defaultCustSettings.ConsolidateInvoices;
-					_customerSettingsService.SaveUpdatedCustomerSettings(customer.url, custSettings, _restService);
-				}
-			}
+					var changesMade = false;
 
-			ViewBag.Message = "SetCustomerDefaults";
+					if (custSettings.ChargeLateFee == null) { custSettings.ChargeLateFee = defaultCustSettings.ChargeLateFee; messages.Add($"Setting deafult value ChargeLateFee to {custSettings.ChargeLateFee} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.NextLateFeeChargeDate == null) { custSettings.NextLateFeeChargeDate = defaultCustSettings.NextLateFeeChargeDate; messages.Add($"Setting deafult value NextLateFeeChargeDate to {custSettings.NextLateFeeChargeDate} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.ConsolidateInvoices == null) { custSettings.ConsolidateInvoices = defaultCustSettings.ConsolidateInvoices; messages.Add($"Setting deafult value ConsolidateInvoices to {custSettings.ConsolidateInvoices} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.LastSmsAlertSent == null) { custSettings.LastSmsAlertSent = defaultCustSettings.LastSmsAlertSent; messages.Add($"Setting deafult value LastSmsAlertSent to {custSettings.LastSmsAlertSent} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.CustomDaysBetweenSmsAlerts == null) { custSettings.CustomDaysBetweenSmsAlerts = defaultCustSettings.CustomDaysBetweenSmsAlerts; messages.Add($"Setting deafult value CustomDaysBetweenSmsAlerts to {custSettings.CustomDaysBetweenSmsAlerts} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.SendSmsAlerts == null) { custSettings.SendSmsAlerts = defaultCustSettings.SendSmsAlerts; messages.Add($"Setting deafult value SendSmsAlerts to {custSettings.SendSmsAlerts} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.StatementUrl == null) { custSettings.StatementUrl = defaultCustSettings.StatementUrl; messages.Add($"Setting deafult value StatementUrl to {custSettings.StatementUrl} for customer: {customer.name}"); changesMade = true; }
+
+					if (changesMade)
+					{
+						_customerSettingsService.SaveUpdatedCustomerSettings(customer.url, custSettings, _restService);
+						processedCsutomers.Add(customer);
+					}
+					
+				}
+			});
+
+			ViewBag.Message = string.Join(Environment.NewLine, messages); 
 			return View(processedCsutomers);
 		}
 
@@ -252,7 +364,9 @@ namespace WaveAccountingIntegration.Controllers
 			var invoices = _restService.Get<List<Invoice>>(
 				$"https://api.waveapps.com/businesses/{_appAppSettings.MahayagBusinessGuid}/invoices/");
 
-			List<Invoice> updatedInvoices = new List<Invoice>();
+			var updatedInvoices = new ConcurrentBag<Invoice>();
+
+			var messages = new ConcurrentBag<string>();
 
 			if (invoices.IsSuccessStatusCode)
 			{
@@ -261,7 +375,7 @@ namespace WaveAccountingIntegration.Controllers
 					(x.disable_bank_payments == false || x.disable_credit_card_payments == false)
 				);
 
-				foreach (var invoice in invoicesToProcess)
+				Parallel.ForEach(invoicesToProcess, (invoice) =>
 				{
 					var disablePaymentInvoice = new InvoiceDisablePayments
 					{
@@ -273,19 +387,20 @@ namespace WaveAccountingIntegration.Controllers
 					if (updatedInvoiceResult.IsSuccessStatusCode)
 					{
 						updatedInvoices.Add(updatedInvoiceResult.Result);
+						messages.Add($"Disabled payments on invoice_number: {invoice.invoice_number}");
 					}
 					else
 					{
 						throw new InvalidOperationException("Failed to save disable_payments = true");
 					}
-				}
+				});
 			}
 			else
 			{
 				throw new InvalidOperationException("Failed to retrieve invoice list");
 			}
 
-			ViewBag.Message = "DisableInvoicePayments";
+			ViewBag.Message = string.Join(Environment.NewLine, messages);
 			return View(updatedInvoices);
 		}
 

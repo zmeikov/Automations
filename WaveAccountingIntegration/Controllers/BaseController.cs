@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Security.Authentication;
+using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using WaveAccountingIntegration.Models;
 using WaveAccountingIntegration.Services;
@@ -13,12 +14,16 @@ namespace WaveAccountingIntegration.Controllers
 		public IRestService _restService;
 		public ICustomerSettingsService _customerSettingsService;
 		public IHeadersParser _headersParser;
+		public ISendGmail _sendGmail;
 
 		public AppSettings _appAppSettings;
 		public Dictionary<string, string> _headers;
 
+		
+
 		public BaseController()
 		{
+			_sendGmail = new SendGmail();
 			_fileSettingsServiceService = new FileSettingsServiceService();
 			_appAppSettings = _fileSettingsServiceService.GetSettings();
 
@@ -52,6 +57,16 @@ namespace WaveAccountingIntegration.Controllers
 			#endregion
 
 			
+		}
+
+
+		public string ExtractEmailFromString(string input)
+		{
+			var RegexPattern = @"\b[A-Z0-9._-]+@[A-Z0-9][A-Z0-9.-]{0,61}[A-Z0-9]\.[A-Z.]{2,6}\b";
+
+			var emailRegex = new Regex(RegexPattern, RegexOptions.IgnoreCase);
+
+			return emailRegex.Match(input).ToString();
 		}
 	}
 }

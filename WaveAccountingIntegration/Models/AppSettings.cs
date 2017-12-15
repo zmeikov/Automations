@@ -14,7 +14,7 @@ namespace WaveAccountingIntegration.Models
 		public int MahayagLateFeeProductId { get; set; }
 
 
-		public List<Address> Addresses { get; set; }
+		public List<Address> MahayagAddresses { get; set; }
 
 		public class Address
 		{
@@ -25,6 +25,14 @@ namespace WaveAccountingIntegration.Models
 			public int ZipCode { get; set; }
 		}
 
+		public GoogleAccountSettings  GoogleSettings { get; set; }
 
+		public class GoogleAccountSettings
+		{
+			public string UserName { get; set; }
+			public string Password { get; set; }
+		}
 	}
+
+	
 }

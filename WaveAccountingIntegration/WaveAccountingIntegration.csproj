@@ -232,7 +232,9 @@
     <Compile Include="Services\IHttpClientService.cs" />
     <Compile Include="Services\IHttpClientServiceFactory.cs" />
     <Compile Include="Services\IRestService.cs" />
+    <Compile Include="Services\ISendGmail.cs" />
     <Compile Include="Services\RestService.cs" />
+    <Compile Include="Services\SendGmail.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -240,6 +242,7 @@
     <Content Include="App_Data\RequestHeaders.txt" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Images\tp_sig.png" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -304,9 +307,12 @@
     <Content Include="Views\BusinessProcessingMahayag\LateCustomers.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\EvictionDocs.cshtml" />
     <None Include="Views\BusinessProcessingMahayag\3DayLate.cshtml" />
+    <Content Include="Views\BusinessProcessingMahayag\5DayTennantAtWill.cshtml" />
+    <Content Include="Views\BusinessProcessingMahayag\SmsAlertLateCustomers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\forms\3DayLate\" />
+    <Folder Include="Content\forms\5DayTennantAtWill\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

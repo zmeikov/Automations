@@ -6,8 +6,6 @@
 	var entry = Model.First();
 
 	WaveAccountingIntegration.Models.AppSettings.Address address = ViewBag.address;
-
-	var dateString = DateTime.Now.ToUSADateFormat();
 }
 <!DOCTYPE html>
 <html>
@@ -79,11 +77,7 @@
 			period(s):
 		</div>
 		<div class="t m0 x5 h5 ye ff5 fs2 fc1 sc0 ls0 ws0">
-			Unpaid/Short paid rent from @entry.Value.events.Where(x=>x.event_type == "invoice" && x.invoice.invoice_amount_due > 0).OrderBy(x=>x.date).FirstOrDefault().date.Value.ToUSADateFormat() up to and including @{
-				                                                                                                                                                                                                             DateTime today = DateTime.Today;
-				                                                                                                                                                                                                             DateTime endOfMonth = new DateTime(today.Year, today.Month, 1).AddMonths(1).AddDays(-1);
-				                                                                                                                                                                                                             @endOfMonth.ToUSADateFormat();
-			                                                                                                                                                                                                             }
+			Unpaid/Short paid rent from @entry.Value.events.Where(x=>x.event_type == "invoice" && x.invoice.invoice_amount_due > 0).OrderBy(x=>x.date).FirstOrDefault().date.Value.ToUSADateFormat() up to and including @DateTime.Today.GetEndOfTheMonth().ToUSADateFormat()
 		</div>
 		<div class="t m0 x5 h5 yf ff5 fs2 fc1 sc0 ls0 ws0">
 			___________________________________________________________________________
@@ -164,7 +158,7 @@
 			78B-6-811 which specifically may include trebling all of those damages mentioned above except
 		</div>
 		<div class="t m0 x4 h1 y29 ff6 fs3 fc1 sc0 ls0 ws0">
-			@dateString<span class="_ _1"></span> <span class="_ _4"></span>Three Day Notice to Pay or to Vacate <span class="_ _5"></span>Page <span class="ff1 fs0">1</span>
+			@DateTime.Now.ToUSADateFormat()<span class="_ _1"></span> <span class="_ _4"></span>Three Day Notice to Pay or to Vacate <span class="_ _5"></span>Page <span class="ff1 fs0">1</span>
 		</div>
 	</div>
 	<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
@@ -194,16 +188,16 @@
 			situation.
 		</div>
 		<div class="t m0 x8 h4 y30 ff4 fs2 fc1 sc0 ls0 ws0">
-			Date @dateString <span class="_ _6"></span>Sign here _______________________________
+			Date @DateTime.Now.ToUSADateFormat() <span class="_ _6"></span>Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
 		</div>
 		<div class="t m0 x9 h5 y31 ff5 fs2 fc1 sc0 ls0 ws0">
-			Todor Peykov
+			
 		</div>
 		<div class="t m0 xa h5 y32 ff5 fs2 fc1 sc0 ls0 ws0">
 			RETURN OF SERVICE
 		</div>
 		<div class="t m0 x4 h4 y33 ff4 fs2 fc1 sc0 ls0 ws0">
-			This Notice was served upon <span>@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()</span>, on @dateString <span class="ff7 fs0">(date)</span> in the following
+			This Notice was served upon <span>@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()</span>, on @DateTime.Now.ToUSADateFormat() <span class="ff7 fs0">(date)</span> in the following
 		</div>
 		<div class="t m0 x4 h4 y34 ff4 fs2 fc1 sc0 ls0 ws0">
 			manner:
@@ -239,13 +233,13 @@
 			[_] <span class="ff1"><span class="ff4 fs2">place of business.</span></span>
 		</div>
 		<div class="t m0 xc h4 y3f ff4 fs2 fc1 sc0 ls0 ws0">
-			Sign here _______________________________
+			Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
 		</div>
 		<div class="t m0 xd h4 y40 ff4 fs2 fc1 sc0 ls0 ws0">
-			Person Serving This Notice
+			
 		</div>
 		<div class="t m0 x4 h1 y29 fs3 fc1 sc0 ls0 ws0">
-			@dateString<span class="_ _1"></span> <span class="_ _4"></span>Three Day Notice to Pay or to Vacate <span class="_ _5"></span>Page <span class="ff1 fs0">2</span>
+			@DateTime.Now.ToUSADateFormat()<span class="_ _1"></span> <span class="_ _4"></span>Three Day Notice to Pay or to Vacate <span class="_ _5"></span>Page <span class="ff1 fs0">2</span>
 		</div>
 	</div>
 	<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>

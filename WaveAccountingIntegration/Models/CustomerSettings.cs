@@ -12,5 +12,13 @@ namespace WaveAccountingIntegration.Models
 		public DateTime? NextLateFeeChargeDate { get; set; }
 
 		public bool? ConsolidateInvoices { get; set; }
+
+		public DateTime? LastSmsAlertSent { get; set; }
+
+		public int? CustomDaysBetweenSmsAlerts { get; set; }
+
+		public bool? SendSmsAlerts { get; set; }
+
+		public string StatementUrl { get; set; }
 	}
 }

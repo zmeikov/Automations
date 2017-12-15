@@ -1,6 +1,8 @@
 ﻿@model IEnumerable<WaveAccountingIntegration.Models.Customer>
 
 @{
+	Layout = null;
+
 	ViewBag.Title = "SetCustomerDefaults";
 
 	string Message = ViewBag.Message;
@@ -13,125 +15,5 @@
 		Html.RenderPartial("Pre", Message);
 	}
 </div>
-<table class="table">
-	<tr>
-		<th>
-			@Html.DisplayNameFor(model => model.url)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.account_number)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.active)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.name)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.first_name)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.last_name)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.email)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.fax_number)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.mobile_number)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.phone_number)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.toll_free_number)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.website)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.address1)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.address2)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.city)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.postal_code)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.date_created)
-		</th>
-		<th>
-			@Html.DisplayNameFor(model => model.date_modified)
-		</th>
-		<th></th>
-	</tr>
 
-@foreach (var item in Model) {
-	<tr>
-		<td>
-			@Html.DisplayFor(modelItem => item.url)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.account_number)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.active)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.name)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.first_name)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.last_name)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.email)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.fax_number)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.mobile_number)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.phone_number)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.toll_free_number)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.website)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.address1)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.address2)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.city)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.postal_code)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.date_created)
-		</td>
-		<td>
-			@Html.DisplayFor(modelItem => item.date_modified)
-		</td>
-		<td>
-			
-		</td>
-	</tr>
-}
 
-</table>
