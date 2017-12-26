@@ -20,5 +20,11 @@ namespace WaveAccountingIntegration.Models
 		public bool? SendSmsAlerts { get; set; }
 
 		public string StatementUrl { get; set; }
+
+		public DateTime? EvictonNoticeDate { get; set; }
+
+		public string EvictionCourtCaseNumber { get; set; }
+
+		public string EvictionCourtAssignedJudge { get; set; }
 	}
 }

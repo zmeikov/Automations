@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Xml.Schema;
 using Newtonsoft.Json;
 using WaveAccountingIntegration.Models;
 
@@ -51,8 +52,8 @@ namespace WaveAccountingIntegration.Controllers
 						           $"and your last payment of: ${lastPayment.total} " +
 						           $"was received on: {lastPayment.date.Value.ToUSADateFormat()}. " +
 						           $"You can see your history here: {custSettings.StatementUrl} ." +
-						           $"Please let me know when can you make your next payment." +
-						           $"NOTE: Starting FEB 2018 there will be 2% daily charge for any past due balance!";
+						           $"Please let me know when can you make your next payment. " +
+						           $"IMPORTANT NOTE: Starting FEB 2018 there will be 2% daily charge for any past due balance!";
 
 
 						messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address1)}");
@@ -69,8 +70,8 @@ namespace WaveAccountingIntegration.Controllers
 						           $"and your last payment of: ${lastPayment.total} " +
 						           $"was received on: {lastPayment.date.Value.ToUSADateFormat()}. " +
 						           $"You can see your history here: {custSettings.StatementUrl} ." +
-								   $"Please let me know when can you make your next payment." +
-						           $"NOTE: Starting FEB 2018 there will be 2% daily charge for any past due balance!";
+								   $"Please let me know when can you make your next payment. " +
+						           $"IMPORTANT NOTE: Starting FEB 2018 there will be 2% daily charge for any past due balance!";
 
 
 						messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address2)}");
@@ -120,6 +121,11 @@ namespace WaveAccountingIntegration.Controllers
 			var address = _appAppSettings.MahayagAddresses.FirstOrDefault(x => x.id == customer.name.Substring(0, 4));
 
 			ViewBag.address = address;
+			ViewBag.CustomerSettings = _customerSettingsService.ExctractFromCustomerObject(customer);
+			ViewBag.AppSettings = _appAppSettings;
+			var total = customerStatement.First().Value.ending_balance;
+			ViewBag.invoice = customerStatement.Values.First().events.First(x=>x.invoice.invoice_amount_due == total && x.event_type == "invoice").invoice;
+			ViewBag.invoice_items = _restService.Get<List<InvoiceItem>>(ViewBag.invoice.items_url).Result;
 			return View(form, customerStatement);
 		}
 
@@ -208,7 +214,10 @@ namespace WaveAccountingIntegration.Controllers
 					LastSmsAlertSent = DateTime.Today,
 					CustomDaysBetweenSmsAlerts = 5,
 					SendSmsAlerts = false,
-					StatementUrl = "StatementUrl"
+					StatementUrl = "StatementUrl",
+					EvictonNoticeDate = DateTime.Today,
+					EvictionCourtCaseNumber = "",
+					EvictionCourtAssignedJudge = ""
 				};
 
 				if (custSettings == null)
@@ -244,11 +253,18 @@ namespace WaveAccountingIntegration.Controllers
 
 					if (custSettings.ChargeLateFee == null) { custSettings.ChargeLateFee = defaultCustSettings.ChargeLateFee; messages.Add($"Setting deafult value ChargeLateFee to {custSettings.ChargeLateFee} for customer: {customer.name}"); changesMade = true; }
 					if (custSettings.NextLateFeeChargeDate == null) { custSettings.NextLateFeeChargeDate = defaultCustSettings.NextLateFeeChargeDate; messages.Add($"Setting deafult value NextLateFeeChargeDate to {custSettings.NextLateFeeChargeDate} for customer: {customer.name}"); changesMade = true; }
+
 					if (custSettings.ConsolidateInvoices == null) { custSettings.ConsolidateInvoices = defaultCustSettings.ConsolidateInvoices; messages.Add($"Setting deafult value ConsolidateInvoices to {custSettings.ConsolidateInvoices} for customer: {customer.name}"); changesMade = true; }
+
 					if (custSettings.LastSmsAlertSent == null) { custSettings.LastSmsAlertSent = defaultCustSettings.LastSmsAlertSent; messages.Add($"Setting deafult value LastSmsAlertSent to {custSettings.LastSmsAlertSent} for customer: {customer.name}"); changesMade = true; }
 					if (custSettings.CustomDaysBetweenSmsAlerts == null) { custSettings.CustomDaysBetweenSmsAlerts = defaultCustSettings.CustomDaysBetweenSmsAlerts; messages.Add($"Setting deafult value CustomDaysBetweenSmsAlerts to {custSettings.CustomDaysBetweenSmsAlerts} for customer: {customer.name}"); changesMade = true; }
 					if (custSettings.SendSmsAlerts == null) { custSettings.SendSmsAlerts = defaultCustSettings.SendSmsAlerts; messages.Add($"Setting deafult value SendSmsAlerts to {custSettings.SendSmsAlerts} for customer: {customer.name}"); changesMade = true; }
+
 					if (custSettings.StatementUrl == null) { custSettings.StatementUrl = defaultCustSettings.StatementUrl; messages.Add($"Setting deafult value StatementUrl to {custSettings.StatementUrl} for customer: {customer.name}"); changesMade = true; }
+
+					if (custSettings.EvictonNoticeDate == null) { custSettings.EvictonNoticeDate = defaultCustSettings.EvictonNoticeDate; messages.Add($"Setting deafult value EvictonNoticeDate to {custSettings.EvictonNoticeDate} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.EvictionCourtCaseNumber == null) { custSettings.EvictionCourtCaseNumber = defaultCustSettings.EvictionCourtCaseNumber; messages.Add($"Setting deafult value EvictionCourtCaseNumber to {custSettings.EvictionCourtCaseNumber} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.EvictionCourtAssignedJudge == null) { custSettings.EvictionCourtAssignedJudge = defaultCustSettings.EvictionCourtAssignedJudge; messages.Add($"Setting deafult value EvictionCourtAssignedJudge to {custSettings.EvictionCourtAssignedJudge} for customer: {customer.name}"); changesMade = true; }
 
 					if (changesMade)
 					{
@@ -274,7 +290,7 @@ namespace WaveAccountingIntegration.Controllers
 				url = url + $"&customer.id={narrrowByCustomerId}";
 
 			var invoicesDue = _restService.Get<List<Invoice>>(url).Result
-				.Where(x=> x.invoice_amount_due > 0)
+				.Where(x=> x.invoice_amount_due != 0)
 				.OrderBy(x=>x.customer.name)
 				.ToList();
 
@@ -286,7 +302,7 @@ namespace WaveAccountingIntegration.Controllers
 				var custSettings = _customerSettingsService.ExctractFromCustomerObject(customerInvoicesDue.First().customer);
 
 				//consolidate more than 2 invoices when settings allow it
-				if (customerInvoicesDue.Count() > 1 && custSettings.ConsolidateInvoices == true)
+				if (customerInvoicesDue.Count() > 1 && custSettings.ConsolidateInvoices == true && !customerInvoicesDue.First().customer.name.StartsWith("XXX"))
 				{
 					var targetInvoice = customerInvoicesDue.Last();
 					var sourceInvoices = customerInvoicesDue.Where(x => x.id != targetInvoice.id);
@@ -404,8 +420,9 @@ namespace WaveAccountingIntegration.Controllers
 			return View(updatedInvoices);
 		}
 
-		public ActionResult ChargeLateFees(double latePercentRate = 0.02)
+		public ActionResult ChargeLateFees(double lateRate = 0.02)
 		{
+			var latePercentRate = new decimal(lateRate);
 			var catchupOnLatefees = false;
 			List<Invoice> addedFeeInvoices = new List<Invoice>();
 
@@ -468,7 +485,7 @@ namespace WaveAccountingIntegration.Controllers
 			if (catchupOnLatefees)
 			{
 				//recusrsive call to catch up on late fees if process has not run for more than a day
-				ChargeLateFees(latePercentRate);
+				ChargeLateFees((double)latePercentRate);
 			}
 
 			return View(addedFeeInvoices);

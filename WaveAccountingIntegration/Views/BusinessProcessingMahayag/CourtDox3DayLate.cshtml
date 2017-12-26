@@ -1,0 +1,3245 @@
+﻿@model Dictionary<WaveAccountingIntegration.Models.Customer, WaveAccountingIntegration.Models.Transaction_History>
+
+@{
+	Layout = null;
+
+	var entry = Model.First();
+
+	WaveAccountingIntegration.Models.AppSettings.Address address = ViewBag.address;
+
+	WaveAccountingIntegration.Models.CustomerSettings custSettings = ViewBag.CustomerSettings;
+	WaveAccountingIntegration.Models.AppSettings appSettings = ViewBag.AppSettings;
+
+	WaveAccountingIntegration.Models.Invoice invoice = ViewBag.invoice;
+	List<WaveAccountingIntegration.Models.InvoiceItem> invoice_items = ViewBag.invoice_items;
+
+	var lateFeesAmount = invoice_items.Where(x => x.product.id == appSettings.MahayagLateFeeProductId).Select(x => x.price).Sum();
+	var pastDueRentAmount = entry.Value.ending_balance - lateFeesAmount;
+
+	var totalSubjectToTrebling = pastDueRentAmount + lateFeesAmount;
+
+	var totalTrebled = totalSubjectToTrebling * 3;
+
+	var serviceFees = 120;
+
+	var filingFees = 75;
+
+	var totalClaimAmount = totalTrebled + serviceFees + filingFees;
+
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
+	<link href="/Content/forms/CourtDox3DayLate/base.min.css" rel="stylesheet">
+	<link href="/Content/forms/CourtDox3DayLate/fancy.min.css" rel="stylesheet">
+	<link href="/Content/forms/CourtDox3DayLate/main.css" rel="stylesheet">
+	<script src="/Content/forms/CourtDox3DayLate/compatibility.min.js">
+	</script>
+	<script src="/Content/forms/CourtDox3DayLate/theViewer.min.js">
+	</script>
+	<script>
+		try {
+			theViewer.defaultViewer = new theViewer.Viewer({});
+		} catch (e) { }
+	</script>
+	<title></title>
+</head>
+<body>
+	<div id="sidebar">
+		<div id="outline"></div>
+	</div>
+	<div id="page-container">
+		<div class="pf w0 h0" data-page-no="1" id="pf1">
+			<div class="pc pc1 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg1.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x2 h2 y2 ff2 fs0 fc1 sc0 ls0 ws0">
+					                                                  
+				</div>
+				<div class="t m0 x3 h3 y3 ff3 fs1 fc0 sc0 ls0 ws0">
+					COVER SHEET FOR CIVIL ACTIONS
+				</div>
+				<div class="t m0 x4 h4 y4 ff4 fs2 fc1 sc0 ls0 ws0">
+					Cover Sheet for Civil Actions
+				</div>
+				<div class="t m0 x3 h5 y5 ff5 fs3 fc1 sc0 ls0 ws0">
+					Interpretation. <span class="ff6">If you do not speak or</span>
+				</div>
+				<div class="t m0 x5 h6 y6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Interpretación. <span class="ff8">Si usted no habla o entiende</span>
+				</div>
+				<div class="t m0 x3 h5 y7 ff6 fs3 fc1 sc0 ls0 ws0">
+					understand English, contact the court at least 3
+				</div>
+				<div class="t m0 x5 h6 y8 ff8 fs3 fc1 sc0 ls0 ws0">
+					el Inglés contacte al tribunal por lo menos 3
+				</div>
+				<div class="t m0 x3 h5 y9 ff6 fs3 fc1 sc0 ls0 ws0">
+					days before the hearing, and an interpreter will
+				</div>
+				<div class="t m0 x5 h6 ya ff8 fs3 fc1 sc0 ls0 ws0">
+					días antes de la audiencia o mediación y le
+				</div>
+				<div class="t m0 x3 h5 yb ff6 fs3 fc1 sc0 ls0 ws0">
+					be provided.
+				</div>
+				<div class="t m0 x5 h6 yc ff8 fs3 fc1 sc0 ls0 ws0">
+					proveerán un intérprete<span class="ff1 fs0">.</span>
+				</div>
+				<div class="t m0 x3 h7 yd ff9 fs4 fc1 sc0 ls0 ws0">
+					Petitioner <span class="_ _2"></span>Petitioner  s Attorney
+				</div>
+				<div class="t m0 x3 h8 ye ffa fs4 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x3 h9 yf ffb fs4 fc1 sc0 ls0 ws0">
+					Name
+				</div>
+				<div class="t m0 x5 ha y10 ffc fs4 fc1 sc0 ls0 ws0">
+					Name <span class="_ _4"></span>Bar Number
+				</div>
+				<div class="t m0 x3 h8 y11 ffa fs4 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x3 h9 y12 ffb fs4 fc1 sc0 ls0 ws0">
+					Address
+				</div>
+				<div class="t m0 x5 ha y13 ffc fs4 fc1 sc0 ls0 ws0">
+					Address
+				</div>
+				<div class="t m0 x3 h8 y14 ffa fs4 fc1 sc0 ls0 ws0">
+					Salt Lake City, UT 84127
+				</div>
+				<div class="t m0 x3 h9 y15 ffb fs4 fc1 sc0 ls0 ws0">
+					City, State, Zip
+				</div>
+				<div class="t m0 x5 ha y16 ffc fs4 fc1 sc0 ls0 ws0">
+					City, State, Zip
+				</div>
+				<div class="t m0 x3 h8 y17 ffa fs4 fc1 sc0 ls0 ws0">
+					(801) 810-9087 <span class="_ _5"></span>zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x6 h8 y18 ffa fs4 fc1 sc0 ls0 ws0">
+					
+				</div>
+				<div class="t m0 x3 h9 y19 ffb fs4 fc1 sc0 ls0 ws0">
+					Phone <span class="_ _6"></span>Email
+				</div>
+				<div class="t m0 x5 ha y1a ffc fs4 fc1 sc0 ls0 ws0">
+					Phone <span class="_ _7"></span>Email
+				</div>
+				<div class="t m0 x3 h7 y1b ff9 fs4 fc1 sc0 ls0 ws0">
+					Respondent <span class="_ _8"></span>Respondent  s Attorney
+				</div>
+				<div class="t m0 x3 h8 y1c ffa fs4 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()
+				</div>
+				<div class="t m0 x3 ha y1d ffc fs4 fc1 sc0 ls0 ws0">
+					Name <span class="_ _9"></span>Name <span class="_ _a"></span>Bar Number
+				</div>
+				<div class="t m0 x3 h8 y1e ffa fs4 fc1 sc0 ls0 ws0">
+					@address.Address1
+				</div>
+				<div class="t m0 x3 ha y1f ffc fs4 fc1 sc0 ls0 ws0">
+					Address <span class="_ _b"></span>Address
+				</div>
+				<div class="t m0 x3 h8 y20 ffa fs4 fc1 sc0 ls0 ws0">
+					@address.City, @address.State @address.ZipCode
+				</div>
+				<div class="t m0 x3 ha y21 ffc fs4 fc1 sc0 ls0 ws0">
+					City, State, Zip <span class="_ _c"></span>City, State, Zip
+				</div>
+				<div class="t m0 x3 ha y22 ffc fs4 fc1 sc0 ls0 ws0">
+					Phone
+				</div>
+				<div class="t m0 x6 ha y23 ffc fs4 fc1 sc0 ls0 ws0">
+					Email
+				</div>
+				<div class="t m0 x5 ha y22 ffc fs4 fc1 sc0 ls0 ws0">
+					Phone <span class="_ _7"></span>Email
+				</div>
+				<div class="t m0 x3 h7 y24 ff9 fs4 fc1 sc0 ls0 ws0">
+					Total Claim for Damages $<u>@entry.Value.ending_balance</u>
+				</div>
+				<div class="t m0 x5 h5 y25 ff9 fs4 fc1 sc0 ls0 ws0">
+					Jury Demand <span class="ffc"><span class="ffd">[_] <span class="ff6 fs3">Yes</span> [_] <span class="ff6 fs3">No $250 <span class="ffd fs4">[_]</span> <span class="ffe fs0">Jury</span></span></span></span>
+				</div>
+				<div class="t m0 x3 h5 y26 ff5 fs3 fc1 sc0 ls0 ws0">
+					Schedule of Fees: 78-2-301 <span class="ff6"><span class="fff fs5">(Choose <span class="ff10">[X]</span> all that apply. See Page 2 for fees for claims other than claims for damages.)</span></span>
+				</div>
+				<div class="t m0 x7 h7 y27 ff9 fs4 fc1 sc0 ls0 ws0">
+					PLEASE CHOOSE ONE BEFORE PROCEEDING
+				</div>
+				<div class="t m0 x8 hb y28 ffe fs0 fc1 sc0 ls0 ws0">
+					$180.00 <span class="_ _e"></span>[_] <span class="_ _f"></span>Damages $10,000 &amp; over
+				</div>
+				<div class="t m0 x9 hb y29 ffe fs0 fc1 sc0 ls0 ws0">
+					[_] <span class="_ _10"></span>No monetary damages are requested.
+				</div>
+				<div class="t m0 xa hb y2a ffe fs0 fc1 sc0 ls0 ws0">
+					(URCP 26: Tier 2)
+				</div>
+				<div class="t m0 xb h7 y2b ff9 fs4 fc1 sc0 ls0 ws0">
+					--COMPLAINT OR INTERPLEADER--
+				</div>
+				<div class="t m0 x9 hb y2c ffe fs0 fc1 sc0 ls0 ws0">
+					[_] <span class="_ _10"></span>Damages requested are $50,000 or less <span class="_ _11"></span>$75 <span class="_ _e"></span>[_] <span class="_ _f"></span>Damages $2000 or less
+				</div>
+				<div class="t m0 xa hb y2d ffe fs0 fc1 sc0 ls0 ws0">
+					(URCP 26: Tier 1) <span class="_ _12"></span>$185 <span class="_ _e"></span>[_] <span class="_ _f"></span>Damages $2001 - $9999
+				</div>
+				<div class="t m0 x9 hb y2e ffe fs0 fc1 sc0 ls0 ws0">
+					[_] <span class="_ _10"></span>Damages requested are more than $50,000 <span class="_ _13"></span>$360 <span class="_ _e"></span>[_] <span class="_ _f"></span>Damages $10,000 &amp; over
+				</div>
+				<div class="t m0 xa hb y2f ffe fs0 fc1 sc0 ls0 ws0">
+					And less than $300,000 (URCP 26: Tier 2) <span class="_ _14"></span>$360 <span class="_ _e"></span>[_] <span class="_ _f"></span>Damages Unspecified
+				</div>
+				<div class="t m0 x9 hb y30 ffe fs0 fc1 sc0 ls0 ws0">
+					[_] <span class="_ _10"></span>Damages requested are $300,000 or more
+				</div>
+				<div class="t m0 xa hb y31 ffe fs0 fc1 sc0 ls0 ws0">
+					(URCP 26: Tier 3)
+				</div>
+				<div class="t m0 xc h7 y32 ff9 fs4 fc1 sc0 ls0 ws0">
+					--COUNTERCLAIM, CROSS CLAIM, THIRD
+				</div>
+				<div class="t m0 x9 hb y33 ffe fs0 fc1 sc0 ls0 ws0">
+					[_] <span class="_ _10"></span>Damages are unspecified
+				</div>
+				<div class="t m0 xd h7 y34 ff9 fs4 fc1 sc0 ls0 ws0">
+					PARTY CLAIM, OR INTERVENTION --
+				</div>
+				<div class="t m0 xa hb y35 ffe fs0 fc1 sc0 ls0 ws0">
+					Circle one: Tier 1 Tier 2  Tier 3 <span class="_ _15"></span>$55 <span class="_ _e"></span>[_] <span class="_ _f"></span>Damages $2000 or less
+				</div>
+				<div class="t m0 x9 hb y36 ff11 fs0 fc1 sc0 ls0 ws0">
+					[X] <span class="_ _f"></span>This case is exempt from URCP 26. (E) <span class="_ _16"></span><span class="ffe">$150 <span class="_ _e"></span>[_] <span class="_ _f"></span>Damages $2001 - $9999</span>
+				</div>
+				<div class="t m0 xe h7 y37 ff9 fs4 fc1 sc0 ls0 ws0">
+					--MOTION TO RENEW JUDGMENT --
+				</div>
+				<div class="t m0 xf hb y38 ffe fs0 fc1 sc0 ls0 ws0">
+					$155 <span class="_ _e"></span>[_] <span class="_ _f"></span>Damages $10,000 &amp; over
+				</div>
+				<div class="t m0 x10 hb y39 ffe fs0 fc1 sc0 ls0 ws0">
+					$37.50 <span class="_ _e"></span>[_] <span class="_ _f"></span>Damages $2,000 or less
+				</div>
+				<div class="t m0 x10 hb y3a ffe fs0 fc1 sc0 ls0 ws0">
+					$92.50 <span class="_ _e"></span>[_] <span class="_ _f"></span>Damages $2001 - $9,999
+				</div>
+				<div class="t m0 x3 h1 y3b ff1 fs0 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _17"></span>Civil Cover Sheet Revised June 27, 2016 <span class="_ _18"></span>Page 1
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="2" id="pf2">
+			<div class="pc pc2 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg2.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x11 h6 y3c ff12 fs3 fc1 sc0 ls0 ws0">
+					Choose [X] One Category
+				</div>
+				<div class="t m0 x3 h6 y3d ff12 fs3 fc1 sc0 ls0 ws0">
+					Fee <span class="_ _19"></span>Case Type <span class="_ _1a"></span>Fee <span class="_ _1b"></span>Case Type
+				</div>
+				<div class="t m0 x12 h6 y3e ff12 fs3 fc1 sc0 ls0 ws0">
+					------ APPEALS ------
+				</div>
+				<div class="t m0 x5 h2 y3f ff2 fs0 fc1 sc0 ls0 ws0">
+					$115
+				</div>
+				<div class="t m0 x13 hc y40 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 hd y41 ff14 fs5 fc1 sc0 ls0 ws0">
+					Counterclaim: Custody/ Visit/Support
+				</div>
+				<div class="t m0 x15 h2 y42 ff2 fs0 fc1 sc0 ls0 ws0">
+					$360
+				</div>
+				<div class="t m0 x16 hc y43 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y42 ff2 fs0 fc1 sc0 ls0 ws0">
+					Administrative Agency Review <span class="_ _11"></span>$155
+				</div>
+				<div class="t m0 x13 hc y43 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y42 ff2 fs0 fc1 sc0 ls0 ws0">
+					Counterclaim: Paternity/Grandparent
+				</div>
+				<div class="t m0 x10 h2 y44 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y45 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y44 ff2 fs0 fc1 sc0 ls0 ws0">
+					Tax Court <span class="ff13 fs1">(Appeal of Tax Commission <span class="_ _1c"></span><span class="ff2 fs0">Visitation</span></span>
+				</div>
+				<div class="t m0 x17 hc y46 ff13 fs1 fc1 sc0 ls0 ws0">
+					Court: Refer to Clerk of Court upon filing.
+				</div>
+				<div class="t m0 x5 h2 y47 ff2 fs0 fc1 sc0 ls0 ws0">
+					$100
+				</div>
+				<div class="t m0 x13 hc y46 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y47 ff2 fs0 fc1 sc0 ls0 ws0">
+					Domestic Modification <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x15 h2 y48 ff2 fs0 fc1 sc0 ls0 ws0">
+					$225
+				</div>
+				<div class="t m0 x16 hc y49 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y48 ff2 fs0 fc1 sc0 ls0 ws0">
+					Civil (78A-2-301(1)(h)) <span class="ff13 fs1">(E) <span class="_ _1d"></span></span>$100
+				</div>
+				<div class="t m0 x13 hc y49 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y48 ff2 fs0 fc1 sc0 ls0 ws0">
+					Counter-petition: Domestic Mod.
+				</div>
+				<div class="t m0 x15 h2 y4a ff2 fs0 fc1 sc0 ls0 ws0">
+					$225
+				</div>
+				<div class="t m0 x16 hc y4b ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y4a ff2 fs0 fc1 sc0 ls0 ws0">
+					Small Claims Trial de Novo <span class="ff13 fs1">(E) <span class="_ _11"></span></span>$360
+				</div>
+				<div class="t m0 x13 hc y4b ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y4a ff2 fs0 fc1 sc0 ls0 ws0">
+					Grandparent Visitation <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x18 h6 y4c ff12 fs3 fc1 sc0 ls0 ws0">
+					------ GENERAL CIVIL ------
+				</div>
+				<div class="t m0 x5 h2 y4d ff2 fs0 fc1 sc0 ls0 ws0">
+					$360
+				</div>
+				<div class="t m0 x13 hc y4e ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y4d ff2 fs0 fc1 sc0 ls0 ws0">
+					Paternity/Parentage <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x10 h2 y4f ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y50 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y4f ff2 fs0 fc1 sc0 ls0 ws0">
+					Civil Rights <span class="_ _1e"></span>$310
+				</div>
+				<div class="t m0 x13 hc y50 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y4f ff2 fs0 fc1 sc0 ls0 ws0">
+					Separate Maintenance <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x15 h2 y51 ff2 fs0 fc1 sc0 ls0 ws0">
+					$ 0
+				</div>
+				<div class="t m0 x16 hc y52 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y51 ff2 fs0 fc1 sc0 ls0 ws0">
+					Civil Stalking <span class="ff13 fs1">(E) <span class="_ _1f"></span><span class="ff2 fs0">$35</span></span>
+				</div>
+				<div class="t m0 x13 hc y52 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y51 ff2 fs0 fc1 sc0 ls0 ws0">
+					Temporary Separation <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x15 h2 y53 ff2 fs0 fc1 sc0 ls0 ws0">
+					$360
+				</div>
+				<div class="t m0 x16 hc y54 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y53 ff2 fs0 fc1 sc0 ls0 ws0">
+					Condemnation/Eminent Domain <span class="_ _20"></span>$35
+				</div>
+				<div class="t m0 x13 hc y54 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y53 ff2 fs0 fc1 sc0 ls0 ws0">
+					Uniform Child Custody Jurisdiction &amp;
+				</div>
+				<div class="t m0 x10 h2 y55 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y56 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y55 ff2 fs0 fc1 sc0 ls0 ws0">
+					Contract <span class="_ _21"></span>Enforcement Act (UCCJEA) <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x10 h2 y57 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y58 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y57 ff2 fs0 fc1 sc0 ls0 ws0">
+					Contract: Employment Discrimination <span class="_ _22"></span>$35
+				</div>
+				<div class="t m0 x13 hc y58 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 hd y59 ff14 fs5 fc1 sc0 ls0 ws0">
+					Uniform Interstate Family Support Act
+				</div>
+				<div class="t m0 x10 h2 y5a ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y5b ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y5a ff2 fs0 fc1 sc0 ls0 ws0">
+					Contract: Fraud <span class="_ _23"></span>(UIFSA) <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x10 h2 y5c ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y5d ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y5c ff2 fs0 fc1 sc0 ls0 ws0">
+					Debt Collection
+				</div>
+				<div class="t m0 x14 h6 y5e ff12 fs3 fc1 sc0 ls0 ws0">
+					---- JUDGMENTS ----
+				</div>
+				<div class="t m0 x10 h2 y5f ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 he y60 ff10 fs5 fc1 sc0 ls0 ws0">
+					[x]
+				</div>
+				<div class="t m0 x17 h2 y5f ff2 fs0 fc1 sc0 ls0 ws0">
+					Eviction/Forcible Entry and Detainer<span class="_ _24"></span> <span class="ff13 fs1">(E) <span class="_ _25"></span><span class="ff2 fs0">$35</span></span>
+				</div>
+				<div class="t m0 x13 hc y61 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y5f ff2 fs0 fc1 sc0 ls0 ws0">
+					Foreign Judgment (Abstract of) <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x15 h2 y62 ff2 fs0 fc1 sc0 ls0 ws0">
+					$360
+				</div>
+				<div class="t m0 x16 hc y63 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y62 ff2 fs0 fc1 sc0 ls0 ws0">
+					Extraordinary Relief/W<span class="_ _24"></span>rits <span class="_ _26"></span>$50
+				</div>
+				<div class="t m0 x13 hc y63 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y62 ff2 fs0 fc1 sc0 ls0 ws0">
+					Abstract of Judgment/Order of Utah
+				</div>
+				<div class="t m0 x15 h2 y64 ff2 fs0 fc1 sc0 ls0 ws0">
+					$360
+				</div>
+				<div class="t m0 x16 hc y65 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y64 ff2 fs0 fc1 sc0 ls0 ws0">
+					Forfeiture of Property <span class="ff13 fs1">(E) <span class="_ _27"></span></span>Court/Agency <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x10 h2 y66 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y67 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y66 ff2 fs0 fc1 sc0 ls0 ws0">
+					Interpleader <span class="_ _12"></span>$30
+				</div>
+				<div class="t m0 x13 hc y67 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y66 ff2 fs0 fc1 sc0 ls0 ws0">
+					Abstract of Judgment/Order of Utah
+				</div>
+				<div class="t m0 x10 h2 y68 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y69 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y68 ff2 fs0 fc1 sc0 ls0 ws0">
+					Lien/Mortgage Foreclosure <span class="_ _1a"></span>State Tax Com<span class="_ _24"></span>mission <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x10 h2 y6a ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y6b ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y6a ff2 fs0 fc1 sc0 ls0 ws0">
+					Miscellaneous Civil <span class="_ _28"></span>$35
+				</div>
+				<div class="t m0 x13 hc y6b ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y6a ff2 fs0 fc1 sc0 ls0 ws0">
+					Judgment by Confession <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x15 h2 y6c ff2 fs0 fc1 sc0 ls0 ws0">
+					$360
+				</div>
+				<div class="t m0 x16 hc y6d ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y6c ff2 fs0 fc1 sc0 ls0 ws0">
+					Post Conviction Relief: Capital <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x13 hc y6d ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h6 y6e ff12 fs3 fc1 sc0 ls0 ws0">
+					------ PROBATE ------
+				</div>
+				<div class="t m0 x15 h2 y6f ff2 fs0 fc1 sc0 ls0 ws0">
+					$360
+				</div>
+				<div class="t m0 x16 hc y70 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y6f ff2 fs0 fc1 sc0 ls0 ws0">
+					Post Conviction Relief: Non-capital <span class="ff13 fs1">(E) <span class="_ _29"></span><span class="ff2 fs0">$360</span></span>
+				</div>
+				<div class="t m0 x13 hc y70 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y6f ff2 fs0 fc1 sc0 ls0 ws0">
+					Adoption/Foreign Adoption <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x10 h2 y71 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y72 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y71 ff2 fs0 fc1 sc0 ls0 ws0">
+					Property Rights <span class="_ _2a"></span>$8
+				</div>
+				<div class="t m0 x13 hc y72 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y71 ff2 fs0 fc1 sc0 ls0 ws0">
+					Vital Statistics 26-2-25 per form
+				</div>
+				<div class="t m0 x15 h2 y73 ff2 fs0 fc1 sc0 ls0 ws0">
+					$360
+				</div>
+				<div class="t m0 x16 hc y74 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y73 ff2 fs0 fc1 sc0 ls0 ws0">
+					Registry Removal (Gun/W<span class="_ _24"></span>hite Collar) <span class="_ _2b"></span>$360
+				</div>
+				<div class="t m0 x13 hc y74 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y73 ff2 fs0 fc1 sc0 ls0 ws0">
+					Conservatorship <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x10 h2 y75 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y76 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y75 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sexual Harassment <span class="_ _2c"></span>$360
+				</div>
+				<div class="t m0 x13 hc y76 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y75 ff2 fs0 fc1 sc0 ls0 ws0">
+					Estate Personal Rep
+				</div>
+				<div class="t m0 x10 h2 y77 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y78 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y77 ff2 fs0 fc1 sc0 ls0 ws0">
+					W<span class="_ _24"></span>ater Rights <span class="_ _27"></span>$35
+				</div>
+				<div class="t m0 x13 hc y78 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y77 ff14 fs5 fc1 sc0 ls0 ws0">
+					Foreign Probate/Child Custody <span class="ff2 fs0">Doc <span class="ff13 fs1">(E)</span></span>
+				</div>
+				<div class="t m0 x15 h2 y79 ff2 fs0 fc1 sc0 ls0 ws0">
+					$360
+				</div>
+				<div class="t m0 x16 hc y7a ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y79 ff2 fs0 fc1 sc0 ls0 ws0">
+					W<span class="_ _24"></span>rongful Lien <span class="_ _2d"></span>$360
+				</div>
+				<div class="t m0 x13 hc y7a ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y79 ff2 fs0 fc1 sc0 ls0 ws0">
+					Gestational Agreement <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x10 h2 y7b ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y7c ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y7b ff2 fs0 fc1 sc0 ls0 ws0">
+					W<span class="_ _24"></span>rongful Termination <span class="_ _7"></span>$360
+				</div>
+				<div class="t m0 x13 hc y7c ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y7b ff2 fs0 fc1 sc0 ls0 ws0">
+					Guardianship-Adult <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x17 h6 y7d ff12 fs3 fc1 sc0 ls0 ws0">
+					-------- TORTS -------
+				</div>
+				<div class="t m0 x5 h2 y7e ff2 fs0 fc1 sc0 ls0 ws0">
+					$360
+				</div>
+				<div class="t m0 x13 hc y7f ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y7e ff2 fs0 fc1 sc0 ls0 ws0">
+					Guardianship-Minor <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x10 h2 y80 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y81 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y80 ff2 fs0 fc1 sc0 ls0 ws0">
+					Automobile Tort <span class="_ _2e"></span>$35
+				</div>
+				<div class="t m0 x13 hc y81 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y82 ff14 fs5 fc1 sc0 ls0 ws0">
+					Guardianship-Disabled Adult Child <span class="ff2 fs0"><span class="ff13 fs1">(T2)</span></span>
+				</div>
+				<div class="t m0 x10 h2 y83 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y84 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y83 ff2 fs0 fc1 sc0 ls0 ws0">
+					Intentional Tort <span class="_ _2f"></span>$0
+				</div>
+				<div class="t m0 x13 hc y84 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y83 ff2 fs0 fc1 sc0 ls0 ws0">
+					Involuntary Commitment <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x10 h2 y85 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y86 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y85 ff2 fs0 fc1 sc0 ls0 ws0">
+					Malpractice-Medical Tort <span class="_ _30"></span>$360
+				</div>
+				<div class="t m0 x13 hc y86 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y85 ff2 fs0 fc1 sc0 ls0 ws0">
+					Minor <span class="_ _31"></span>s Settlement <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x10 h2 y87 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y88 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y87 ff2 fs0 fc1 sc0 ls0 ws0">
+					Malpractice_Legal Tort; Other <span class="_ _32"></span>$360
+				</div>
+				<div class="t m0 x13 hc y88 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y87 ff2 fs0 fc1 sc0 ls0 ws0">
+					Name Change <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x10 h2 y89 ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y8a ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y89 ff2 fs0 fc1 sc0 ls0 ws0">
+					Premises Liability <span class="_ _33"></span>$360
+				</div>
+				<div class="t m0 x13 hc y8a ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y89 ff2 fs0 fc1 sc0 ls0 ws0">
+					Supervised Administration <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x10 h2 y8b ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y8c ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y8b ff2 fs0 fc1 sc0 ls0 ws0">
+					Asbestos <span class="_ _34"></span>$360
+				</div>
+				<div class="t m0 x13 hc y8c ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y8b ff2 fs0 fc1 sc0 ls0 ws0">
+					Trusts <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x10 h2 y8d ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y8e ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y8d ff2 fs0 fc1 sc0 ls0 ws0">
+					Product Liability (NOT Asbestos) <span class="_ _35"></span>$360
+				</div>
+				<div class="t m0 x13 hc y8e ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y8d ff2 fs0 fc1 sc0 ls0 ws0">
+					Unspecified (other) Probate <span class="ff13 fs1">(T2)</span>
+				</div>
+				<div class="t m0 x10 h2 y8f ff2 fs0 fc1 sc0 ls0 ws0">
+					Sch
+				</div>
+				<div class="t m0 x16 hc y90 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y8f ff2 fs0 fc1 sc0 ls0 ws0">
+					Slander/Libel/Defamation
+				</div>
+				<div class="t m0 x19 h6 y91 ff12 fs3 fc1 sc0 ls0 ws0">
+					-------- SPECIAL MATTERS -------
+				</div>
+				<div class="t m0 x9 h6 y92 ff12 fs3 fc1 sc0 ls0 ws0">
+					------ DOMESTIC RELATIONS ------
+				</div>
+				<div class="t m0 x1a h2 y93 ff2 fs0 fc1 sc0 ls0 ws0">
+					$35
+				</div>
+				<div class="t m0 x13 hc y94 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y93 ff2 fs0 fc1 sc0 ls0 ws0">
+					Arbitration Award <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x7 h2 y95 ff2 fs0 fc1 sc0 ls0 ws0">
+					$0
+				</div>
+				<div class="t m0 x16 hc y96 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y95 ff2 fs0 fc1 sc0 ls0 ws0">
+					Protective Orders <span class="ff13 fs1">(E) <span class="_ _36"></span></span>$0
+				</div>
+				<div class="t m0 x13 hc y96 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 hd y97 ff14 fs5 fc1 sc0 ls0 ws0">
+					Determination Competency-Criminal <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x15 h2 y98 ff2 fs0 fc1 sc0 ls0 ws0">
+					$310
+				</div>
+				<div class="t m0 x16 hc y99 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y98 ff2 fs0 fc1 sc0 ls0 ws0">
+					Marriage Adjudication <span class="ff13 fs1">(T2) <span class="_ _37"></span></span>$135
+				</div>
+				<div class="t m0 x13 hc y99 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y98 ff2 fs0 fc1 sc0 ls0 ws0">
+					Expungement <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x15 h2 y9a ff2 fs0 fc1 sc0 ls0 ws0">
+					$310
+				</div>
+				<div class="t m0 x16 hc y9b ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y9a ff2 fs0 fc1 sc0 ls0 ws0">
+					Custody/Visitation/Support <span class="_ _24"></span><span class="ff13 fs1">(T2) <span class="_ _38"></span><span class="ff2 fs0">$0</span></span>
+				</div>
+				<div class="t m0 x13 hc y9b ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y9a ff2 fs0 fc1 sc0 ls0 ws0">
+					Hospital Lien <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x15 h2 y9c ff2 fs0 fc1 sc0 ls0 ws0">
+					$310
+				</div>
+				<div class="t m0 x16 hc y9d ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 y9c ff2 fs0 fc1 sc0 ls0 ws0">
+					Divorce/Annulment <span class="ff13 fs1">(T2) <span class="_ _39"></span></span>$35
+				</div>
+				<div class="t m0 x13 hc y9d ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 y9c ff2 fs0 fc1 sc0 ls0 ws0">
+					Judicial Approval of Document: Not
+				</div>
+				<div class="t m0 x17 hf y9e ff13 fs1 fc1 sc0 ls0 ws0">
+					[_] <span class="ff15 fs0"></span>Check if child support, custody, or
+				</div>
+				<div class="t m0 x17 hc y9f ff13 fs1 fc1 sc0 ls0 ws0">
+					parent-time will be part of decree
+				</div>
+				<div class="t m0 x14 h2 ya0 ff2 fs0 fc1 sc0 ls0 ws0">
+					Part of Pending Case <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x17 hc ya1 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_] Check if Temporary Separation filed
+				</div>
+				<div class="t m0 x1a h2 ya2 ff2 fs0 fc1 sc0 ls0 ws0">
+					$35
+				</div>
+				<div class="t m0 x13 hc ya1 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 ya2 ff2 fs0 fc1 sc0 ls0 ws0">
+					Notice of Deposition in Out-of-State
+				</div>
+				<div class="t m0 x7 h2 ya3 ff2 fs0 fc1 sc0 ls0 ws0">
+					$8
+				</div>
+				<div class="t m0 x16 hc ya4 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 ya3 ff2 fs0 fc1 sc0 ls0 ws0">
+					Vital Statistics 26-2-25 per form <span class="_ _6"></span>Case/Foreign Subpoena <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x10 h2 ya5 ff2 fs0 fc1 sc0 ls0 ws0">
+					$20
+				</div>
+				<div class="t m0 x16 he ya6 ff10 fs5 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 ya5 ff2 fs0 fc1 sc0 ls0 ws0">
+					Online Court Assistance Program $35
+				</div>
+				<div class="t m0 x13 hc ya7 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x14 h2 ya5 ff2 fs0 fc1 sc0 ls0 ws0">
+					Open Sealed Record <span class="ff13 fs1">(E)</span>
+				</div>
+				<div class="t m0 x15 h2 ya8 ff2 fs0 fc1 sc0 ls0 ws0">
+					$115
+				</div>
+				<div class="t m0 x16 hc y34 ff13 fs1 fc1 sc0 ls0 ws0">
+					[_]
+				</div>
+				<div class="t m0 x17 h2 ya8 ff2 fs0 fc1 sc0 ls0 ws0">
+					Counterclaim: Divorce/Sep Maint.
+				</div>
+				<div class="t m0 x1b hc ya9 ff13 fs1 fc1 sc0 ls0 ws0">
+					(E) Exempt from URCP Rule 26
+				</div>
+				<div class="t m0 x1b hc yaa ff13 fs1 fc1 sc0 ls0 ws0">
+					(T2) Case type defaults to Tier 2 (no monetary damages)
+				</div>
+				<div class="t m0 x3 h1 y3b ff1 fs0 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _17"></span>Civil Cover Sheet Revised June 27, 2016 <span class="_ _18"></span>Page 2
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="3" id="pf3">
+			<div class="pc pc3 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg3.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h10 yab ff7 fs3 fc0 sc0 ls0 ws0">
+					COMPLAINT
+				</div>
+				<div class="t m0 x1c h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					Name:
+				</div>
+				<div class="t m0 x1d h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x2 h2 yae ff2 fs0 fc1 sc0 ls0 ws0">
+					                                                  
+				</div>
+				<div class="t m0 x1c h6 yaf ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x1d h10 yb0 ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x1d h10 yb1 ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x1c h6 yb2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x1d h10 yb3 ff7 fs3 fc1 sc0 ls0 ws0">
+					(801) 810-9087
+				</div>
+				<div class="t m0 x1c h6 yb4 ff8 fs3 fc1 sc0 ls0 ws0">
+					Email:
+				</div>
+				<div class="t m0 x1d h10 yb5 ff7 fs3 fc1 sc0 ls0 ws0">
+					zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x1c h10 yb6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Pro Se
+				</div>
+				<div class="t m0 x1e h6 yb7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 yb8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 yb9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x3 h6 yba ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">, <span class="_ _3b"></span></span>COMPLAINT
+				</div>
+				<div class="t m0 x3 h6 ybb ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x1f h6 ybc ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x3 h6 ybd ff8 fs3 fc1 sc0 ls0 ws0">
+					vs.
+				</div>
+				<div class="t m0 x1f h6 ybe ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x3 h6 ybf ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 yc0 ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x3 h6 y7d ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff complains of defendant(s) and alleges as follows:
+				</div>
+				<div class="t m0 x3 h10 yc1 ff7 fs3 fc1 sc0 ls0 ws0">
+					ALLEGATIONS AND COMPLAINTS
+				</div>
+				<div class="t m0 x3 h6 yc2 ff8 fs3 fc1 sc0 ls0 ws0">
+					1. <span class="ff7">Todor Peykov</span> is the owner of real property located at:
+				</div>
+				<div class="t m0 x16 h6 yc3 ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.Address1, @address.City, @address.State @address.ZipCode <span class="ff8">.</span>
+				</div>
+				<div class="t m0 x3 h6 yc4 ff8 fs3 fc1 sc0 ls0 ws0">
+					2. Defendant(s) are residents at:
+				</div>
+				<div class="t m0 x16 h6 yc5 ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.Address1, @address.City, @address.State @address.ZipCode <span class="ff8">.</span>
+				</div>
+				<div class="t m0 x3 h6 yc6 ff8 fs3 fc1 sc0 ls0 ws0">
+					3. <span class="ff7">Todor Peykov</span> and defendant(s) entered into an oral agreement for the rental of property at
+				</div>
+				<div class="t m0 x3 h6 yc7 ff8 fs3 fc1 sc0 ls0 ws0">
+					the above address.
+				</div>
+				<div class="t m0 x3 h6 yc8 ff8 fs3 fc1 sc0 ls0 ws0">
+					4. <span class="ff7">Todor Peykov</span> is evicting defendant(s) for the following reasons:
+				</div>
+				<div class="t m0 x16 h10 yc9 ff7 fs3 fc1 sc0 ls0 ws0">
+					The defendant @entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper() has failed to catch up on late rent. 
+					We had setup multiple payment arrangements and none came to fruition. 
+				</div>
+				<div class="t m0 x16 h10 yca ff7 fs3 fc1 sc0 ls0 ws0">
+					________________________________________________________________________
+				</div>
+				<div class="t m0 x16 h10 ycb ff7 fs3 fc1 sc0 ls0 ws0">
+					___________________________________________________________________
+				</div>
+				<div class="t m0 x3 h6 ycc ff8 fs3 fc1 sc0 ls0 ws0">
+					5. Defendant(s) owe <span class="ff7">Todor Peykov</span> <span class="ff7">$@entry.Value.ending_balance</span> unpaid rent, for the following time periods:
+				</div>
+				<div class="t m0 x16 h10 ycd ff7 fs3 fc1 sc0 ls0 ws0">
+					Unpaid/Short paid rent from @entry.Value.events.Where(x => x.event_type == "invoice" && x.invoice.invoice_amount_due > 0).OrderBy(x => x.date).FirstOrDefault().date.Value.ToUSADateFormat() up to and including @DateTime.Today.GetEndOfTheMonth().ToUSADateFormat()
+				</div>
+				<div class="t m0 x16 h10 yce ff7 fs3 fc1 sc0 ls0 ws0">
+					________________________________________________________________________
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _3c"></span><span class="ff1 fs0">Complaint <span class="_ _3d"></span></span>Page <span class="ff1 fs0">1</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="4" id="pf4">
+			<div class="pc pc4 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg4.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x16 h10 yab ff7 fs3 fc1 sc0 ls0 ws0">
+					___________________________________________________________________
+				</div>
+				<div class="t m0 x3 h6 yd0 ff8 fs3 fc1 sc0 ls0 ws0">
+					6. Plaintiff served a Three Day Pay or Quit Notice upon defendant(s) on <span class="_ _3e"></span><span class="ff7">@custSettings.EvictonNoticeDate.Value.ToUSADateFormat()<span class="ff8">.</span></span>
+				</div>
+				<div class="t m0 x3 h6 yd1 ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff incorporates that notice and the statements contained in the notice as part of this
+				</div>
+				<div class="t m0 x3 h6 yd2 ff8 fs3 fc1 sc0 ls0 ws0">
+					complaint. A copy of the notice is attached.
+				</div>
+				<div class="t m0 x3 h6 yd3 ff8 fs3 fc1 sc0 ls0 ws0">
+					7. Defendant(s) did not comply with the notice and are in unlawful detainer.
+				</div>
+				<div class="t m0 x3 h6 yd4 ff8 fs3 fc1 sc0 ls0 ws0">
+					8. Plaintiff asks for an Order of Restitution which removes defendant(s) from plaintiff's
+				</div>
+				<div class="t m0 x3 h6 yd5 ff8 fs3 fc1 sc0 ls0 ws0">
+					property.
+				</div>
+				<div class="t m0 x3 h6 yd6 ff8 fs3 fc1 sc0 ls0 ws0">
+					9. Pursuant to Utah Code 78B-6-811, plaintiff asks for a judgment for any of the following upon
+				</div>
+				<div class="t m0 x3 h6 y73 ff8 fs3 fc1 sc0 ls0 ws0">
+					proof at trial or upon plaintiff's affidavit in the event of defendant's default:
+				</div>
+				<div class="t m0 x16 h6 yd7 ff8 fs3 fc1 sc0 ls0 ws0">
+					a. any rent due and unpaid by defendant(s) through the end of the parties   rental
+				</div>
+				<div class="t m0 x16 h6 yd8 ff8 fs3 fc1 sc0 ls0 ws0">
+					agreement;
+				</div>
+				<div class="t m0 x16 h6 yd9 ff8 fs3 fc1 sc0 ls0 ws0">
+					b. damages caused because defendant(s) remained in possession of plaintiff's property, in
+				</div>
+				<div class="t m0 x16 h6 yda ff8 fs3 fc1 sc0 ls0 ws0">
+					unlawful detainer, after the time expired in the eviction notice(s) referred to in this
+				</div>
+				<div class="t m0 x16 h6 ydb ff8 fs3 fc1 sc0 ls0 ws0">
+					complaint;
+				</div>
+				<div class="t m0 x16 h6 ydc ff8 fs3 fc1 sc0 ls0 ws0">
+					c. physical damages beyond normal wear and tear (waste) caused by defendants to the
+				</div>
+				<div class="t m0 x16 h6 ydd ff8 fs3 fc1 sc0 ls0 ws0">
+					plaintiff's property during the time defendant(s) were in possession of plaintiff's
+				</div>
+				<div class="t m0 x16 h6 yde ff8 fs3 fc1 sc0 ls0 ws0">
+					property; and,
+				</div>
+				<div class="t m0 x16 h6 ydf ff8 fs3 fc1 sc0 ls0 ws0">
+					d. damages for the abatement (termination) of any nuisance caused by defendant(s) as
+				</div>
+				<div class="t m0 x16 h6 ye0 ff8 fs3 fc1 sc0 ls0 ws0">
+					provided in Utah Code 78B-6-1107 through 1114.
+				</div>
+				<div class="t m0 x3 h6 ye1 ff8 fs3 fc1 sc0 ls0 ws0">
+					10. Plaintiff asks for treble damages in accordance with Utah Code 78B-6-811.
+				</div>
+				<div class="t m0 x3 h6 ye2 ff8 fs3 fc1 sc0 ls0 ws0">
+					11. Plaintiff has not incurred attorney's fees and is not entitled to a judgment for attorney's fees
+				</div>
+				<div class="t m0 x3 h6 ye3 ff8 fs3 fc1 sc0 ls0 ws0">
+					as provided in the written lease or rental agreement.
+				</div>
+				<div class="t m0 x3 h6 ye4 ff8 fs3 fc1 sc0 ls0 ws0">
+					12. Itemized calculation of amounts Defendant(s) owe at time of filing:
+				</div>
+				<div class="t m0 x20 h6 ye5 ff8 fs3 fc1 sc0 ls0 ws0">
+					a. Past Due Rent
+				</div>
+				<div class="t m0 x21 h10 ye6 ff7 fs3 fc1 sc0 ls0 ws0">
+					@pastDueRentAmount.ToCurrency()
+				</div>
+				<div class="t m0 x20 h6 ye7 ff8 fs3 fc1 sc0 ls0 ws0">
+					b. Non-Rent Contract Amounts
+				</div>
+				<div class="t m0 x21 h10 ye8 ff7 fs3 fc1 sc0 ls0 ws0">
+					$0.00
+				</div>
+				<div class="t m0 x20 h6 ye9 ff8 fs3 fc1 sc0 ls0 ws0">
+					c. Late Fees
+				</div>
+				<div class="t m0 x21 h10 yea ff7 fs3 fc1 sc0 ls0 ws0">
+					@lateFeesAmount.ToCurrency()
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _3c"></span><span class="ff1 fs0">Complaint <span class="_ _3d"></span></span>Page <span class="ff1 fs0">2</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="5" id="pf5">
+			<div class="pc pc5 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg5.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x20 h6 yeb ff8 fs3 fc1 sc0 ls0 ws0">
+					d. Damages to Premises
+				</div>
+				<div class="t m0 x22 h10 yab ff7 fs3 fc1 sc0 ls0 ws0">
+					$0.00
+				</div>
+				<div class="t m0 x20 h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					e. Nuisance Abatement
+				</div>
+				<div class="t m0 x22 h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					$0.00
+				</div>
+				<div class="t m0 x20 h6 yec ff8 fs3 fc1 sc0 ls0 ws0">
+					f. Other Damages
+				</div>
+				<div class="t m0 x22 h10 yd0 ff7 fs3 fc1 sc0 ls0 ws0">
+					$0.00
+				</div>
+				<div class="t m0 x20 h6 yed ff8 fs3 fc1 sc0 ls0 ws0">
+					g. Total Subject to Trebling
+				</div>
+				<div class="t m0 x23 h10 yee ff7 fs3 fc1 sc0 ls0 ws0">
+					@totalSubjectToTrebling.ToCurrency()
+				</div>
+				<div class="t m0 x20 h6 yef ff8 fs3 fc1 sc0 ls0 ws0">
+					h. Total Trebled
+				</div>
+				<div class="t m0 x23 h10 yf0 ff7 fs3 fc1 sc0 ls0 ws0">
+					@totalTrebled.ToCurrency()
+				</div>
+				<div class="t m0 x20 h6 yf1 ff8 fs3 fc1 sc0 ls0 ws0">
+					i. Attorney Fees
+				</div>
+				<div class="t m0 x22 h10 yf2 ff7 fs3 fc1 sc0 ls0 ws0">
+					$0.00
+				</div>
+				<div class="t m0 x20 h6 yf3 ff8 fs3 fc1 sc0 ls0 ws0">
+					j. Service Fees (Eviction Notice)
+				</div>
+				<div class="t m0 x24 h10 yf4 ff7 fs3 fc1 sc0 ls0 ws0">
+					@serviceFees.ToCurrency()
+				</div>
+				<div class="t m0 x20 h6 yf5 ff8 fs3 fc1 sc0 ls0 ws0">
+					k. Filing Fees
+				</div>
+				<div class="t m0 x25 h10 yf6 ff7 fs3 fc1 sc0 ls0 ws0">
+					@filingFees.ToCurrency()
+				</div>
+				<div class="t m0 x20 h6 yf7 ff8 fs3 fc1 sc0 ls0 ws0">
+					k. Total Claim Amount at time of filing
+				</div>
+				<div class="t m0 x24 h10 y5f ff7 fs3 fc1 sc0 ls0 ws0">
+					@totalClaimAmount.ToCurrency()
+				</div>
+				<div class="t m0 x3 h10 yf8 ff7 fs3 fc1 sc0 ls0 ws0">
+					REQUESTS FOR RELIEF
+				</div>
+				<div class="t m0 x3 h6 yf9 ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff asks that this court:
+				</div>
+				<div class="t m0 x3 h6 yfa ff8 fs3 fc1 sc0 ls0 ws0">
+					1. Enter an Order of Restitution requiring that defendant(s) move out of the premises within
+				</div>
+				<div class="t m0 x3 h6 yfb ff8 fs3 fc1 sc0 ls0 ws0">
+					three calendar days of the date the Order of Restitution is entered, unless a shorter time to move
+				</div>
+				<div class="t m0 x3 h6 yfc ff8 fs3 fc1 sc0 ls0 ws0">
+					out is ordered by the court because it is appropriate under the circumstances, or unless immediate
+				</div>
+				<div class="t m0 x3 h6 yfd ff8 fs3 fc1 sc0 ls0 ws0">
+					restitution is required under Utah Code 78B-6-810(3) should the court find defendant(s) to be a
+				</div>
+				<div class="t m0 x3 h6 yfe ff8 fs3 fc1 sc0 ls0 ws0">
+					nuisance because of criminal acts.
+				</div>
+				<div class="t m0 x3 h6 yff ff8 fs3 fc1 sc0 ls0 ws0">
+					2. Include in the Order of Restitution authorization for the sheriff to evict the defendant(s), if the
+				</div>
+				<div class="t m0 x3 h6 y100 ff8 fs3 fc1 sc0 ls0 ws0">
+					defendant(s) do not voluntarily vacate the premises within the time allowed in the Order of
+				</div>
+				<div class="t m0 x3 h6 y101 ff8 fs3 fc1 sc0 ls0 ws0">
+					Restitution.
+				</div>
+				<div class="t m0 x3 h6 y102 ff8 fs3 fc1 sc0 ls0 ws0">
+					3. Grant plaintiff a judgment for any damages allowed under Utah Code 78B-6-811, in
+				</div>
+				<div class="t m0 x3 h6 y103 ff8 fs3 fc1 sc0 ls0 ws0">
+					accordance with the eviction notice(s) served upon defendant(s), and as proven in court, or as
+				</div>
+				<div class="t m0 x3 h6 y104 ff8 fs3 fc1 sc0 ls0 ws0">
+					stated in Plaintiff's affidavit of damages in the event of Defendant(s) default.
+				</div>
+				<div class="t m0 x3 h6 y105 ff8 fs3 fc1 sc0 ls0 ws0">
+					4. Grant other relief that is just and proper in the circumstances.
+				</div>
+				<div class="t m0 x16 h6 y106 ff8 fs3 fc1 sc0 ls0 ws0">
+					Date @DateTime.Now.ToUSADateFormat() <span class="_ _40"></span>Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x26 h10 y107 ff7 fs3 fc1 sc0 ls0 ws0">
+					
+				</div>
+				<div class="t m0 x3 h6 y108 ff8 fs3 fc1 sc0 ls0 ws0">
+				</div>
+				<div class="t m0 x3 h10 y109 ff7 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff s address: 
+				</div>
+				<div class="t m0 x3 h10 y10a ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x3 h10 y10b ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157, Salt Lake City, UT 84127
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _3c"></span><span class="ff1 fs0">Complaint <span class="_ _3d"></span></span>Page <span class="ff1 fs0">3</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		
+		<div class="pf w0 h0" data-page-no="7" id="pf7">
+			<div class="pc pc7 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg7.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h6 yeb ff8 fs3 fc0 sc0 ls0 ws0">
+					NOTICE OF DISCLOSURE REQUIREMENTS
+				</div>
+				<div class="t m0 x1c h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					Name:
+				</div>
+				<div class="t m0 x1d h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x2 h2 yae ff2 fs0 fc1 sc0 ls0 ws0">
+					                                                  
+				</div>
+				<div class="t m0 x1c h6 yaf ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x1d h10 yb0 ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x1d h10 yb1 ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x1c h6 yb2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x1d h10 yb3 ff7 fs3 fc1 sc0 ls0 ws0">
+					(801) 810-9087
+				</div>
+				<div class="t m0 x1c h6 yb4 ff8 fs3 fc1 sc0 ls0 ws0">
+					Email:
+				</div>
+				<div class="t m0 x1d h10 yb5 ff7 fs3 fc1 sc0 ls0 ws0">
+					zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x1c h10 yb6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Pro Se
+				</div>
+				<div class="t m0 x1e h6 yb7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 yb8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 yb9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x3 h6 yba ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">, <span class="_ _41"></span></span>Notice of Disclosure Requirements
+				</div>
+				<div class="t m0 x3 h6 ybb ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x1f h6 ybc ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x3 h6 ybd ff8 fs3 fc1 sc0 ls0 ws0">
+					vs.
+				</div>
+				<div class="t m0 x1f h6 ybe ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x3 h6 ybf ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 yc0 ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x3 h6 y7d ff8 fs3 fc1 sc0 ls0 ws0">
+					To:
+				</div>
+				<div class="t m0 x16 h10 y10c ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()
+				</div>
+				<div class="t m0 x16 h6 y10d ff8 fs3 fc0 sc0 ls0 ws0">
+					.
+				</div>
+				<div class="t m0 x3 h6 y10e ff8 fs3 fc1 sc0 ls0 ws0">
+					Please take notice that:
+				</div>
+				<div class="t m0 x16 h6 y10f ff8 fs3 fc1 sc0 ls0 ws0">
+					If you ask for a hearing to give evidence to the court to determine who should occupy the
+				</div>
+				<div class="t m0 x3 h6 y110 ff8 fs3 fc1 sc0 ls0 ws0">
+					(1)
+				</div>
+				<div class="t m0 x16 h6 y111 ff8 fs3 fc1 sc0 ls0 ws0">
+					property until this case is decided, you must serve on the plaintiff with your hearing
+				</div>
+				<div class="t m0 x16 h6 y112 ff8 fs3 fc1 sc0 ls0 ws0">
+					request the following documents:
+				</div>
+				<div class="t m0 x16 h6 y113 ff8 fs3 fc1 sc0 ls0 ws0">
+					(a) <span class="_ _25"></span>Any document not yet disclosed to the plaintiff that you will offer as evidence at
+				</div>
+				<div class="t m0 x27 h6 y114 ff8 fs3 fc1 sc0 ls0 ws0">
+					the occupancy hearing.
+				</div>
+				<div class="t m0 x16 h6 y115 ff8 fs3 fc1 sc0 ls0 ws0">
+					(b) <span class="_ _29"></span>The name and, if known, the contact information of any witnesses you will call at
+				</div>
+				<div class="t m0 x27 h6 y9e ff8 fs3 fc1 sc0 ls0 ws0">
+					the occupancy hearing, and a summary of what you expect the witnesses to say.
+				</div>
+				<div class="t m0 x3 h6 y116 ff8 fs3 fc1 sc0 ls0 ws0">
+					(2) <span class="_ _29"></span>If the plaintiff asks for a hearing to give evidence to the court to determine who should
+				</div>
+				<div class="t m0 x16 h6 y117 ff8 fs3 fc1 sc0 ls0 ws0">
+					occupy the property until this case is decided, you must serve on the plaintiff the
+				</div>
+				<div class="t m0 x16 h6 y118 ff8 fs3 fc1 sc0 ls0 ws0">
+					documents listed in (1)(a) and (b) above at least 2 days before hearing.
+				</div>
+				<div class="t m0 x3 h6 y119 ff8 fs3 fc1 sc0 ls0 ws0">
+					(3) <span class="_ _29"></span>You must serve the documents and information listed above by the method most likely to
+				</div>
+				<div class="t m0 x16 h6 y11a ff8 fs3 fc1 sc0 ls0 ws0">
+					be promptly received.
+				</div>
+				<div class="t m0 x3 h6 y11b ff8 fs3 fc1 sc0 ls0 ws0">
+					(4) <span class="_ _29"></span>If you do not follow these requirements the court may sanction you by not allowing the
+				</div>
+				<div class="t m0 x16 h6 y11c ff8 fs3 fc1 sc0 ls0 ws0">
+					witnesses to testify, by striking pleadings, by awarding attorney fees, or by imposing on
+				</div>
+				<div class="t m0 x16 h6 y11d ff8 fs3 fc1 sc0 ls0 ws0">
+					you some other sanction the court feels is appropriate.
+				</div>
+				<div class="t m0 x3 h1 ycf ff1 fs0 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _39"></span>Notice of URCP 26.3 Requirements <span class="_ _42"></span>Page 1
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="8" id="pf8">
+			<div class="pc pc8 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg8.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h6 yeb ff8 fs3 fc1 sc0 ls0 ws0">
+					(5) <span class="_ _29"></span>You may use the Online Court Assistance Program web site to prepare your disclosure
+				</div>
+				<div class="t m0 x16 h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					documents: <span class="fc2">https://www.utcourts.gov/ocap/</span>
+				</div>
+				<div class="t m0 x3 h6 y11e ff8 fs3 fc1 sc0 ls0 ws0">
+					I declare under penalty of Utah Code Section 78B-5-705 that everything stated in this document
+				</div>
+				<div class="t m0 x3 h6 y11f ff8 fs3 fc1 sc0 ls0 ws0">
+					is true.
+				</div>
+				<div class="t m0 x16 h6 y120 ff8 fs3 fc1 sc0 ls0 ws0">
+					Date @DateTime.Today.ToUSADateFormat() <span class="_ _40"></span>Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x26 h10 y121 ff7 fs3 fc1 sc0 ls0 ws0">
+					
+				</div>
+				<div class="t m0 x28 h6 y122 ff8 fs3 fc1 sc0 ls0 ws0">
+					CERTIFICATE OF MAILING/DELIVERY
+				</div>
+				<div class="t m0 x3 h6 y123 ff8 fs3 fc1 sc0 ls0 ws0">
+					On @DateTime.Today.ToUSADateFormat() (date) I [_] mailed [X] hand delivered a copy of this NOTICE OF
+				</div>
+				<div class="t m0 x3 h6 y124 ff8 fs3 fc1 sc0 ls0 ws0">
+					DISCLOSURE REQUIREMENTS, to:
+				</div>
+				<div class="t m0 x27 h10 y125 ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()
+				</div>
+				<div class="t m0 x27 h10 y126 ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.Address1
+				</div>
+				<div class="t m0 x27 h10 y127 ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.City, @address.State @address.ZipCode
+				</div>
+				<div class="t m0 x29 h6 y79 ff8 fs3 fc1 sc0 ls0 ws0">
+					Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x26 h10 y128 ff7 fs3 fc1 sc0 ls0 ws0">
+				</div>
+				<div class="t m0 x3 h1 ycf ff1 fs0 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _39"></span>Notice of URCP 26.3 Requirements <span class="_ _42"></span>Page 2
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="9" id="pf9">
+			<div class="pc pc9 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg9.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h6 yeb ff8 fs3 fc0 sc0 ls0 ws0">
+					SUMMONS
+				</div>
+				<div class="t m0 x1c h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					Name:
+				</div>
+				<div class="t m0 x1d h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x2 h2 yae ff2 fs0 fc1 sc0 ls0 ws0">
+					                                                  
+				</div>
+				<div class="t m0 x1c h6 yaf ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x1d h10 yb0 ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x1d h10 yb1 ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x1c h6 yb2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x1d h10 yb3 ff7 fs3 fc1 sc0 ls0 ws0">
+					(801) 810-9087
+				</div>
+				<div class="t m0 x1c h6 yb4 ff8 fs3 fc1 sc0 ls0 ws0">
+					Email:
+				</div>
+				<div class="t m0 x1d h10 yb5 ff7 fs3 fc1 sc0 ls0 ws0">
+					zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x1c h10 yb6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Pro Se
+				</div>
+				<div class="t m0 x1e h6 yb7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 yb8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 yb9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x1c h6 y129 ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x1c h6 y12a ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x1c h6 y12b ff8 fs3 fc1 sc0 ls0 ws0">
+					vs.
+				</div>
+				<div class="t m0 x2a h10 y129 ff7 fs3 fc1 sc0 ls0 ws0">
+					SUMMONS
+				</div>
+				<div class="t m0 x2b h6 y12c ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x2b h6 y12d ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x1c h6 y12e ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x1c h6 y12f ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x3 h6 y130 ff8 fs3 fc1 sc0 ls0 ws0">
+					THE STATE OF UTAH TO: <span class="ff7">@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper(),</span>
+				</div>
+				<div class="t m0 x3 h6 y131 ff8 fs3 fc1 sc0 ls0 ws0">
+					You are summoned and required to file an ANSWER in writing to the attached COMPLAINT
+				</div>
+				<div class="t m0 x3 h6 y132 ff8 fs3 fc1 sc0 ls0 ws0">
+					with the clerk of the court at <span class="ff7">West Jordan District Court, 8080 S. Redwood Road, Suite 1701,</span>
+				</div>
+				<div class="t m0 x3 h6 y133 ff7 fs3 fc1 sc0 ls0 ws0">
+					West Jordan, UT 84088 <span class="ff8">and to serve upon, or mail to</span> Todor Peykov <span class="ff8">at</span> PO BOX 271157, Salt
+				</div>
+				<div class="t m0 x3 h6 y134 ff7 fs3 fc1 sc0 ls0 ws0">
+					Lake City, UT 84127 <span class="ff8">a copy of your ANSWER within three (3) business days of being</span>
+				</div>
+				<div class="t m0 x3 h6 y135 ff8 fs3 fc1 sc0 ls0 ws0">
+					served with this SUMMONS and the COMPLAINT. If you fail to do so, judgment by default
+				</div>
+				<div class="t m0 x3 h6 y136 ff8 fs3 fc1 sc0 ls0 ws0">
+					will be taken against you for the relief demanded in the COMPLAINT. The COMPLAINT has
+				</div>
+				<div class="t m0 x3 h6 y137 ff8 fs3 fc1 sc0 ls0 ws0">
+					been filed with the court. <span class="ff7">Read these papers carefully.</span> These papers mean that your landlord is
+				</div>
+				<div class="t m0 x3 h6 y138 ff8 fs3 fc1 sc0 ls0 ws0">
+					suing to evict you.
+				</div>
+				<div class="t m0 x16 h6 y139 ff8 fs3 fc1 sc0 ls0 ws0">
+					Date @DateTime.Today.ToUSADateFormat() <span class="_ _40"></span>Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x26 h10 y13a ff7 fs3 fc1 sc0 ls0 ws0">
+				</div>
+				<div class="t m0 x3 h6 ya7 ff8 fs3 fc1 sc0 ls0 ws0">
+				</div>
+				<div class="t m0 x3 h10 y13b ff7 fs3 fc1 sc0 ls0 ws0">
+					Serve Defendants at:
+				</div>
+				<div class="t m0 x3 h10 y13c ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.Address1, @address.City, @address.State @address.ZipCode
+				</div>
+				<div class="t m0 x3 h6 y13d ff8 fs3 fc1 sc0 ls0 ws0">
+					To see if you qualify for free assistance from Utah Legal Services, go to:
+				</div>
+				<div class="t m0 x3 h6 y13e ff1 fs0 fc2 sc0 ls0 ws0">
+					http://www.utahlegalservices.org<span class="_ _24"></span> <span class="ff8 fs3 fc1">or call 801-328-8891 in Salt Lake County or 1-800-662-4245 outside</span>
+				</div>
+				<div class="t m0 x3 h6 y13f ff8 fs3 fc1 sc0 ls0 ws0">
+					of Salt Lake County.
+				</div>
+				<div class="t m0 x3 h6 y140 ff8 fs3 fc1 sc0 ls0 ws0">
+					Information on answering these papers is available at: <span class="ff1 fs0 fc2">http://www.utcourts.gov/ocap/utah/landlordtenant/<span class="_ _24"></span><span class="ff8 fs3 fc1">.</span></span>
+				</div>
+				<div class="t m0 x2c h1 ycf ff1 fs0 fc1 sc0 ls0 ws0">
+					1
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="a" id="pfa">
+			<div class="pc pca w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bga.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					If you are unable to afford an attorney, information about free or low cost legal assistance is
+				</div>
+				<div class="t m0 x3 h6 yec ff8 fs3 fc1 sc0 ls0 ws0">
+					available at: <span class="ff1 fs0 fc2">http://www.utcourts.gov/howto/legalassist/<span class="_ _43"></span><span class="ff8 fs3 fc1">.</span></span>
+				</div>
+				<div class="t m0 x3 h6 y53 ff8 fs3 fc1 sc0 ls0 ws0">
+					You may contact the Self-Help Center of the Utah State Courts:
+				</div>
+				<div class="t m0 x3 h6 y141 ff1 fs0 fc2 sc0 ls0 ws0">
+					http://www.utcourts.gov/selfhelp/contact<span class="_ _43"></span><span class="ff8 fs3 fc1">.</span>
+				</div>
+				<div class="t m0 x3 h6 y142 ff8 fs3 fc1 sc0 ls0 ws0">
+					The Utah State Bar administers a Modest Means Lawyer Referral Program:
+				</div>
+				<div class="t m0 x3 h1 y143 ff1 fs0 fc2 sc0 ls0 ws0">
+					http://www.utahbar.org/members/lawyer-referral/modest-means/
+				</div>
+				<div class="t m0 x2c h1 ycf ff1 fs0 fc1 sc0 ls0 ws0">
+					2
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div><!--
+		<div class="pf w0 h0" data-page-no="b" id="pfb">
+			<div class="pc pcb w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bgb.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h6 yeb ff8 fs3 fc0 sc0 ls0 ws0">
+					PROOF OF SERVICE BY MAIL
+				</div>
+				<div class="t m0 x1c h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					Name:
+				</div>
+				<div class="t m0 x1d h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x2 h2 yae ff2 fs0 fc1 sc0 ls0 ws0">
+					                                                  
+				</div>
+				<div class="t m0 x1c h6 yaf ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x1d h10 yb0 ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x1d h10 yb1 ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x1c h6 yb2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x1d h10 yb3 ff7 fs3 fc1 sc0 ls0 ws0">
+					(801) 810-9087
+				</div>
+				<div class="t m0 x1c h6 yb4 ff8 fs3 fc1 sc0 ls0 ws0">
+					Email:
+				</div>
+				<div class="t m0 x1d h10 yb5 ff7 fs3 fc1 sc0 ls0 ws0">
+					zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x1c h10 yb6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Pro Se
+				</div>
+				<div class="t m0 x1e h6 yb7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 yb8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 yb9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x3 h6 y144 ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y145 ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x3 h6 y146 ff8 fs3 fc1 sc0 ls0 ws0">
+					Vs.
+				</div>
+				<div class="t m0 x2d h10 y144 ff7 fs3 fc1 sc0 ls0 ws0">
+					PROOF OF SERVICE BY MAIL
+				</div>
+				<div class="t m0 x1f h6 y147 ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x1f h6 y148 ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x3 h6 y149 ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y14a ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x3 h6 y14b ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">, being first duly sworn and under oath, states that:</span>
+				</div>
+				<div class="t m0 x3 h6 y14c ff8 fs3 fc1 sc0 ls0 ws0">
+					1. I placed the following completed and signed documents in an envelope appropriately
+				</div>
+				<div class="t m0 x3 h6 y14d ff8 fs3 fc1 sc0 ls0 ws0">
+					addressed to Defendant _____________________________________________ (name):
+				</div>
+				<div class="t m0 x16 h6 y14e ff17 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff8">a. Summons along with the Complaint.</span>
+				</div>
+				<div class="t m0 x16 h6 y14f ff17 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff8">b. Notice to Renter of Owner's Possession Bond</span>
+				</div>
+				<div class="t m0 x3 h6 y150 ff8 fs3 fc1 sc0 ls0 ws0">
+					2. I then caused this envelope to be delivered to this Defendant by:
+				</div>
+				<div class="t m0 x16 h6 y151 ff17 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff8">a. United States Mail requiring that Defendant sign a document indicating receipt.</span>
+				</div>
+				<div class="t m0 x16 h6 y152 ff17 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff8">b. Commercial Courier Service requiring that Defendant sign a document</span>
+				</div>
+				<div class="t m0 x12 h6 y153 ff8 fs3 fc1 sc0 ls0 ws0">
+					indicating receipt.
+				</div>
+				<div class="t m0 x3 h6 y154 ff8 fs3 fc1 sc0 ls0 ws0">
+					3. The original copy of the document which Defendant signed indicating receipt of the envelope
+				</div>
+				<div class="t m0 x3 h6 y155 ff8 fs3 fc1 sc0 ls0 ws0">
+					is attached. Copies of the documents served in the envelope are either attached or on file with
+				</div>
+				<div class="t m0 x3 h6 y156 ff8 fs3 fc1 sc0 ls0 ws0">
+					the court.
+				</div>
+				<div class="t m0 x3 h6 y157 ff8 fs3 fc1 sc0 ls0 ws0">
+					4. I am personally familiar with the signature of this Defendant and the signature on the
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _44"></span><span class="ff1 fs0">Proof of Service by Mail <span class="_ _45"></span>Page 1</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+	<div class="pf w0 h0" data-page-no="c" id="pfc">
+			<div class="pc pcc w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bgc.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h6 yeb ff8 fs3 fc1 sc0 ls0 ws0">
+					document indicating receipt of the envelope is that of this Defendant.
+				</div>
+				<div class="t m0 x3 h10 y158 ff7 fs3 fc1 sc0 ls0 ws0">
+					(This document must be dated and signed in front of Notary Public or Deputy Court Clerk)
+				</div>
+				<div class="t m0 x16 h6 y159 ff8 fs3 fc1 sc0 ls0 ws0">
+					Date __________________ <span class="_ _46"></span>Sign here _______________________________
+				</div>
+				<div class="t m0 x26 h10 y15a ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x3 h6 y15b ff8 fs3 fc1 sc0 ls0 ws0">
+					I certify that <span class="ff7">Todor Peykov</span>, who is known to me or who presented satisfactory identification in
+				</div>
+				<div class="t m0 x3 h6 y15c ff8 fs3 fc1 sc0 ls0 ws0">
+					the form of ______________________________________ (form of identification), has, while in
+				</div>
+				<div class="t m0 x3 h6 y15d ff8 fs3 fc1 sc0 ls0 ws0">
+					my presence and while under oath or affirmation, voluntarily signed this document and declared
+				</div>
+				<div class="t m0 x3 h6 y15e ff8 fs3 fc1 sc0 ls0 ws0">
+					that it is true.
+				</div>
+				<div class="t m0 x16 h6 y15f ff8 fs3 fc1 sc0 ls0 ws0">
+					Date __________________ <span class="_ _46"></span>Sign here <span class="_ _47"></span>_______________________________
+				</div>
+				<div class="t m0 x2e h6 y160 ff8 fs3 fc1 sc0 ls0 ws0">
+					Typed or printed name: <span class="_ _29"></span>_______________________________
+				</div>
+				<div class="t m0 x2e h6 y161 ff8 fs3 fc1 sc0 ls0 ws0">
+					Clerk or Notary Public
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _44"></span><span class="ff1 fs0">Proof of Service by Mail <span class="_ _45"></span>Page 2</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+	--><div class="pf w0 h0" data-page-no="d" id="pfd">
+			<div class="pc pcd w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bgd.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h10 yab ff7 fs3 fc0 sc0 ls0 ws0">
+					RETURN OF SERVICE
+				</div>
+				<div class="t m0 x1c h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					Name:
+				</div>
+				<div class="t m0 x1d h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x2 h2 yae ff2 fs0 fc1 sc0 ls0 ws0">
+					                                                  
+				</div>
+				<div class="t m0 x1c h6 yaf ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x1d h10 yb0 ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x1d h10 yb1 ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x1c h6 yb2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x1d h10 yb3 ff7 fs3 fc1 sc0 ls0 ws0">
+					(801) 810-9087
+				</div>
+				<div class="t m0 x1c h6 yb4 ff8 fs3 fc1 sc0 ls0 ws0">
+					Email:
+				</div>
+				<div class="t m0 x1d h10 yb5 ff7 fs3 fc1 sc0 ls0 ws0">
+					zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x1c h10 yb6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Pro Se
+				</div>
+				<div class="t m0 x1e h6 yb7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 yb8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 yb9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x3 h6 y144 ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y145 ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x3 h6 y146 ff8 fs3 fc1 sc0 ls0 ws0">
+					vs.
+				</div>
+				<div class="t m0 x2f h10 y144 ff7 fs3 fc1 sc0 ls0 ws0">
+					RETURN OF SERVICE
+				</div>
+				<div class="t m0 x1f h6 y147 ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x1f h6 y148 ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x3 h6 y149 ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y14a ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x3 h6 y162 ff8 fs3 fc1 sc0 ls0 ws0">
+					___________________________________________, being first duly sworn, deposes and says:
+				</div>
+				<div class="t m0 x3 h6 y163 ff8 fs3 fc1 sc0 ls0 ws0">
+					1. I am a resident of ____________________________________ County, State of Utah.
+				</div>
+				<div class="t m0 x3 h6 y164 ff8 fs3 fc1 sc0 ls0 ws0">
+					2. I am eighteen (18) years of age or older, and do not have an interest in the above action.
+				</div>
+				<div class="t m0 x3 h6 y165 ff8 fs3 fc1 sc0 ls0 ws0">
+					3. On ___________________________ (date), I received the following documents:
+				</div>
+				<div class="t m0 x16 h6 y166 ff17 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff8">Summons</span>
+				</div>
+				<div class="t m0 x16 h6 y167 ff17 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff8">Complaint</span>
+				</div>
+				<div class="t m0 x16 h6 y168 ff17 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff8">Notice of Possession Bond</span>
+				</div>
+				<div class="t m0 x16 h6 y169 ff8 fs3 fc1 sc0 ls0 ws0">
+					[_] Notice of Disclosure Requirements
+				</div>
+				<div class="t m0 x16 h6 y16a ff17 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff8">Other ____________________________________________________;</span>
+				</div>
+				<div class="t m0 x3 h6 y16b ff8 fs3 fc1 sc0 ls0 ws0">
+					4. <span class="ff17">[_]</span> I personally served <U>@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()</U> (name)
+				</div>
+				<div class="t m0 x3 h6 y16c ff8 fs3 fc1 sc0 ls0 ws0">
+					on ___________________________ (date).
+				</div>
+				<div class="t m0 x3 h6 y16d ff8 fs3 fc1 sc0 ls0 ws0">
+					5. <span class="ff17">[_]</span> I served <U>@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()</U> (name) by leaving a copy with
+				</div>
+				<div class="t m0 x3 h6 y16e ff8 fs3 fc1 sc0 ls0 ws0">
+					_______________________________________ <span class="fc0"></span>a person of suitable age and discretion, at the
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _48"></span>Return of Service <span class="_ _49"></span>Page <span class="ff1 fs0">1</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="e" id="pfe">
+			<div class="pc pce w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bge.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h6 yeb ff8 fs3 fc1 sc0 ls0 ws0">
+					defendant's residence, on _______________________ (date). I did the following to determine
+				</div>
+				<div class="t m0 x3 h6 y16f ff8 fs3 fc1 sc0 ls0 ws0">
+					that the person I left the papers with was of suitable age and discretion:
+				</div>
+				<div class="t m0 x3 h6 y170 ff8 fs3 fc1 sc0 ls0 ws0">
+					_____________________________________________________________________________
+				</div>
+				<div class="t m0 x3 h6 y171 ff8 fs3 fc1 sc0 ls0 ws0">
+					_____________________________________________________________________________
+				</div>
+				<div class="t m0 x3 h6 y172 ff8 fs3 fc1 sc0 ls0 ws0">
+					_____________________________________________________________________________
+				</div>
+				<div class="t m0 x3 h6 y173 ff8 fs3 fc1 sc0 ls0 ws0">
+					6. I served the following documents:
+				</div>
+				<div class="t m0 x16 h6 y174 ff17 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff8">Summons</span>
+				</div>
+				<div class="t m0 x16 h6 y175 ff17 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff8">Complaint</span>
+				</div>
+				<div class="t m0 x16 h6 y176 ff17 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff8">Notice of Possession Bond</span>
+				</div>
+				<div class="t m0 x16 h6 y177 ff8 fs3 fc1 sc0 ls0 ws0">
+					[_] Notice of Disclosure Requirements
+				</div>
+				<div class="t m0 x16 h6 y178 ff17 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff8">Other ____________________________________________________</span>
+				</div>
+				<div class="t m0 x3 h6 y179 ff8 fs3 fc1 sc0 ls0 ws0">
+					7. At the defendant's address <span class="_ _4a"></span>@address.Address1
+				</div>
+				<div class="t m0 x29 h6 y17a ff8 fs3 fc1 sc0 ls0 ws0">
+					@address.City, @address.State @address.ZipCode
+				</div>
+				<div class="t m0 x29 h6 y17b ff8 fs3 fc1 sc0 ls0 ws0">
+					____________________________________
+				</div>
+				<div class="t m0 x3 h6 y17c ff8 fs3 fc1 sc0 ls0 ws0">
+					Service Fee: <span class="_ _4b"></span>$ _______
+				</div>
+				<div class="t m0 x3 h6 y17d ff8 fs3 fc1 sc0 ls0 ws0">
+					Mileage Fee: $ _______
+				</div>
+				<div class="t m0 x3 h6 y17e ff8 fs3 fc1 sc0 ls0 ws0">
+					Total: <span class="_ _4c"></span>$ _______
+				</div>
+				<div class="t m0 x30 h6 y17f ff8 fs3 fc1 sc0 ls0 ws0">
+					_____________________________
+				</div>
+				<div class="t m0 x30 h6 y180 ff8 fs3 fc1 sc0 ls0 ws0">
+					Affiant&apos;s Signature
+				</div>
+				<div class="t m0 x3 h6 y166 ff8 fs3 fc1 sc0 ls0 ws0">
+					Subscribed and sworn to before me this _____day of ____________________, _______.
+				</div>
+				<div class="t m0 x30 h6 y181 ff8 fs3 fc1 sc0 ls0 ws0">
+					_____________________________
+				</div>
+				<div class="t m0 x30 h6 y182 ff8 fs3 fc1 sc0 ls0 ws0">
+					Notary Public&apos;s Signature
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _48"></span>Return of Service <span class="_ _49"></span>Page <span class="ff1 fs0">2</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+
+		<div class="pf w0 h0" data-page-no="11" id="pf11">
+			<div class="pc pc11 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg11.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h10 yab ff7 fs3 fc0 sc0 ls0 ws0">
+					MOTION FOR ENTRY OF DEFAULT CERTIFICATE
+				</div>
+				<div class="t m0 x1c h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					Name:
+				</div>
+				<div class="t m0 x1d h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x1 h1 yae ff1 fs0 fc1 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x1c h6 yaf ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x1d h10 yb0 ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x1d h10 yb1 ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x1c h6 yb2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x1d h10 yb3 ff7 fs3 fc1 sc0 ls0 ws0">
+					(801) 810-9087
+				</div>
+				<div class="t m0 x1c h6 yb4 ff8 fs3 fc1 sc0 ls0 ws0">
+					Email:
+				</div>
+				<div class="t m0 x1d h10 yb5 ff7 fs3 fc1 sc0 ls0 ws0">
+					zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x1c h10 yb6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Pro Se
+				</div>
+				<div class="t m0 x1e h6 yb7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 yb8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 yb9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x3 h6 y19c ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y19d ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x3 h6 y19e ff8 fs3 fc1 sc0 ls0 ws0">
+					vs.
+				</div>
+				<div class="t m0 x34 h10 y144 ff7 fs3 fc1 sc0 ls0 ws0">
+					MOTION FOR ENTRY OF
+				</div>
+				<div class="t m0 x34 h10 y12a ff7 fs3 fc1 sc0 ls0 ws0">
+					DEFAULT CERTIFICATE
+				</div>
+				<div class="t m0 x1f h6 y183 ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x1f h6 y184 ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x3 h6 y185 ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y186 ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x3 h6 y187 ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant, was served with a Summons and Complaint. A copy of the Summons and a Return
+				</div>
+				<div class="t m0 x3 h6 y188 ff8 fs3 fc1 sc0 ls0 ws0">
+					of Service is on file with the court. The time allowed by law for answering has expired and
+				</div>
+				<div class="t m0 x3 h6 y189 ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant has failed to appear and answer. Pursuant to Rule 55 of the Utah Rules of Civil
+				</div>
+				<div class="t m0 x3 h6 y195 ff8 fs3 fc1 sc0 ls0 ws0">
+					Procedure, Plaintiff moves that Defendant's default be entered by the Court Clerk.
+				</div>
+				<div class="t m0 x16 h6 y19f ff8 fs3 fc1 sc0 ls0 ws0">
+					Date @DateTime.Now.ToUSADateFormat() <span class="_ _6"></span>Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x35 h10 y1a0 ff7 fs3 fc1 sc0 ls0 ws0">
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _52"></span>Motion for Entry of Default Certificate <span class="_ _53"></span>Page <span class="ff1 fs0">1</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="12" id="pf12">
+			<div class="pc pc12 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg12.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h10 yab ff7 fs3 fc0 sc0 ls0 ws0">
+					DEFAULT CERTIFICATE
+				</div>
+				<div class="t m0 x1c h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					Name:
+				</div>
+				<div class="t m0 x1d h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x1 h1 yae ff1 fs0 fc1 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x1c h6 yaf ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x1d h10 yb0 ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x1d h10 yb1 ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x1c h6 yb2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x1d h10 yb3 ff7 fs3 fc1 sc0 ls0 ws0">
+					(801) 810-9087
+				</div>
+				<div class="t m0 x1c h6 yb4 ff8 fs3 fc1 sc0 ls0 ws0">
+					Email:
+				</div>
+				<div class="t m0 x1d h10 yb5 ff7 fs3 fc1 sc0 ls0 ws0">
+					zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x1c h10 yb6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Pro Se
+				</div>
+				<div class="t m0 x1e h6 yb7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 yb8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 yb9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x3 h6 y19c ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y19d ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x3 h6 y19e ff8 fs3 fc1 sc0 ls0 ws0">
+					vs.
+				</div>
+				<div class="t m0 x34 h10 y144 ff7 fs3 fc1 sc0 ls0 ws0">
+					DEFAULT CERTIFICATE
+				</div>
+				<div class="t m0 x1f h6 y147 ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x1f h6 y148 ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x3 h6 y1a1 ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y1a2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x3 h6 y1a3 ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant, having been served with a Summons and Complaint, and having failed to appear and
+				</div>
+				<div class="t m0 x3 h6 y1a4 ff8 fs3 fc1 sc0 ls0 ws0">
+					answer plaintiff's complaint; and the time allowed by law for answering having expired; the
+				</div>
+				<div class="t m0 x3 h6 y1a5 ff8 fs3 fc1 sc0 ls0 ws0">
+					default of defendant is entered pursuant to Rule 55 of the Utah Rules of Civil Procedure.
+				</div>
+				<div class="t m0 x16 h6 y1a6 ff8 fs3 fc1 sc0 ls0 ws0">
+					Dated: ________________ <span class="_ _51"></span>_____________________________
+				</div>
+				<div class="t m0 x35 h6 y1a7 ff8 fs3 fc1 sc0 ls0 ws0">
+					Deputy Court Clerk&apos;s Signature
+				</div>
+				<div class="t m0 x28 h6 y1a0 ff8 fs3 fc1 sc0 ls0 ws0">
+					CERTIFICATE OF MAILING/DELIVERY
+				</div>
+				<div class="t m0 x3 h6 y1a8 ff8 fs3 fc1 sc0 ls0 ws0">
+					On Date @DateTime.Now.ToUSADateFormat() <span class="ff7">(date)</span> I <span class="ff17">[_]</span> mailed <span class="ff17">[X]</span> hand delivered a copy of this DEFAULT
+				</div>
+				<div class="t m0 x3 h6 y1a9 ff8 fs3 fc1 sc0 ls0 ws0">
+					CERTIFICATE, to:
+				</div>
+				<div class="t m0 x27 h10 y1aa ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()
+				</div>
+				<div class="t m0 x27 h10 y1ab ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.Address1
+				</div>
+				<div class="t m0 x27 h10 y1ac ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.City, @address.State @address.ZipCode
+				</div>
+				<div class="t m0 x29 h6 y1ad ff8 fs3 fc1 sc0 ls0 ws0">
+					Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x26 h10 y1ae ff7 fs3 fc1 sc0 ls0 ws0">
+
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _1e"></span>Default Certificate <span class="_ _54"></span>Page <span class="ff1 fs0">1</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="13" id="pf13">
+			<div class="pc pc13 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg13.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h10 yab ff7 fs3 fc0 sc0 ls0 ws0">
+					MILITARY SERVICE DECLARATION (In Military)
+				</div>
+				<div class="t m0 x1c h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					Name:
+				</div>
+				<div class="t m0 x1d h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x1 h1 yae ff1 fs0 fc1 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x1c h6 yaf ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x1d h10 yb0 ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x1d h10 yb1 ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x1c h6 yb2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x1d h10 yb3 ff7 fs3 fc1 sc0 ls0 ws0">
+					(801) 810-9087
+				</div>
+				<div class="t m0 x1c h6 yb4 ff8 fs3 fc1 sc0 ls0 ws0">
+					Email:
+				</div>
+				<div class="t m0 x1d h10 yb5 ff7 fs3 fc1 sc0 ls0 ws0">
+					zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x1c h10 yb6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Pro Se
+				</div>
+				<div class="t m0 x1e h6 yb7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 yb8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 yb9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x1c h6 y129 ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x1c h6 y12a ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x1c h6 y12b ff8 fs3 fc1 sc0 ls0 ws0">
+					vs.
+				</div>
+				<div class="t m0 x1c h6 y1e ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x1c h6 y149 ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x1f h10 y129 ff7 fs3 fc1 sc0 ls0 ws0">
+					MILITARY SERVICE DECLARATION
+				</div>
+				<div class="t m0 x36 h10 y1af ff7 fs3 fc1 sc0 ls0 ws0">
+					(Not in Military)
+				</div>
+				<div class="t m0 x1f h6 y12b ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x1f h6 y75 ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x3 h6 y1b0 ff8 fs3 fc1 sc0 ls0 ws0">
+					1. To support my Motion for Default Judgment and to comply with the Servicemembers
+				</div>
+				<div class="t m0 x3 h6 y1b1 ff8 fs3 fc1 sc0 ls0 ws0">
+					Civil Relief Act, I swear that Defendant, <span class="ff7">@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()</span>, is not in military
+				</div>
+				<div class="t m0 x3 h6 y1b2 ff8 fs3 fc1 sc0 ls0 ws0">
+					service.
+				</div>
+				<div class="t m0 x3 h6 y1b3 ff8 fs3 fc1 sc0 ls0 ws0">
+					2. I have done the following research to support the above conclusion:
+				</div>
+				<div class="t m0 x16 h10 y1b4 ff7 fs3 fc1 sc0 ls0 ws0">
+					Performed a DoD Manpower lookup under SCRA https://scra.dmdc.osd.mil/scra/
+				</div>
+				<div class="t m0 x3 h6 y1b5 ff8 fs3 fc1 sc0 ls0 ws0">
+					3. I visited the Department of Defense Manpower Data Center website to inquire about
+				</div>
+				<div class="t m0 x3 h6 y1b6 ff8 fs3 fc1 sc0 ls0 ws0">
+					military service, and I entered the following identifying information for Defendant
+				</div>
+				<div class="t m0 x3 h6 y1b7 ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">, which I know to be correct:</span>
+				</div>
+				<div class="t m0 x16 h6 y1b8 ff8 fs3 fc1 sc0 ls0 ws0">
+					Name: <span class="ff7">@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()</span>
+				</div>
+				<div class="t m0 x16 h6 y1b9 ff8 fs3 fc1 sc0 ls0 ws0">
+					Date of Birth: <span class="ff7">@entry.Key.name.Substring(entry.Key.name.IndexOf("/") - 2, 10)</span>
+				</div>
+				<div class="t m0 x16 h6 y1ba ff8 fs3 fc1 sc0 ls0 ws0">
+					Social Security Number: <span class="ff7">I did not enter a Social Security Number.</span>
+				</div>
+				<div class="t m0 x3 h6 y1bb ff8 fs3 fc1 sc0 ls0 ws0">
+					4. I know the identifying information to be correct because:
+				</div>
+				<div class="t m0 x16 h6 y1bc ff8 fs3 fc1 sc0 ls0 ws0">
+					Name: <span class="ff7">It Is Taken From Government Issues Picture Id. Also Researched And</span>
+				</div>
+				<div class="t m0 x16 h10 y1bd ff7 fs3 fc1 sc0 ls0 ws0">
+					Verified It Via Utah Court System Case (Xchange And Corris) Search That
+				</div>
+				<div class="t m0 x16 h10 y1be ff7 fs3 fc1 sc0 ls0 ws0">
+					Defendant Is A Party Of.
+				</div>
+				<div class="t m0 x16 h6 y1bf ff8 fs3 fc1 sc0 ls0 ws0">
+					Date of Birth: <span class="ff7">It is taken from Government issues picture ID. Also researched and</span>
+				</div>
+				<div class="t m0 x16 h10 y1c0 ff7 fs3 fc1 sc0 ls0 ws0">
+					verified it via Utah court system case (XChange and CORRIS) search that
+				</div>
+				<div class="t m0 x16 h10 y1c1 ff7 fs3 fc1 sc0 ls0 ws0">
+					defendant is a party of.
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _55"></span><span class="ff1 fs0">Military Service Declaration <span class="_ _12"></span>Page 1</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="14" id="pf14">
+			<div class="pc pc14 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg14.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h6 yeb ff8 fs3 fc1 sc0 ls0 ws0">
+					5. I do not know and am unable to discover the following identity information for
+				</div>
+				<div class="t m0 x3 h6 yad ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant <span class="ff7">@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper():</span>
+				</div>
+				<div class="t m0 x16 h10 yd0 ff7 fs3 fc1 sc0 ls0 ws0">
+					Social Security Number
+				</div>
+				<div class="t m0 x3 h6 y53 ff8 fs3 fc1 sc0 ls0 ws0">
+					I declare under criminal penalty of Utah Code Section 78B-5-705 that the information in this
+				</div>
+				<div class="t m0 x3 h6 y141 ff8 fs3 fc1 sc0 ls0 ws0">
+					document is true and correct. I understand that for knowingly making a false statement, I can be
+				</div>
+				<div class="t m0 x3 h6 y1c2 ff8 fs3 fc1 sc0 ls0 ws0">
+					fined as provided in Title 19, United States Code, or imprisoned for not more than one year, or
+				</div>
+				<div class="t m0 x3 h6 y142 ff8 fs3 fc1 sc0 ls0 ws0">
+					both.
+				</div>
+				<div class="t m0 x16 h6 y1c3 ff8 fs3 fc1 sc0 ls0 ws0">
+					Date @DateTime.Now.ToUSADateFormat() <span class="_ _40"></span>Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x26 h10 yd4 ff7 fs3 fc1 sc0 ls0 ws0">
+				</div>
+				<div class="t m0 x28 h6 y1c4 ff8 fs3 fc1 sc0 ls0 ws0">
+					CERTIFICATE OF MAILING/DELIVERY
+				</div>
+				<div class="t m0 x3 h6 y1c5 ff8 fs3 fc1 sc0 ls0 ws0">
+					On Date @DateTime.Now.ToUSADateFormat() <span class="ff18 fs0">(date)</span> I [_] mailed [X] hand delivered a copy of
+				</div>
+				<div class="t m0 x3 h6 y1c6 ff8 fs3 fc1 sc0 ls0 ws0">
+					MILITARY SERVICE DECLARATION (Not in Military), to:
+				</div>
+				<div class="t m0 x37 h10 y1c7 ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()
+				</div>
+				<div class="t m0 x37 h10 y1c8 ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.Address1
+				</div>
+				<div class="t m0 x37 h10 y1c9 ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.City, @address.State @address.ZipCode
+				</div>
+				<div class="t m0 x29 h6 y1ca ff8 fs3 fc1 sc0 ls0 ws0">
+					Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x26 h10 y1cb ff7 fs3 fc1 sc0 ls0 ws0">
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _55"></span><span class="ff1 fs0">Military Service Declaration <span class="_ _12"></span>Page 2</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="15" id="pf15">
+			<div class="pc pc15 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg15.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h10 yab ff7 fs3 fc0 sc0 ls0 ws0">
+					MILITARY SERVICE ORDER
+				</div>
+				<div class="t m0 x1c h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					Name:
+				</div>
+				<div class="t m0 x1d h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x1 h1 yae ff1 fs0 fc1 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x1c h6 yaf ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x1d h10 yb0 ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x1d h10 yb1 ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x1c h6 yb2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x1d h10 yb3 ff7 fs3 fc1 sc0 ls0 ws0">
+					(801) 810-9087
+				</div>
+				<div class="t m0 x1c h6 yb4 ff8 fs3 fc1 sc0 ls0 ws0">
+					Email:
+				</div>
+				<div class="t m0 x1d h10 yb5 ff7 fs3 fc1 sc0 ls0 ws0">
+					zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x1c h10 yb6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Pro Se
+				</div>
+				<div class="t m0 x1e h6 yb7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 yb8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 yb9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x1c h6 y129 ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x1c h6 y12a ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x1c h6 y12b ff8 fs3 fc1 sc0 ls0 ws0">
+					vs.
+				</div>
+				<div class="t m0 x1c h6 y1e ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x1c h6 y149 ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x38 h10 y129 ff7 fs3 fc1 sc0 ls0 ws0">
+					MILITARY SERVICE ORDER
+				</div>
+				<div class="t m0 x2b h6 y12c ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x2b h6 y12d ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x3 h6 y81 ff8 fs3 fc1 sc0 ls0 ws0">
+					The Court having reviewed the Certificate of Service and the Military Service Declaration on file
+				</div>
+				<div class="t m0 x3 h6 y1cc ff8 fs3 fc1 sc0 ls0 ws0">
+					and being fully informed, pursuant to the Servicemembers Civil Relief Act, the Court finds and
+				</div>
+				<div class="t m0 x3 h6 y1cd ff8 fs3 fc1 sc0 ls0 ws0">
+					orders that:
+				</div>
+				<div class="t m0 x3 h6 y1ce ff8 fs3 fc1 sc0 ls0 ws0">
+					1. [_] The clerk of the court has entered the default of:
+				</div>
+				<div class="t m0 x16 h6 y1cf ff8 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff7">Todor Peykov</span>
+				</div>
+				<div class="t m0 x16 h6 y1d0 ff8 fs3 fc1 sc0 ls0 ws0">
+					[_] <span class="ff7">@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()</span>
+				</div>
+				<div class="t m0 x3 h6 y1d1 ff8 fs3 fc1 sc0 ls0 ws0">
+					2. [_] The Military Service Declaration shows that Plaintiff <span class="ff7">Todor Peykov</span> does not know
+				</div>
+				<div class="t m0 x3 h6 y1d2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant <span class="ff7">@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()'s</span> military service status. <span class="ff7">Todor Peykov</span>:
+				</div>
+				<div class="t m0 x16 h6 y1d3 ff8 fs3 fc1 sc0 ls0 ws0">
+					[_] does not need to file a bond.
+				</div>
+				<div class="t m0 x16 h6 y1d4 ff8 fs3 fc1 sc0 ls0 ws0">
+					[_] must file a bond in the amount of $____________________________.
+				</div>
+				<div class="t m0 x3 h6 y1d5 ff8 fs3 fc1 sc0 ls0 ws0">
+					3. [_] The Military Service Declaration shows that <span class="ff7">@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()</span> is in military
+				</div>
+				<div class="t m0 x3 h6 y1d6 ff8 fs3 fc1 sc0 ls0 ws0">
+					service. The court:
+				</div>
+				<div class="t m0 x16 h6 y1d7 ff8 fs3 fc1 sc0 ls0 ws0">
+					[_] vacates the default certificate.
+				</div>
+				<div class="t m0 x16 h6 y1d8 ff8 fs3 fc1 sc0 ls0 ws0">
+					[_] appoints an attorney to be determined to represent <span class="_ _24"></span><span class="ff7">@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">.</span></span>
+				</div>
+				<div class="t m0 x16 h6 y1d9 ff8 fs3 fc1 sc0 ls0 ws0">
+					[_] stays this action for 120 days from this date.
+				</div>
+				<div class="t m0 x3 h6 y1da ff8 fs3 fc1 sc0 ls0 ws0">
+					4. [_] The Military Service Declaration shows that <span class="ff7">@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()</span> is not in military
+				</div>
+				<div class="t m0 x3 h6 y1db ff8 fs3 fc1 sc0 ls0 ws0">
+					service.
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _42"></span><span class="ff1 fs0">Military Service Order <span class="_ _56"></span>Page 1</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="16" id="pf16">
+			<div class="pc pc16 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg16.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h6 yeb ff8 fs3 fc1 sc0 ls0 ws0">
+					5. [_] The Military Service Declaration is insufficient.
+				</div>
+				<div class="t m0 x3 h6 yec ff8 fs3 fc1 sc0 ls0 ws0">
+					DATED _______________________ <span class="_ _57"></span>_________________________________________
+				</div>
+				<div class="t m0 x1b h6 y1dc ff8 fs3 fc1 sc0 ls0 ws0">
+					District Court Judge
+				</div>
+				<div class="t m0 x28 h6 y1c2 ff8 fs3 fc1 sc0 ls0 ws0">
+					CERTIFICATE OF MAILING/DELIVERY
+				</div>
+				<div class="t m0 x3 h6 y1dd ff8 fs3 fc1 sc0 ls0 ws0">
+					On @DateTime.Now.ToUSADateFormat() <span class="ff18 fs0">(date)</span> I [_] mailed [X] hand delivered a copy of this
+				</div>
+				<div class="t m0 x3 h6 y1de ff8 fs3 fc1 sc0 ls0 ws0">
+					MILITARY SERVICE ORDER, to:
+				</div>
+				<div class="t m0 x37 h10 y1df ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()
+				</div>
+				<div class="t m0 x37 h10 y1e0 ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.Address1
+				</div>
+				<div class="t m0 x37 h10 y1e1 ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.City, @address.State @address.ZipCode
+				</div>
+				<div class="t m0 x29 h6 y1e2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x26 h10 y1e3 ff7 fs3 fc1 sc0 ls0 ws0">
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _42"></span><span class="ff1 fs0">Military Service Order <span class="_ _56"></span>Page 2</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="17" id="pf17">
+			<div class="pc pc17 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg17.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h10 yab ff7 fs3 fc0 sc0 ls0 ws0">
+					EX-PARTE MOTION FOR RESTITUTION
+				</div>
+				<div class="t m0 x1c h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					Name:
+				</div>
+				<div class="t m0 x1d h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x1 h1 yae ff1 fs0 fc1 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x1c h6 yaf ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x1d h10 yb0 ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x1d h10 yb1 ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x1c h6 yb2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x1d h10 yb3 ff7 fs3 fc1 sc0 ls0 ws0">
+					(801) 810-9087
+				</div>
+				<div class="t m0 x1c h6 yb4 ff8 fs3 fc1 sc0 ls0 ws0">
+					Email:
+				</div>
+				<div class="t m0 x1d h10 yb5 ff7 fs3 fc1 sc0 ls0 ws0">
+					zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x1c h10 yb6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Pro Se
+				</div>
+				<div class="t m0 x1e h6 yb7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 yb8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 yb9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x3 h6 y19c ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y19d ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x3 h6 y19e ff8 fs3 fc1 sc0 ls0 ws0">
+					vs.
+				</div>
+				<div class="t m0 x39 h10 y144 ff7 fs3 fc1 sc0 ls0 ws0">
+					EX-PARTE MOTION FOR RESTITUTION
+				</div>
+				<div class="t m0 x3a h6 y147 ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x3a h6 y148 ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x3 h6 y1a1 ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y1a2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x3 h6 y10d ff8 fs3 fc1 sc0 ls0 ws0">
+					1. Plaintiff has filed an eviction action regarding the property located at <span class="ff7"></span>
+				</div>
+				<div class="t m0 x3 h6 y1e4 ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.Address1, @address.City, @address.State @address.ZipCode <span class="ff8">.</span>
+				</div>
+				<div class="t m0 x3 h6 y1e5 ff8 fs3 fc1 sc0 ls0 ws0">
+					2. Defendant has been served with the Summons and Complaint
+				</div>
+				<div class="t m0 x3 h6 y1a7 ff8 fs3 fc1 sc0 ls0 ws0">
+					3. Defendant has failed to answer the Complaint within the time specified in the Summons and
+				</div>
+				<div class="t m0 x3 h6 y1e6 ff8 fs3 fc1 sc0 ls0 ws0">
+					has not moved from the premises. Defendants default has been entered by the Clerk of the Court.
+				</div>
+				<div class="t m0 x3 h6 y1e7 ff8 fs3 fc1 sc0 ls0 ws0">
+					4. Plaintiff requests that defendant be removed as provided in Utah Code 78B-6-811 and 812.
+				</div>
+				<div class="t m0 x16 h6 y198 ff8 fs3 fc1 sc0 ls0 ws0">
+					Date @DateTime.Now.ToUSADateFormat() <span class="_ _6"></span>Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x26 h10 y1e8 ff7 fs3 fc1 sc0 ls0 ws0">
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _58"></span>Ex Parte Motion for Restitution <span class="_ _59"></span>Page <span class="ff1 fs0">1</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="18" id="pf18">
+			<div class="pc pc18 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg18.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h10 yab ff7 fs3 fc0 sc0 ls0 ws0">
+					ORDER OF RESTITUTION
+				</div>
+				<div class="t m0 x1c h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					Name:
+				</div>
+				<div class="t m0 x1d h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x1 h1 yae ff1 fs0 fc1 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x1c h6 yaf ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x1d h10 yb0 ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x1d h10 yb1 ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x1c h6 yb2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x1d h10 yb3 ff7 fs3 fc1 sc0 ls0 ws0">
+					(801) 810-9087
+				</div>
+				<div class="t m0 x1c h6 yb4 ff8 fs3 fc1 sc0 ls0 ws0">
+					Email:
+				</div>
+				<div class="t m0 x1d h10 yb5 ff7 fs3 fc1 sc0 ls0 ws0">
+					zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x1c h10 yb6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Pro Se
+				</div>
+				<div class="t m0 x1e h6 yb7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 yb8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 yb9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x3 h6 y144 ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y145 ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x3 h6 y146 ff8 fs3 fc1 sc0 ls0 ws0">
+					vs.
+				</div>
+				<div class="t m0 x3b h10 y144 ff7 fs3 fc1 sc0 ls0 ws0">
+					ORDER OF RESTITUTION
+				</div>
+				<div class="t m0 x1f h6 y147 ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x1f h6 y148 ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x3 h6 y149 ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y14a ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x3 h6 y14b ff7 fs3 fc1 sc0 ls0 ws0">
+					TO THE DEFENDANT(S): <span class="ff8">Within __________ calendar days following service of this Order</span>
+				</div>
+				<div class="t m0 x3 h6 y193 ff8 fs3 fc1 sc0 ls0 ws0">
+					of Restitution, you must vacate the premises located at <span class="ff7">@address.Address1, </span>
+				</div>
+				<div class="t m0 x3 h6 y194 ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.City, @address.State @address.ZipCode <span class="ff8">, remove your personal property, and restore possession of the premises to</span>
+				</div>
+				<div class="t m0 x3 h6 y180 ff8 fs3 fc1 sc0 ls0 ws0">
+					the plaintiff, or be forcibly removed by a sheriff or constable. You have the right to a hearing to
+				</div>
+				<div class="t m0 x3 h6 y1e9 ff8 fs3 fc1 sc0 ls0 ws0">
+					contest the manner of the enforcement of the Order of Restitution. A form for requesting a
+				</div>
+				<div class="t m0 x3 h6 y1ea ff8 fs3 fc1 sc0 ls0 ws0">
+					hearing, together with a copy of this Order of Restitution, will be served upon you in accordance
+				</div>
+				<div class="t m0 x3 h6 y1eb ff8 fs3 fc1 sc0 ls0 ws0">
+					with Utah Code 78B-6-805 and 812. If you fail to comply with the Order of Restitution, the
+				</div>
+				<div class="t m0 x3 h6 y168 ff8 fs3 fc1 sc0 ls0 ws0">
+					sheriff or constable may, at the direction of plaintiff, enter the premises by force using the least
+				</div>
+				<div class="t m0 x3 h6 y1ec ff8 fs3 fc1 sc0 ls0 ws0">
+					destructive means possible to remove you, your personal property, and any persons claiming a
+				</div>
+				<div class="t m0 x3 h6 y1ed ff8 fs3 fc1 sc0 ls0 ws0">
+					right to occupancy from you.
+				</div>
+				<div class="t m0 x3 h6 y16c ff7 fs3 fc1 sc0 ls0 ws0">
+					TO THE SHERIFF OR CONSTABLE: <span class="ff8">If the defendant(s) after being served with the Order</span>
+				</div>
+				<div class="t m0 x3 h6 y1ee ff8 fs3 fc1 sc0 ls0 ws0">
+					of Restitution in accordance with Utah Code 78B-6-812 fail to comply <span class="_ _24"></span>within the time period
+				</div>
+				<div class="t m0 x3 h6 y192 ff8 fs3 fc1 sc0 ls0 ws0">
+					prescribed above, you are commanded to, at the plaintiff's direction, enter the premises by force
+				</div>
+				<div class="t m0 x3 h6 y1ef ff8 fs3 fc1 sc0 ls0 ws0">
+					using the least destructive means possible to remove the defendant(s), any personal property, and
+				</div>
+				<div class="t m0 x3 h11 y1f0 ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _5a"></span>Order of Restitution <span class="_ _5b"></span>Page 1
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="19" id="pf19">
+			<div class="pc pc19 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg19.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h6 yeb ff8 fs3 fc1 sc0 ls0 ws0">
+					any persons claiming a right to occupancy from defendants(s).
+				</div>
+				<div class="t m0 x3 h6 y1f1 ff8 fs3 fc1 sc0 ls0 ws0">
+					DATED _______________________ <span class="_ _57"></span>_________________________________________
+				</div>
+				<div class="t m0 x1b h6 y1f2 ff8 fs3 fc1 sc0 ls0 ws0">
+					District Court Judge
+				</div>
+				<div class="t m0 x3 h11 y1f0 ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _5a"></span>Order of Restitution <span class="_ _5b"></span>Page 2
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="f" id="pff">
+			<div class="pc pcf w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bgf.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+
+				</div>
+				<div class="t m0 x31 h10 yab ff7 fs3 fc0 sc0 ls0 ws0">
+					PLAINTIFF'S REQUEST FOR OCCUPANCY HEARING
+				</div>
+				<div class="t m0 x1c h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					Name:
+				</div>
+				<div class="t m0 x1d h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x32 h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+
+				</div>
+				<div class="t m0 x1c h6 yaf ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x1d h10 yb0 ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x1d h10 yb1 ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x1c h6 yb2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x1d h10 yb3 ff7 fs3 fc1 sc0 ls0 ws0">
+					(801) 810-9087
+				</div>
+				<div class="t m0 x1c h6 yb4 ff8 fs3 fc1 sc0 ls0 ws0">
+					Email:
+				</div>
+				<div class="t m0 x1d h10 yb5 ff7 fs3 fc1 sc0 ls0 ws0">
+					zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x1c h10 yb6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Pro Se
+				</div>
+				<div class="t m0 x1e h6 yb7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 yb8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 yb9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x3 h6 y144 ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y145 ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x3 h6 y146 ff8 fs3 fc1 sc0 ls0 ws0">
+					vs.
+				</div>
+				<div class="t m0 x19 h10 y144 ff7 fs3 fc1 sc0 ls0 ws0">
+					PLAINTIFF'S REQUEST FOR
+				</div>
+				<div class="t m0 x13 h10 y12a ff7 fs3 fc1 sc0 ls0 ws0">
+					OCCUPANCY HEARING
+				</div>
+				<div class="t m0 x1f h6 y183 ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x1f h6 y184 ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x3 h6 y185 ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y186 ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x3 h6 y187 ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff requests a hearing to determine occupancy of the premises defendant now resides in.
+				</div>
+				<div class="t m0 x3 h6 y188 ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff asks that the hearing be scheduled within ten business days after defendant's answer was
+				</div>
+				<div class="t m0 x3 h6 y189 ff8 fs3 fc1 sc0 ls0 ws0">
+					filed. This request is made pursuant to Utah Code 78B-6-810.
+				</div>
+				<div class="t m0 x16 h6 y18a ff8 fs3 fc1 sc0 ls0 ws0">
+					Date @DateTime.Today.ToUSADateFormat() <span class="_ _40"></span>Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x26 h10 y18b ff7 fs3 fc1 sc0 ls0 ws0">
+					&nbsp;
+				</div>
+				<div class="t m0 x28 h6 y18c ff8 fs3 fc1 sc0 ls0 ws0">
+					CERTIFICATE OF MAILING/DELIVERY
+				</div>
+				<div class="t m0 x3 h6 y18d ff8 fs3 fc1 sc0 ls0 ws0">
+					On @DateTime.Today.ToUSADateFormat() (date)I <span class="ff17">[_] <span class="ff8">mailed</span> [X] <span class="ff8">hand delivered a copy of this PLAINTIFF'S</span></span>
+				</div>
+				<div class="t m0 x3 h6 y34 ff8 fs3 fc1 sc0 ls0 ws0">
+					REQUEST FOR OCCUPANCY HEARING, to:
+				</div>
+				<div class="t m0 x27 h10 y18e ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()
+				</div>
+				<div class="t m0 x27 h10 y18f ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.Address1
+				</div>
+				<div class="t m0 x27 h10 y190 ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.City, @address.State @address.ZipCode
+				</div>
+				<div class="t m0 x29 h6 y191 ff8 fs3 fc1 sc0 ls0 ws0">
+					Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x26 h10 y192 ff7 fs3 fc1 sc0 ls0 ws0">
+
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _4d"></span><span class="ff1 fs0">Plaintiff Request for Occupancy Hearing <span class="_ _4e"></span>Page 1</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="10" id="pf10">
+			<div class="pc pc10 w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg10.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+
+				</div>
+				<div class="t m0 x33 h10 yab ff7 fs3 fc0 sc0 ls0 ws0">
+					NOTICE OF OCCUPANCY HEARING
+				</div>
+				<div class="t m0 x1c h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+					Name:
+				</div>
+				<div class="t m0 x1d h10 yad ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x32 h6 yac ff8 fs3 fc1 sc0 ls0 ws0">
+
+				</div>
+				<div class="t m0 x1c h6 yaf ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x1d h10 yb0 ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x1d h10 yb1 ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x1c h6 yb2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x1d h10 yb3 ff7 fs3 fc1 sc0 ls0 ws0">
+					(801) 810-9087
+				</div>
+				<div class="t m0 x1c h6 yb4 ff8 fs3 fc1 sc0 ls0 ws0">
+					Email:
+				</div>
+				<div class="t m0 x1d h10 yb5 ff7 fs3 fc1 sc0 ls0 ws0">
+					zmeikov@yahoo.com
+				</div>
+				<div class="t m0 x1c h10 yb6 ff7 fs3 fc1 sc0 ls0 ws0">
+					Pro Se
+				</div>
+				<div class="t m0 x1e h6 yb7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 yb8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 yb9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x3 h6 y144 ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y145 ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x3 h6 y146 ff8 fs3 fc1 sc0 ls0 ws0">
+					vs.
+				</div>
+				<div class="t m0 x2b h10 y144 ff7 fs3 fc1 sc0 ls0 ws0">
+					NOTICE OF OCCUPANCY HEARING
+				</div>
+				<div class="t m0 x1f h6 y147 ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x1f h6 y148 ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x3 h6 y149 ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y14a ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x3 h6 y162 ff8 fs3 fc1 sc0 ls0 ws0">
+					A hearing to determine occupancy of the premises defendant now resides in will be held on
+				</div>
+				<div class="t m0 x3 h6 y193 ff8 fs3 fc1 sc0 ls0 ws0">
+					_________ (date) at the hour of ___________, in room ______________, of the <span class="ff7">West Jordan</span>
+				</div>
+				<div class="t m0 x3 h10 y194 ff7 fs3 fc1 sc0 ls0 ws0">
+					District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x16 h6 y195 ff8 fs3 fc1 sc0 ls0 ws0">
+					Date @DateTime.Now.ToUSADateFormat() <span class="_ _6"></span>Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x26 h10 y196 ff7 fs3 fc1 sc0 ls0 ws0">
+
+				</div>
+				<div class="t m0 x28 h6 y166 ff8 fs3 fc1 sc0 ls0 ws0">
+					CERTIFICATE OF MAILING/DELIVERY
+				</div>
+				<div class="t m0 x3 h6 y9f ff8 fs3 fc1 sc0 ls0 ws0">
+					On @DateTime.Today.ToUSADateFormat() (date) I <span class="ff17">[_] <span class="ff8">mailed</span> [X] <span class="ff8">hand delivered a copy of this NOTICE OF</span></span>
+				</div>
+				<div class="t m0 x3 h6 y197 ff8 fs3 fc1 sc0 ls0 ws0">
+					OCCUPANCY HEARING, to:
+				</div>
+				<div class="t m0 x27 h10 y198 ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()
+				</div>
+				<div class="t m0 x27 h10 y16b ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.Address1
+				</div>
+				<div class="t m0 x27 h10 y199 ff7 fs3 fc1 sc0 ls0 ws0">
+					@address.City, @address.State @address.ZipCode
+				</div>
+				<div class="t m0 x29 h6 y19a ff8 fs3 fc1 sc0 ls0 ws0">
+					Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+				</div>
+				<div class="t m0 x26 h10 y19b ff7 fs3 fc1 sc0 ls0 ws0">
+
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _4f"></span><span class="ff1 fs0">Notice of Occupancy Hearing <span class="_ _50"></span>Page 1</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="1a" id="pf1a">
+			<div class="pc pc1a w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg1a.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x2 h2 y1f3 ff2 fs0 fc1 sc0 ls0 ws0">
+					                                                  
+				</div>
+				<div class="t m0 x3 h10 y1f4 ff7 fs3 fc0 sc0 ls0 ws0">
+					REQUEST FOR HEARING
+				</div>
+				<div class="t m0 x3 h6 y1f5 ff8 fs3 fc1 sc0 ls0 ws0">
+					Tenant Name:
+				</div>
+				<div class="t m0 x3 h6 y1f2 ff8 fs3 fc1 sc0 ls0 ws0">
+					Address:
+				</div>
+				<div class="t m0 x3 h6 y5a ff8 fs3 fc1 sc0 ls0 ws0">
+					Phone:
+				</div>
+				<div class="t m0 x3c h6 y1f5 ff8 fs3 fc1 sc0 ls0 ws0">
+					_________________________________
+				</div>
+				<div class="t m0 x3c h6 y1f2 ff8 fs3 fc1 sc0 ls0 ws0">
+					_________________________________
+				</div>
+				<div class="t m0 x3c h6 y1f6 ff8 fs3 fc1 sc0 ls0 ws0">
+					_________________________________
+				</div>
+				<div class="t m0 x3c h6 y5a ff8 fs3 fc1 sc0 ls0 ws0">
+					_________________________________
+				</div>
+				<div class="t m0 x1e h6 y1f7 ff8 fs3 fc1 sc0 ls0 ws0">
+					IN THE THIRD JUDICIAL DISTRICT COURT
+				</div>
+				<div class="t m0 x1e h6 y1f8 ff8 fs3 fc1 sc0 ls0 ws0">
+					OF SALT LAKE COUNTY, STATE OF UTAH
+				</div>
+				<div class="t m0 x9 h6 y1f9 ff8 fs3 fc1 sc0 ls0 ws0">
+					West Jordan District Court, 8080 S. Redwood Road, Suite 1701, West Jordan, UT 84088
+				</div>
+				<div class="t m0 x3 h6 y1fa ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y1fb ff8 fs3 fc1 sc0 ls0 ws0">
+					Plaintiff,
+				</div>
+				<div class="t m0 x3 h6 y1fc ff8 fs3 fc1 sc0 ls0 ws0">
+					vs.
+				</div>
+				<div class="t m0 x34 h10 y1fa ff7 fs3 fc1 sc0 ls0 ws0">
+					REQUEST FOR HEARING
+				</div>
+				<div class="t m0 x1f h6 y1fd ff8 fs3 fc1 sc0 ls0 ws0">
+					Case No: <u>@custSettings.EvictionCourtCaseNumber</u>
+				</div>
+				<div class="t m0 x1f h6 y1fe ff8 fs3 fc1 sc0 ls0 ws0">
+					Judge: <u>@custSettings.EvictionCourtAssignedJudge</u>
+				</div>
+				<div class="t m0 x3 h6 y1ff ff7 fs3 fc1 sc0 ls0 ws0">
+					@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()<span class="ff8">,</span>
+				</div>
+				<div class="t m0 x3 h6 y200 ff8 fs3 fc1 sc0 ls0 ws0">
+					Defendant.
+				</div>
+				<div class="t m0 x3 h6 y201 ff8 fs3 fc1 sc0 ls0 ws0">
+					I object to the manner in which the Order of Restitution was enforced for the following reasons:
+				</div>
+				<div class="t m0 x3 h10 y202 ff7 fs3 fc1 sc0 ls0 ws0">
+					(check all that apply):
+				</div>
+				<div class="t m0 x3 h6 y203 ff8 fs3 fc1 sc0 ls0 ws0">
+					1. <span class="ff17">[_]</span> I was not personally served with a copy of the Order of Restitution, nor was a copy of the
+				</div>
+				<div class="t m0 x3 h6 y204 ff8 fs3 fc1 sc0 ls0 ws0">
+					Order mailed to me and posted on the premises.
+				</div>
+				<div class="t m0 x3 h6 y205 ff8 fs3 fc1 sc0 ls0 ws0">
+					2. <span class="ff17">[_]</span> I was not given the time period ordered by the court to voluntarily vacate the premises.
+				</div>
+				<div class="t m0 x3 h6 y206 ff8 fs3 fc1 sc0 ls0 ws0">
+					3. <span class="ff17">[_]</span> My property is not being stored in a suitable place and/or in a reasonable manner.
+				</div>
+				<div class="t m0 x3 h6 y207 ff8 fs3 fc1 sc0 ls0 ws0">
+					4. <span class="ff17">[_]</span> The removal and storage costs charged to me are unreasonable.
+				</div>
+				<div class="t m0 x3 h6 y208 ff8 fs3 fc1 sc0 ls0 ws0">
+					5. <span class="ff17">[_]</span> I was not provided with a copy of the inventory of the property removed.
+				</div>
+				<div class="t m0 x3 h6 y209 ff8 fs3 fc1 sc0 ls0 ws0">
+					6. <span class="ff17">[_]</span> Although I demanded return of my property within 30 days of the date it was removed, and
+				</div>
+				<div class="t m0 x3 h6 y20a ff8 fs3 fc1 sc0 ls0 ws0">
+					although I paid all costs associated with its removal and storage, my property was not returned to
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _5a"></span>Request for Hearing <span class="_ _5c"></span>Page <span class="ff1 fs0">1</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+		<div class="pf w0 h0" data-page-no="1b" id="pf1b">
+			<div class="pc pc1b w0 h0">
+				<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/CourtDox3DayLate/bg1b.png">
+				<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
+					 
+				</div>
+				<div class="t m0 x3 h6 yeb ff8 fs3 fc1 sc0 ls0 ws0">
+					me.
+				</div>
+				<div class="t m0 x3 h6 y20b ff8 fs3 fc1 sc0 ls0 ws0">
+					7. <span class="ff17">[_]</span> A written notice of the time and place of sale of my property was not mailed to me.
+				</div>
+				<div class="t m0 x3 h6 y20c ff8 fs3 fc1 sc0 ls0 ws0">
+					8. <span class="ff17">[_]</span> I attended the sale of my property. However, the remainder of my property was not
+				</div>
+				<div class="t m0 x3 h6 y20d ff8 fs3 fc1 sc0 ls0 ws0">
+					released to me after costs of removal, storage, advertising, and conducting the sale were
+				</div>
+				<div class="t m0 x3 h6 y20e ff8 fs3 fc1 sc0 ls0 ws0">
+					recovered.
+				</div>
+				<div class="t m0 x3 h6 y20f ff8 fs3 fc1 sc0 ls0 ws0">
+					9. <span class="ff17">[_]</span> I did not attend the sale of my property. The remaining proceeds of the sale were not
+				</div>
+				<div class="t m0 x3 h6 y210 ff8 fs3 fc1 sc0 ls0 ws0">
+					returned to me after deducting costs of removal, storage, advertising, and conducting the sale and
+				</div>
+				<div class="t m0 x3 h6 y211 ff8 fs3 fc1 sc0 ls0 ws0">
+					paying plaintiff's judgment against me.
+				</div>
+				<div class="t m0 x3 h6 y179 ff8 fs3 fc1 sc0 ls0 ws0">
+					10. <span class="ff17">[_]</span> I am not the defendant. I delivered a written demand for the release of my property to the
+				</div>
+				<div class="t m0 x3 h6 y212 ff8 fs3 fc1 sc0 ls0 ws0">
+					constable or sheriff, and provided proper identification and evidence of ownership, but my
+				</div>
+				<div class="t m0 x3 h6 y213 ff8 fs3 fc1 sc0 ls0 ws0">
+					property was not returned.
+				</div>
+				<div class="t m0 x3 h6 y214 ff8 fs3 fc1 sc0 ls0 ws0">
+					11. <span class="ff17">[_]</span> Other ________________________________________________________________
+				</div>
+				<div class="t m0 x3 h6 y132 ff8 fs3 fc1 sc0 ls0 ws0">
+					_____________________________________________________________________________.
+				</div>
+				<div class="t m0 x3 h6 y134 ff8 fs3 fc1 sc0 ls0 ws0">
+					The statements made in this Request for Hearing are true to the best of my knowledge
+				</div>
+				<div class="t m0 x3 h6 y215 ff8 fs3 fc1 sc0 ls0 ws0">
+					and belief.
+				</div>
+				<div class="t m0 x16 h6 y137 ff8 fs3 fc1 sc0 ls0 ws0">
+					Date _____________ <span class="_ _40"></span>Sign here _______________________________
+				</div>
+				<div class="t m0 x30 h6 y216 ff8 fs3 fc1 sc0 ls0 ws0">
+					Tenant's Signature
+				</div>
+				<div class="t m0 x28 h6 y217 ff8 fs3 fc1 sc0 ls0 ws0">
+					CERTIFICATE OF MAILING/DELIVERY
+				</div>
+				<div class="t m0 x3 h6 y218 ff8 fs3 fc1 sc0 ls0 ws0">
+					On _________________ (date) I <span class="ff17">[_] <span class="ff8">mailed</span> [_] <span class="ff8">hand delivered a copy of this REQUEST FOR</span></span>
+				</div>
+				<div class="t m0 x3 h6 y219 ff8 fs3 fc1 sc0 ls0 ws0">
+					HEARING to Plaintiff at:
+				</div>
+				<div class="t m0 x27 h10 y21a ff7 fs3 fc1 sc0 ls0 ws0">
+					Todor Peykov
+				</div>
+				<div class="t m0 x27 h10 y21b ff7 fs3 fc1 sc0 ls0 ws0">
+					PO BOX 271157
+				</div>
+				<div class="t m0 x27 h10 y21c ff7 fs3 fc1 sc0 ls0 ws0">
+					Salt Lake City UT 84127
+				</div>
+				<div class="t m0 x29 h6 y21d ff8 fs3 fc1 sc0 ls0 ws0">
+					Sign here _______________________________
+				</div>
+				<div class="t m0 x30 h6 y21e ff8 fs3 fc1 sc0 ls0 ws0">
+					Tenant's Signature
+				</div>
+				<div class="t m0 x3 h1 ycf ff16 fs5 fc1 sc0 ls0 ws0">
+					@DateTime.Now.ToUSADateFormat() <span class="_ _5a"></span>Request for Hearing <span class="_ _5c"></span>Page <span class="ff1 fs0">2</span>
+				</div>
+			</div>
+			<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
+		</div>
+	</div>
+	<div class="loading-indicator"></div>
+</body>
+</html>
+

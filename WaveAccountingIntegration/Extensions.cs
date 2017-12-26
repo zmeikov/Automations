@@ -21,5 +21,15 @@ namespace WaveAccountingIntegration
 		{
 			return new DateTime(today.Year, today.Month, 1).AddMonths(1).AddDays(-1);
 		}
+
+		public static string ToCurrency(this decimal amount)
+		{
+			return amount.ToString("C");
+		}
+
+		public static string ToCurrency(this int amount)
+		{
+			return amount.ToString("C");
+		}
 	}
 }

@@ -16,11 +16,11 @@ namespace WaveAccountingIntegration.Models
 		public string invoice_number_label { get; set; }
 		public string invoice_number { get; set; }
 		public Invoice_Currency invoice_currency { get; set; }
-		public double exchange_rate { get; set; }
-		public double invoice_total { get; set; }
-		public double invoice_tax_total { get; set; }
-		public double invoice_amount_paid { get; set; }
-		public double invoice_amount_due { get; set; }
+		public decimal exchange_rate { get; set; }
+		public decimal invoice_total { get; set; }
+		public decimal invoice_tax_total { get; set; }
+		public decimal invoice_amount_paid { get; set; }
+		public decimal invoice_amount_due { get; set; }
 		public DateTime due_date { get; set; }
 		public DateTime? last_payment_date { get; set; }
 		public string status { get; set; }
@@ -63,8 +63,8 @@ namespace WaveAccountingIntegration.Models
 		public int id { get; set; }
 		public string url { get; set; }
 		public Product product { get; set; }
-		public double price { get; set; }
-		public double quantity { get; set; }
+		public decimal price { get; set; }
+		public decimal quantity { get; set; }
 		public string description { get; set; }
 		public object[] taxes { get; set; }
 		public DateTime date_created { get; set; }
@@ -76,7 +76,7 @@ namespace WaveAccountingIntegration.Models
 		public int id { get; set; }
 		public string url { get; set; }
 		public string name { get; set; }
-		public double price { get; set; }
+		public decimal price { get; set; }
 		public string description { get; set; }
 		public bool? is_sold { get; set; }
 		public bool? is_bought { get; set; }
@@ -209,8 +209,8 @@ namespace WaveAccountingIntegration.Models
 		public string url { get; set; }
 		public string payment_date { get; set; }
 		public string memo { get; set; }
-		public double exchange_rate { get; set; }
-		public double amount { get; set; }
+		public decimal exchange_rate { get; set; }
+		public decimal amount { get; set; }
 		public Payment_Account payment_account { get; set; }
 		public string payment_method { get; set; }
 		public Payment_Details payment_details { get; set; }
@@ -240,7 +240,7 @@ namespace WaveAccountingIntegration.Models
 		public RecurringInvoiceCustomer customer { get; set; }
 		public string previous_invoice_date { get; set; }
 		public List<Line_Items> line_items { get; set; }
-		public double total { get; set; }
+		public decimal total { get; set; }
 		public string currency_symbol { get; set; }
 		public string footer { get; set; }
 		public string currency_code { get; set; }
@@ -325,9 +325,9 @@ namespace WaveAccountingIntegration.Models
 	{
 		public int product_id { get; set; }
 		public object sort_order_index { get; set; }
-		public double quantity { get; set; }
+		public decimal quantity { get; set; }
 		public string description { get; set; }
-		public double price { get; set; }
+		public decimal price { get; set; }
 		public object[] taxes { get; set; }
 	}
 
@@ -482,11 +482,11 @@ namespace WaveAccountingIntegration.Models
 
 	public class Transaction_History
 	{
-		public double starting_balance { get; set; }
-		public double ending_balance { get; set; }
-		public double payment_balance_for_period { get; set; }
-		public double refund_balance_for_period { get; set; }
-		public double invoice_balance_for_period { get; set; }
+		public decimal starting_balance { get; set; }
+		public decimal ending_balance { get; set; }
+		public decimal payment_balance_for_period { get; set; }
+		public decimal refund_balance_for_period { get; set; }
+		public decimal invoice_balance_for_period { get; set; }
 		public Statement_Currency statement_currency { get; set; }
 		public List<Event> events { get; set; }
 	}
@@ -503,7 +503,7 @@ namespace WaveAccountingIntegration.Models
 	{
 		public string event_type { get; set; }
 		public DateTime? date { get; set; }
-		public double total { get; set; }
+		public decimal total { get; set; }
 		public Invoice invoice { get; set; }
 		public Payment payment { get; set; }
 	}
