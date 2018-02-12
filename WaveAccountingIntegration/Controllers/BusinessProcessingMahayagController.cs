@@ -29,15 +29,15 @@ namespace WaveAccountingIntegration.Controllers
 
 				var minDaysBetweenAlerts = Math.Max(custSettings.CustomDaysBetweenSmsAlerts?? daysBetweenAlerts, daysBetweenAlerts);
 
-				var lastPayment = customerKvp.Value.events.Where(x => x.event_type == "payment").OrderByDescending(x => x.date).First();
+				var lastPayment = customerKvp.Value.events.Where(x => x.event_type == "payment").OrderByDescending(x => x.date).FirstOrDefault();
 				var lastInvoice = customerKvp.Value.events.Where(x => x.event_type == "invoice" && x.total > 0).OrderByDescending(x => x.date).First();
 
-				var daysSinceLastPayment = (DateTime.Now - (lastPayment.date?? DateTime.Now)).Days;
+				var daysSinceLastPayment = (DateTime.Now - (lastPayment?.date?? DateTime.Now.AddYears(-10))).Days;
 
 				if (
 					daysSinceLastSmsAlert >= minDaysBetweenAlerts &&
 					daysSinceLastPayment >= 10 &&
-					lastInvoice.date <= DateTime.Today.Date.AddDays(-10) &&
+					lastInvoice.date <= DateTime.Today.Date.AddDays(-5) &&
 					DateTime.Now.Hour > 8 &&
 					custSettings.SendSmsAlerts == true
 				)
@@ -45,17 +45,9 @@ namespace WaveAccountingIntegration.Controllers
 					//sent alert to name 1
 					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
 					{
-						var name = customer.first_name.ToUpper().Trim();	
-						var body = $"Hello {name}, " +
-						           $"as of today {DateTime.Today.ToUSADateFormat()} " +
-						           $"your balance due is ${customerKvp.Value.ending_balance} " +
-						           $"and your last payment of: ${lastPayment.total} " +
-						           $"was received on: {lastPayment.date.Value.ToUSADateFormat()}. " +
-						           $"You can see your history here: {custSettings.StatementUrl} ." +
-						           $"Please let me know when can you make your next payment. " +
-						           $"IMPORTANT NOTE: Starting FEB 2018 there will be 2% daily charge for any past due balance!";
-
-
+						var name = customer.first_name.ToUpper().Trim();
+						var body = GetLateCustomerSmsAlertBody(name, customerKvp, lastPayment, custSettings);
+						           
 						messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address1)}");
 						_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appAppSettings);
 					}
@@ -64,19 +56,10 @@ namespace WaveAccountingIntegration.Controllers
 					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
 					{
 						var name = customer.last_name.ToUpper().Trim();
-						var body = $"Hello {name}, " +
-						           $"as of today {DateTime.Today.ToUSADateFormat()} " +
-						           $"your balance due is ${customerKvp.Value.ending_balance} " +
-						           $"and your last payment of: ${lastPayment.total} " +
-						           $"was received on: {lastPayment.date.Value.ToUSADateFormat()}. " +
-						           $"You can see your history here: {custSettings.StatementUrl} ." +
-								   $"Please let me know when can you make your next payment. " +
-						           $"IMPORTANT NOTE: Starting FEB 2018 there will be 2% daily charge for any past due balance!";
+						var body = GetLateCustomerSmsAlertBody(name, customerKvp, lastPayment, custSettings);
 
-
-						messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address2)}");
+						messages.Add($"alerting late customer: {name} on {ExtractEmailFromString(customer.address2)}");
 						_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appAppSettings);
-
 					}
 
 					custSettings.LastSmsAlertSent = DateTime.Now;
@@ -98,6 +81,19 @@ namespace WaveAccountingIntegration.Controllers
 
 			ViewBag.Message = string.Join(Environment.NewLine, messages);
 			return View();
+		}
+
+		private string GetLateCustomerSmsAlertBody(string name, KeyValuePair<Customer, Transaction_History> customerKvp, Event lastPayment, CustomerSettings custSettings)
+		{
+			var dailyRate = custSettings.SignedLeaseAgreement == true ? $"${custSettings.LateFeeDailyAmount}" : $"{custSettings.LateFeePercentRate * 100}%";
+			return $"Hello {name}, " +
+					$"as of today {DateTime.Today.ToUSADateFormat()} " +
+					$"your balance due is ${customerKvp.Value.ending_balance} " +
+					$"and your last payment of: ${lastPayment?.total} " +
+					$"was received on: {lastPayment?.date.Value.ToUSADateFormat()}. " +
+					$"You can see your history here: {custSettings.StatementUrl} ." +
+					$"Please let me know when can you make your next payment. " +
+					$"IMPORTANT NOTE: Starting March 2018 there will be: {dailyRate}; daily charge for any past due balance! ";
 		}
 
 		public ActionResult EvictionDocs(int id, string form)
@@ -145,14 +141,21 @@ namespace WaveAccountingIntegration.Controllers
 
 			Parallel.ForEach(activeCustomers, (customer) =>
 			{
-				var statement = _restService.Get<TransactionHistory>(
-						$"https://api.waveapps.com/businesses/{_appAppSettings.MahayagBusinessGuid}/customers/{customer.id}/statements/transaction-history/")
-					.Result;
+				try
+				{
+					var statement = _restService.Get<TransactionHistory>(
+							$"https://api.waveapps.com/businesses/{_appAppSettings.MahayagBusinessGuid}/customers/{customer.id}/statements/transaction-history/")
+						.Result;
 
-				var trxHistory = statement.transaction_history.FirstOrDefault();
+					var trxHistory = statement.transaction_history.FirstOrDefault();
 
-				if (trxHistory != null)
-					allCustomerStatements.Add(customer, trxHistory);
+					if (trxHistory != null)
+						allCustomerStatements.Add(customer, trxHistory);
+				}
+				catch
+				{
+					// ignored
+				}
 			});
 
 			var toReturn = new Dictionary<Customer, Transaction_History>();
@@ -200,7 +203,7 @@ namespace WaveAccountingIntegration.Controllers
 			var allCustomers = _restService.Get<List<Customer>>(
 				$"https://api.waveapps.com/businesses/{_appAppSettings.MahayagBusinessGuid}/customers/").Result;
 
-			var activeCustomersToSetup = allCustomers.Where(x => x.active && !x.name.StartsWith("XX"));
+			var activeCustomersToSetup = allCustomers.Where(x => x.active && !x.name.StartsWith("XX") && !x.name.StartsWith("??"));
 
 			Parallel.ForEach(activeCustomersToSetup, (customer) =>
 			{
@@ -210,10 +213,14 @@ namespace WaveAccountingIntegration.Controllers
 				{
 					ChargeLateFee = false,
 					NextLateFeeChargeDate = DateTime.Today,
+					LateFeePercentRate = (decimal)0.02,
+					LateFeeDailyAmount = 10,
+					LateFeeChargeAboveBalance = 340,
 					ConsolidateInvoices = true,
+					SignedLeaseAgreement = false,
 					LastSmsAlertSent = DateTime.Today,
 					CustomDaysBetweenSmsAlerts = 5,
-					SendSmsAlerts = false,
+					SendSmsAlerts = true,
 					StatementUrl = "StatementUrl",
 					EvictonNoticeDate = DateTime.Today,
 					EvictionCourtCaseNumber = "",
@@ -253,8 +260,14 @@ namespace WaveAccountingIntegration.Controllers
 
 					if (custSettings.ChargeLateFee == null) { custSettings.ChargeLateFee = defaultCustSettings.ChargeLateFee; messages.Add($"Setting deafult value ChargeLateFee to {custSettings.ChargeLateFee} for customer: {customer.name}"); changesMade = true; }
 					if (custSettings.NextLateFeeChargeDate == null) { custSettings.NextLateFeeChargeDate = defaultCustSettings.NextLateFeeChargeDate; messages.Add($"Setting deafult value NextLateFeeChargeDate to {custSettings.NextLateFeeChargeDate} for customer: {customer.name}"); changesMade = true; }
-
+					if (custSettings.LateFeePercentRate == null) { custSettings.LateFeePercentRate = defaultCustSettings.LateFeePercentRate; messages.Add($"Setting deafult value LateFeePercentRate to {custSettings.LateFeePercentRate} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.LateFeeDailyAmount == null) { custSettings.LateFeeDailyAmount = defaultCustSettings.LateFeeDailyAmount; messages.Add($"Setting deafult value LateFeeDailyAmount to {custSettings.LateFeeDailyAmount} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.LateFeeChargeAboveBalance == null) { custSettings.LateFeeChargeAboveBalance = defaultCustSettings.LateFeeChargeAboveBalance; messages.Add($"Setting deafult value LateFeeChargeAboveBalance to {custSettings.LateFeeChargeAboveBalance} for customer: {customer.name}"); changesMade = true; }
+					//set NextLateFeeChargeDate to today if  ChargeLateFee is false
+					if (custSettings.ChargeLateFee == false && custSettings.NextLateFeeChargeDate < DateTime.Today) { custSettings.NextLateFeeChargeDate = defaultCustSettings.NextLateFeeChargeDate; messages.Add($"Setting todays date for NextLateFeeChargeDate to {custSettings.NextLateFeeChargeDate} for customer: {customer.name}"); changesMade = true; }
+					
 					if (custSettings.ConsolidateInvoices == null) { custSettings.ConsolidateInvoices = defaultCustSettings.ConsolidateInvoices; messages.Add($"Setting deafult value ConsolidateInvoices to {custSettings.ConsolidateInvoices} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.SignedLeaseAgreement == null) { custSettings.SignedLeaseAgreement = defaultCustSettings.SignedLeaseAgreement; messages.Add($"Setting deafult value SignedLeaseAgreement to {custSettings.SignedLeaseAgreement} for customer: {customer.name}"); changesMade = true; }
 
 					if (custSettings.LastSmsAlertSent == null) { custSettings.LastSmsAlertSent = defaultCustSettings.LastSmsAlertSent; messages.Add($"Setting deafult value LastSmsAlertSent to {custSettings.LastSmsAlertSent} for customer: {customer.name}"); changesMade = true; }
 					if (custSettings.CustomDaysBetweenSmsAlerts == null) { custSettings.CustomDaysBetweenSmsAlerts = defaultCustSettings.CustomDaysBetweenSmsAlerts; messages.Add($"Setting deafult value CustomDaysBetweenSmsAlerts to {custSettings.CustomDaysBetweenSmsAlerts} for customer: {customer.name}"); changesMade = true; }
@@ -319,7 +332,7 @@ namespace WaveAccountingIntegration.Controllers
 							#region transfer Items
 							var sourceItems = _restService.Get<List<InvoiceItem>>(sourceInvoice.items_url).Result;
 
-							foreach (var sourceItem in sourceItems)
+							foreach (var sourceItem in sourceItems.Where(x=> x.quantity * x.price != 0))
 							{
 								var movedItem = new InvoiceItem
 								{
@@ -422,12 +435,12 @@ namespace WaveAccountingIntegration.Controllers
 
 		public ActionResult ChargeLateFees(double lateRate = 0.02)
 		{
-			var latePercentRate = new decimal(lateRate);
+			var defaultLatePercentRate = new decimal(lateRate);
 			var catchupOnLatefees = false;
 			List<Invoice> addedFeeInvoices = new List<Invoice>();
 
 			var overdueInvoices = _restService.Get<List<Invoice>>(
-				$"https://api.waveapps.com/businesses/{_appAppSettings.MahayagBusinessGuid}/invoices/?status=overdue&embed_customer=true&customer.id=14361244");
+				$"https://api.waveapps.com/businesses/{_appAppSettings.MahayagBusinessGuid}/invoices/?status=overdue&embed_customer=true");
 			
 
 			//TODO: handle multiple invoices per single customer
@@ -436,18 +449,19 @@ namespace WaveAccountingIntegration.Controllers
 				var custSettings = _customerSettingsService.ExctractFromCustomerObject(invoice.customer);
 
 				if (custSettings?.ChargeLateFee != null && custSettings.ChargeLateFee.Value && 
-					custSettings.NextLateFeeChargeDate != null && custSettings.NextLateFeeChargeDate.Value.Date <= DateTime.Now.Date)
+					custSettings.NextLateFeeChargeDate != null && custSettings.NextLateFeeChargeDate.Value.Date <= DateTime.Now.Date 
+				    && custSettings.LateFeeChargeAboveBalance <= invoice.invoice_amount_due)
 				{
 					#region add late fee
 					var lateFee = new InvoiceItem
 					{
 						product = new Product{ id = _appAppSettings.MahayagLateFeeProductId },
-						description = $"Late Charge: {100 * latePercentRate}% " +
+						description = $"Late Charge: {100 * (custSettings.LateFeePercentRate?? defaultLatePercentRate)}% " +
 						              $"from PastDueAmount: {invoice.invoice_amount_due} " +
 						              $"as of date: {custSettings.NextLateFeeChargeDate.Value.Date.ToShortDateString()} " +
 						              $"added on: {DateTime.Now.ToShortDateString()}",
 						quantity = 1,
-						price = invoice.invoice_amount_due * latePercentRate,
+						price = invoice.invoice_amount_due * (custSettings.LateFeePercentRate ?? defaultLatePercentRate)
 					};
 
 					var addResult = _restService.Post<AddInvoiceItemResponse, InvoiceItem>(invoice.items_url, lateFee);
@@ -485,7 +499,7 @@ namespace WaveAccountingIntegration.Controllers
 			if (catchupOnLatefees)
 			{
 				//recusrsive call to catch up on late fees if process has not run for more than a day
-				ChargeLateFees((double)latePercentRate);
+				ChargeLateFees((double)defaultLatePercentRate);
 			}
 
 			return View(addedFeeInvoices);
