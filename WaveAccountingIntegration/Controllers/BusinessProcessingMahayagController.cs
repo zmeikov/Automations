@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Xml.Schema;
+using Microsoft.Ajax.Utilities;
 using Newtonsoft.Json;
 using WaveAccountingIntegration.Models;
 
@@ -36,7 +38,7 @@ namespace WaveAccountingIntegration.Controllers
 
 				if (
 					daysSinceLastSmsAlert >= minDaysBetweenAlerts &&
-					daysSinceLastPayment >= 10 &&
+					daysSinceLastPayment >= 7 &&
 					lastInvoice.date <= DateTime.Today.Date.AddDays(-5) &&
 					DateTime.Now.Hour > 8 &&
 					custSettings.SendSmsAlerts == true
@@ -116,14 +118,49 @@ namespace WaveAccountingIntegration.Controllers
 
 			var address = _appAppSettings.MahayagAddresses.FirstOrDefault(x => x.id == customer.name.Substring(0, 4));
 
+			List<Tennant> tenants = GetTennatsFromName(customer.name);
+
 			ViewBag.address = address;
 			ViewBag.CustomerSettings = _customerSettingsService.ExctractFromCustomerObject(customer);
 			ViewBag.AppSettings = _appAppSettings;
+			ViewBag.Tenants = tenants;
 			var total = customerStatement.First().Value.ending_balance;
 			ViewBag.invoice = customerStatement.Values.First().events.First(x=>x.invoice.invoice_amount_due == total && x.event_type == "invoice").invoice;
 			ViewBag.invoice_items = _restService.Get<List<InvoiceItem>>(ViewBag.invoice.items_url).Result;
 			return View(form, customerStatement);
 		}
+
+		private List<Tennant> GetTennatsFromName(string customerName)
+		{
+			List<Tennant> tenants = new List<Tennant>();
+
+			int start = 0;
+			int end = 0;
+
+			do
+			{
+				start = customerName.IndexOf('[', start+1);
+				end = customerName.IndexOf(']', end+1);
+
+				var tenant = new Tennant()
+				{
+					FullName = customerName.Substring(start + 1, (end-start) - 11).ToUpper().Trim(),
+					DateOfBirth = Convert.ToDateTime(customerName.Substring(end-10, 10))
+				};
+
+				var names = tenant.FullName.Split(' ').Where(x=> !string.IsNullOrWhiteSpace(x)).ToList();
+
+				tenant.FirstName = names.First().ToUpper().Trim();
+				tenant.LastName = names.Last().ToUpper().Trim();			
+				tenant.MiddleName = names.Count > 2 ? names[1].ToUpper().Trim() : string.Empty ;
+
+				tenants.Add(tenant);
+
+			} while (customerName.IndexOf('[',end+1) > 0);
+
+			return tenants;
+		}
+
 
 		public ActionResult LateCustomers()
 		{
@@ -223,8 +260,8 @@ namespace WaveAccountingIntegration.Controllers
 					SendSmsAlerts = true,
 					StatementUrl = "StatementUrl",
 					EvictonNoticeDate = DateTime.Today,
-					EvictionCourtCaseNumber = "",
-					EvictionCourtAssignedJudge = ""
+					EvictionCourtCaseNumber = "0000000000000",
+					EvictionCourtAssignedJudge = "JUDGEJUDGEJUDGE"
 				};
 
 				if (custSettings == null)
@@ -311,8 +348,9 @@ namespace WaveAccountingIntegration.Controllers
 
 			foreach (var customerId in distinctCustomerIds)
 			{
-				var customerInvoicesDue = invoicesDue.Where(x => x.customer.id == customerId).OrderByDescending(x => x.invoice_date);
-				var custSettings = _customerSettingsService.ExctractFromCustomerObject(customerInvoicesDue.First().customer);
+				var customerInvoicesDue = invoicesDue.Where(x => x.customer.id == customerId).OrderByDescending(x => x.invoice_date).ToList();
+				var customer = customerInvoicesDue.First().customer;
+				var custSettings = _customerSettingsService.ExctractFromCustomerObject(customer);
 
 				//consolidate more than 2 invoices when settings allow it
 				if (customerInvoicesDue.Count() > 1 && custSettings.ConsolidateInvoices == true && !customerInvoicesDue.First().customer.name.StartsWith("XXX"))
@@ -324,11 +362,9 @@ namespace WaveAccountingIntegration.Controllers
 					{
 						//check for payments
 						var payments = _restService.Get<List<Payment>>(sourceInvoice.payments_url).Result;
-
-						//TODO: consolidate invoices with payments
-						//process src invoice only if there are no payments
 						if (payments.Count == 0)
 						{
+							//process src invoice only if there are no payments
 							#region transfer Items
 							var sourceItems = _restService.Get<List<InvoiceItem>>(sourceInvoice.items_url).Result;
 
@@ -379,6 +415,10 @@ namespace WaveAccountingIntegration.Controllers
 							#endregion
 
 							processedInvoices.Add(sourceInvoice);
+						}
+						else
+						{
+							//TODO: consolidate invoices with payments
 						}
 					}
 				}
