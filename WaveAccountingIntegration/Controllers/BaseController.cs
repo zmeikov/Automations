@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Security.Authentication;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
@@ -12,24 +13,26 @@ namespace WaveAccountingIntegration.Controllers
 	{
 		public IFileSettingsService _fileSettingsServiceService;
 		public IRestService _restService;
-		public ICustomerSettingsService _customerSettingsService;
+		public ICustomerService _customerService;
 		public IHeadersParser _headersParser;
 		public ISendGmail _sendGmail;
 
-		public AppSettings _appAppSettings;
+		public AppSettings _appSettings;
 		public Dictionary<string, string> _headers;
 
 		
 
 		public BaseController()
 		{
+			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
+
 			_sendGmail = new SendGmail();
 			_fileSettingsServiceService = new FileSettingsServiceService();
-			_appAppSettings = _fileSettingsServiceService.GetSettings();
+			_appSettings = _fileSettingsServiceService.GetSettings();
 
 			
 
-			_customerSettingsService = new CustomerSettingsService();
+			_customerService = new CustomerService();
 
 			_headersParser = new HeadersParser();
 			_headers = _headersParser.ParseHeadersFromFile(
@@ -38,7 +41,7 @@ namespace WaveAccountingIntegration.Controllers
 			_restService = new RestService(new HttpClientServiceFactory());
 
 			//This is now fetched via cookies parsing
-			//_restService.SetAuthorizationHeader("Bearer", _appAppSettings.Bearer);
+			//_restService.SetAuthorizationHeader("Bearer", _appSettings.Bearer);
 			#region get Bearer token from Cookies
 			var cookies = _headers.SingleOrDefault(x => x.Key.ToUpper() == "COOKIE").Value.Split(';');
 			var bearerAuthString = cookies.First(x => x.Contains("aveapps=")).Substring(10);
@@ -56,7 +59,7 @@ namespace WaveAccountingIntegration.Controllers
 			}
 			#endregion
 
-			
+
 		}
 
 

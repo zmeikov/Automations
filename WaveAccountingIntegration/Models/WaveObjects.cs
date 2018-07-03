@@ -160,8 +160,14 @@ namespace WaveAccountingIntegration.Models
 
 		public class Update_Shipping_Details
 		{
+			public string ship_to_contact { get; set; }
 			public string delivery_instructions { get; set; }
 		}
+	}
+
+	public class CustomerUpdatePhone
+	{
+		public string phone_number { get; set; }
 	}
 
 	public class Address

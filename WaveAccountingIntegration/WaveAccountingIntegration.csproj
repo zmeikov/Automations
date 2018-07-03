@@ -223,12 +223,12 @@
     <Compile Include="Models\Tennant.cs" />
     <Compile Include="Models\WaveObjects.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\CustomerSettingsService.cs" />
+    <Compile Include="Services\CustomerService.cs" />
     <Compile Include="Services\FileSettingsServiceService.cs" />
     <Compile Include="Services\HeadersParser.cs" />
     <Compile Include="Services\HttpClientService.cs" />
     <Compile Include="Services\HttpClientServiceFactory.cs" />
-    <Compile Include="Services\ICustomerSettingsService.cs" />
+    <Compile Include="Services\ICustomerService.cs" />
     <Compile Include="Services\IFileSettingsService.cs" />
     <Compile Include="Services\IHeadersParser.cs" />
     <Compile Include="Services\IHttpClientService.cs" />
@@ -309,9 +309,11 @@
     <Content Include="Views\BusinessProcessingMahayag\LateCustomers.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\EvictionDocs.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\CourtDox3DayLate.cshtml" />
+    <Content Include="Views\BusinessProcessingMahayag\15DayNoCause.cshtml" />
     <None Include="Views\BusinessProcessingMahayag\3DayLate.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\5DayTennantAtWill.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\SmsAlertLateCustomers.cshtml" />
+    <Content Include="Views\BusinessProcessingMahayag\AutoPinResetAndtext.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -347,7 +349,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>52683</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:52683/</IISUrl>
+          <IISUrl>http://localhost:52666/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

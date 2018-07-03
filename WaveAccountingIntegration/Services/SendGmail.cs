@@ -27,7 +27,7 @@ namespace WaveAccountingIntegration.Services
 			})
 			{
 				//just so not to upset Google we pause for radom time before sending email
-				Thread.Sleep(new Random().Next(0, 60) * 1000);
+				Thread.Sleep(new Random().Next(0, 30) * 1000);
 
 				smtp.Send(message);
 			}

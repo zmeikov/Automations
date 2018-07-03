@@ -15,6 +15,7 @@ namespace WaveAccountingIntegration.Models
 
 		public bool? ConsolidateInvoices { get; set; }
 		public bool? SignedLeaseAgreement { get; set; }
+		public DateTime? LastPinResetDate { get; set; }
 
 		public DateTime? LastSmsAlertSent { get; set; }
 		public int? CustomDaysBetweenSmsAlerts { get; set; }

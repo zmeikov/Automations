@@ -15,18 +15,18 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-	<meta charset="utf-8"/>
+	<meta charset="utf-8" />
 
-	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1"/>
-	<link rel="stylesheet" href="/Content/forms/5DayTennantAtWill/base.min.css"/>
-	<link rel="stylesheet" href="/Content/forms/5DayTennantAtWill/fancy.min.css"/>
-	<link rel="stylesheet" href="/Content/forms/5DayTennantAtWill/main.css"/>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+	<link rel="stylesheet" href="/Content/forms/5DayTennantAtWill/base.min.css" />
+	<link rel="stylesheet" href="/Content/forms/5DayTennantAtWill/fancy.min.css" />
+	<link rel="stylesheet" href="/Content/forms/5DayTennantAtWill/main.css" />
 	<script src="/Content/forms/5DayTennantAtWill/compatibility.min.js"></script>
 	<script src="/Content/forms/5DayTennantAtWill/theViewer.min.js"></script>
 	<script>
-		try{
+		try {
 			theViewer.defaultViewer = new theViewer.Viewer({});
-		}catch(e){}
+		} catch (e) { }
 	</script>
 	<title></title>
 </head>
@@ -36,9 +36,9 @@
 	<title></title>
 </head>
 <body>
-<div id="sidebar">
-	<div id="outline"></div>
-</div>
+	<div id="sidebar">
+		<div id="outline"></div>
+	</div>
 <div id="page-container">
 @foreach (var t in tenants)
 {
@@ -46,7 +46,7 @@
 		<div class="pc pc1 w0 h0">
 			<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/5DayTennantAtWill/bg1.png">
 			<div class="t m0 x3 h3 y3 ff3 fs1 fc1 sc0 ls0 ws0">
-				FIVE DAY N<span class="_ _0"></span>OTICE TO A TEN<span class="_ _0"></span>ANT AT WILL
+				FIFTEEN DAY NOTICE TO VACATE<span class="_ _0"></span><span class="_ _0"></span>
 			</div>
 			<div class="t m0 x4 h4 y4 ff4 fs2 fc1 sc0 ls0 ws0">
 				This Notice is given to: <span class="_ _2"></span>This Notice is given by:
@@ -70,10 +70,10 @@
 				Salt Lake City, UT 84127-
 			</div>
 			<div class="t m0 x4 h5 y8 ff5 fs2 fc1 sc0 ls0 ws0">
-				You are a tenant at will. You are required to vacate the prem<span class="_ _0"></span>ises within five calendar
+				You must vacate the premises you now rent by @DateTime.Now.GetEndOfTheMonth().ToUSADateFormat(), which is the last day of<span class="_ _0"></span>
 			</div>
 			<div class="t m0 x4 h5 y9 ff5 fs2 fc1 sc0 ls0 ws0">
-				days, counting weekends an<span class="_ _1"></span>d holidays.
+				your rental period.<span class="_ _1"></span>
 			</div>
 			<div class="t m0 x4 h4 ya ff4 fs2 fc1 sc0 ls0 ws0">
 				If you do not comply with this notice, you will be served with a Summons and Complaint for
@@ -145,7 +145,7 @@
 
 			</div>
 			<div class="t m0 x4 h1 y21 ff6 fs3 fc1 sc0 ls0 ws0">
-				@DateTime.Now.ToUSADateFormat()<span class="_ _1"></span> <span class="_ _5"></span>Five Day Notice to Vacate to Tenant at Will <span class="_ _6"></span>Page <span class="ff1 fs0">1</span>
+				@DateTime.Now.ToUSADateFormat()<span class="_ _1"></span> <span class="_ _5"></span>Fifteen Day Notice to Vacate <span class="_ _6"></span>Page <span class="ff1 fs0">1</span>
 			</div>
 		</div>
 		<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
@@ -202,14 +202,14 @@
 
 			</div>
 			<div class="t m0 x4 h1 y21 ff6 fs3 fc1 sc0 ls0 ws0">
-				@DateTime.Now.ToUSADateFormat()<span class="_ _1"></span> <span class="_ _5"></span>Five Day Notice to Vacate to Tenant at Will <span class="_ _6"></span>Page <span class="ff1 fs0">2</span>
+				@DateTime.Now.ToUSADateFormat()<span class="_ _1"></span> <span class="_ _5"></span>Fifteen Day Notice to Vacate <span class="_ _6"></span>Page <span class="ff1 fs0">2</span>
 			</div>
 		</div>
 		<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
 	</div>
 }
 </div>
-<div class="loading-indicator"></div>
+	<div class="loading-indicator"></div>
 </body>
 </html>
 </html>

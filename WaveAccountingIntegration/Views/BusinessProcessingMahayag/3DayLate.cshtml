@@ -5,6 +5,8 @@
 
 	var entry = Model.First();
 
+	List<WaveAccountingIntegration.Models.Tennant> tenants = ViewBag.Tenants;
+
 	WaveAccountingIntegration.Models.AppSettings.Address address = ViewBag.address;
 }
 <!DOCTYPE html>
@@ -31,6 +33,8 @@
 	<div id="outline"></div>
 </div>
 <div id="page-container">
+@foreach(var t in tenants)
+{
 <div class="pf w0 h0" data-page-no="1" id="pf1">
 	<div class="pc pc1 w0 h0">
 		<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/3DayLate/bg1.png">
@@ -41,7 +45,7 @@
 			This Notice is given to: <span class="_ _2"></span>This Notice is given by:
 		</div>
 		<div class="t m0 x5 h5 y5 fs2 fc1 sc0 ls0 ws0">
-			@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()
+			@t.FullName
 		</div>
 		<div class="t m0 x5 h5 y6 fs2 fc1 sc0 ls0 ws0">
 			@address.Address1
@@ -77,7 +81,7 @@
 			period(s):
 		</div>
 		<div class="t m0 x5 h5 ye ff5 fs2 fc1 sc0 ls0 ws0">
-			Unpaid/Short paid rent from @entry.Value.events.Where(x=>x.event_type == "invoice" && x.invoice.invoice_amount_due > 0).OrderBy(x=>x.date).FirstOrDefault().date.Value.ToUSADateFormat() up to and including @DateTime.Today.GetEndOfTheMonth().ToUSADateFormat()
+			Unpaid/Short paid rent from @entry.Value.events.Where(x => x.event_type == "invoice" && x.invoice.invoice_amount_due > 0).OrderBy(x => x.date).FirstOrDefault().date.Value.ToUSADateFormat() up to and including @DateTime.Today.GetEndOfTheMonth().ToUSADateFormat()
 		</div>
 		<div class="t m0 x5 h5 yf ff5 fs2 fc1 sc0 ls0 ws0">
 			___________________________________________________________________________
@@ -167,7 +171,7 @@
 	<div class="pc pc2 w0 h0">
 		<img alt="" class="bi x0 y0 w0 h0" src="/Content/forms/3DayLate/bg2.png">
 		<div class="t m0 x1 h1 y1 ff1 fs0 fc0 sc0 ls0 ws0">
-			Online Court Assistan<span class="_ _0"></span>ce Pro<span class="_ _1"></span>gram
+			<span class="_ _0"></span><span class="_ _1"></span>
 		</div>
 		<div class="t m0 x4 h4 y2a ff4 fs2 fc1 sc0 ls0 ws0">
 			attorney<span class="_ _0"></span>s fee<span class="_ _0"></span>s and court costs. Damage<span class="_ _0"></span>s under (b) are the r<span class="_ _0"></span>easonable rental value or r<span class="_ _0"></span>easonable
@@ -188,16 +192,16 @@
 			situation.
 		</div>
 		<div class="t m0 x8 h4 y30 ff4 fs2 fc1 sc0 ls0 ws0">
-			Date @DateTime.Now.ToUSADateFormat() <span class="_ _6"></span>Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+			Date @DateTime.Now.ToUSADateFormat() <span class="_ _6"></span>Sign here <img src="~/Content/Images/tp_sig.png"/> /s/ Todor Peykov
 		</div>
 		<div class="t m0 x9 h5 y31 ff5 fs2 fc1 sc0 ls0 ws0">
-			
+
 		</div>
 		<div class="t m0 xa h5 y32 ff5 fs2 fc1 sc0 ls0 ws0">
 			RETURN OF SERVICE
 		</div>
 		<div class="t m0 x4 h4 y33 ff4 fs2 fc1 sc0 ls0 ws0">
-			This Notice was served upon <span>@entry.Key.first_name.ToUpper() @entry.Key.last_name.ToUpper()</span>, on @DateTime.Now.ToUSADateFormat() <span class="ff7 fs0">(date)</span> in the following
+			This Notice was served upon <span>@t.FullName</span>, on @DateTime.Now.ToUSADateFormat() <span class="ff7 fs0">(date)</span> in the following
 		</div>
 		<div class="t m0 x4 h4 y34 ff4 fs2 fc1 sc0 ls0 ws0">
 			manner:
@@ -233,10 +237,10 @@
 			[_] <span class="ff1"><span class="ff4 fs2">place of business.</span></span>
 		</div>
 		<div class="t m0 xc h4 y3f ff4 fs2 fc1 sc0 ls0 ws0">
-			Sign here <img src="~/Content/Images/tp_sig.png" /> /s/ Todor Peykov
+			Sign here <img src="~/Content/Images/tp_sig.png"/> /s/ Todor Peykov
 		</div>
 		<div class="t m0 xd h4 y40 ff4 fs2 fc1 sc0 ls0 ws0">
-			
+
 		</div>
 		<div class="t m0 x4 h1 y29 fs3 fc1 sc0 ls0 ws0">
 			@DateTime.Now.ToUSADateFormat()<span class="_ _1"></span> <span class="_ _4"></span>Three Day Notice to Pay or to Vacate <span class="_ _5"></span>Page <span class="ff1 fs0">2</span>
@@ -244,6 +248,7 @@
 	</div>
 	<div class="pi" data-data='{"ctm":[1.000000,0.000000,0.000000,1.000000,0.000000,0.000000]}'></div>
 </div>
+}
 </div>
 <div class="loading-indicator"></div>
 </body>
