@@ -17,19 +17,20 @@ namespace WaveAccountingIntegration.Controllers
 {
 	public class BusinessProcessingMahayagController : BaseController
 	{
-		public ActionResult AutoPinResetAndText(DayOfWeek day = DayOfWeek.Monday)
+		public ActionResult AutoPinResetAndText(DayOfWeek day = DayOfWeek.Sunday)
 		{
 			var messages = new ConcurrentBag<string>();
+			var testDateString = "2018-09-22";
 
-			//if (DateTime.Today.Date <= DateTime.Parse("2018-05-20"))
-			//	day = DayOfWeek.Sunday;
+			if (DateTime.Today.Date <= DateTime.Parse(testDateString))
+				day = DayOfWeek.Saturday;
 
 			if (DateTime.Today.DayOfWeek == day && DateTime.Now.Hour < 14 && DateTime.Now.Hour > 8)
 			{
 				var propertyIds = _appSettings.MahayagAddresses.Select(x => x.id);
 
-				//if (DateTime.Today.Date >= DateTime.Parse("2018-05-20"))
-				//	propertyIds = propertyIds.Where(x => x == "0000");
+				if (DateTime.Today.Date >= DateTime.Parse(testDateString))
+					propertyIds = propertyIds.Where(x => x == "0000");
 
 				var allActiveCustomers = GetActiveCustomers();
 

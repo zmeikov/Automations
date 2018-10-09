@@ -18,14 +18,23 @@
             <th>
                 customer.name
             </th>
-            <th>
-	            ending_balance
-            </th>
+	        <th>
+		        balance
+	        </th>
+			<th>
+				last Payment <br /> amount
+			</th>
+			<th>
+				last Payment <br /> date
+			</th>
            
             <th></th>
         </tr>
     
     @foreach (var item in Model) {
+
+		var lastPayment = item.Value.events.Where(x => x.event_type == "payment").OrderByDescending(x => x.date).FirstOrDefault();
+
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.Key.name)
@@ -33,10 +42,16 @@
             <td>
                 @Html.DisplayFor(modelItem => item.Value.ending_balance)
             </td>
-            
-            <td>
-                @Html.ActionLink("EvictionDocs", "EvictionDocs", new { item.Key.id }) |
-            </td>
+	        <td>
+		        @(lastPayment?.total)
+	        </td>
+	        <td>
+		        @(lastPayment?.date.Value.ToUSADateFormat())
+	        </td>
+	        <td>
+		        @Html.ActionLink("EvictionDocs", "EvictionDocs", new { item.Key.id })
+	        </td>
+	        
         </tr>
     }
     
