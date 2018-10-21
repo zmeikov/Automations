@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Common.Models;
+using Common.Services;
 using WaveAccountingIntegration.Models;
 
 namespace WaveAccountingIntegration.Services

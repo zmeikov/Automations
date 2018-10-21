@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using Common.Models;
+using System.Collections.Generic;
 
 namespace WaveAccountingIntegration.Models
 {
@@ -25,13 +26,9 @@ namespace WaveAccountingIntegration.Models
 			public int ZipCode { get; set; }
 		}
 
-		public GoogleAccountSettings  GoogleSettings { get; set; }
+		public GoogleAccountSettings GoogleSettings { get; set; }
 
-		public class GoogleAccountSettings
-		{
-			public string UserName { get; set; }
-			public string Password { get; set; }
-		}
+		
 	}
 
 	

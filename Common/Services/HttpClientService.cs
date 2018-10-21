@@ -1,18 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Web;
 
-namespace WaveAccountingIntegration.Services
+namespace Common.Services
 {
 	public class HttpClientService : IHttpClientService
 	{
 		private readonly HttpClient _httpClient;
-		private Dictionary<string, string> _headers;
 
 		public HttpClientService(string baseApiUrl, AuthenticationHeaderValue authenticationHeader = null, string accept = "application/json")
 		{

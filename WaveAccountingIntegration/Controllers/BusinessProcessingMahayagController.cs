@@ -80,7 +80,7 @@ namespace WaveAccountingIntegration.Controllers
 										var body = GetAutoPinResetAndTextSmsAlertBody(name, oldPin, newPin);
 
 										messages.Add($"alerting new/old pin: {newPin}/{oldPin} for customer:{name} on {ExtractEmailFromString(customer.address1)}");
-										_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings);
+										_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings.GoogleSettings);
 									}
 
 									//sent alert to name 2
@@ -90,7 +90,7 @@ namespace WaveAccountingIntegration.Controllers
 										var body = GetAutoPinResetAndTextSmsAlertBody(name, oldPin, newPin);
 
 										messages.Add($"alerting new/old pin: {newPin}/{oldPin} for customer:{name} on {ExtractEmailFromString(customer.address1)}");
-										_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings);
+										_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
 									}
 								}
 							}
@@ -144,7 +144,7 @@ namespace WaveAccountingIntegration.Controllers
 						var body = GetLateCustomerSmsAlertBody(name, customerKvp, lastPayment, custSettings);
 						           
 						messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address1)}");
-						_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings);
+						_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings.GoogleSettings);
 					}
 
 					//sent alert to name 2
@@ -154,7 +154,7 @@ namespace WaveAccountingIntegration.Controllers
 						var body = GetLateCustomerSmsAlertBody(name, customerKvp, lastPayment, custSettings);
 
 						messages.Add($"alerting late customer: {name} on {ExtractEmailFromString(customer.address2)}");
-						_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings);
+						_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
 					}
 
 					custSettings.LastSmsAlertSent = DateTime.Now;

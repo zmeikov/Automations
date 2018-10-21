@@ -6,11 +6,10 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Web;
+using Common.Models;
 using Newtonsoft.Json;
-using WaveAccountingIntegration.Models;
-using WebGrease;
 
-namespace WaveAccountingIntegration.Services
+namespace Common.Services
 {
 	public class RestService : IRestService
 	{

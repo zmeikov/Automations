@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WaveAccountingIntegration.Services
+namespace Common.Services
 {
 	public interface IHeadersParser
 	{

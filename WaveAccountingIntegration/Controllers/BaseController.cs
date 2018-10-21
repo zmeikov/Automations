@@ -4,6 +4,7 @@ using System.Net;
 using System.Security.Authentication;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
+using Common.Services;
 using WaveAccountingIntegration.Models;
 using WaveAccountingIntegration.Services;
 

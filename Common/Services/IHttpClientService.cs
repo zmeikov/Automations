@@ -5,7 +5,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace WaveAccountingIntegration.Services
+namespace Common.Services
 {
 	public interface IHttpClientService : IDisposable
 	{

@@ -1,4 +1,6 @@
 ﻿using System;
+using Common.Models;
+using Common.Services;
 using Newtonsoft.Json;
 using WaveAccountingIntegration.Models;
 

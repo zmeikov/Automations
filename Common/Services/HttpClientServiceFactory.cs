@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http.Headers;
 using System.Web;
+using Common.Services;
 
-namespace WaveAccountingIntegration.Services
+namespace Common.Services
 {
 	public class HttpClientServiceFactory : IHttpClientServiceFactory
 	{

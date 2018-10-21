@@ -2,13 +2,13 @@
 using System.Net;
 using System.Net.Mail;
 using System.Threading;
-using WaveAccountingIntegration.Models;
+using Common.Models;
 
-namespace WaveAccountingIntegration.Services
+namespace Common.Services
 {
 	public class SendGmail : ISendGmail
 	{
-		public void SendSMS(string toNumberEmail, string body, AppSettings _appSettings)
+		public void SendSMS(string toNumberEmail, string body, GoogleAccountSettings _gglSettings)
 		{
 			var toEmail = new string(toNumberEmail.ToCharArray());
 			var smtp = new SmtpClient
@@ -18,9 +18,9 @@ namespace WaveAccountingIntegration.Services
 				EnableSsl = true,
 				DeliveryMethod = SmtpDeliveryMethod.Network,
 				UseDefaultCredentials = false,
-				Credentials = new NetworkCredential(_appSettings.GoogleSettings.UserName, _appSettings.GoogleSettings.Password)
+				Credentials = new NetworkCredential(_gglSettings.UserName, _gglSettings.Password)
 			};
-			using (var message = new MailMessage(new MailAddress(_appSettings.GoogleSettings.UserName), new MailAddress(toEmail))
+			using (var message = new MailMessage(new MailAddress(_gglSettings.UserName), new MailAddress(toEmail))
 			{
 				Subject = "SMS alert",
 				Body = body

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using WaveAccountingIntegration.Models;
+using Common.Models;
 
-namespace WaveAccountingIntegration.Services
+namespace Common.Services
 {
 	public interface IRestService
 	{

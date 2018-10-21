@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Web;
 
-namespace WaveAccountingIntegration.Services
+namespace Common.Services
 {
 	public class HeadersParser : IHeadersParser
 	{
@@ -26,7 +24,7 @@ namespace WaveAccountingIntegration.Services
 						if (!string.IsNullOrWhiteSpace(headerName) && !string.IsNullOrWhiteSpace(headerValue) && headerName != "accept-encoding"  )
 							headers.Add(headerName, headerValue);
 					}
-					catch (Exception ex)
+					catch (Exception)
 					{
 						//whoops
 					}
