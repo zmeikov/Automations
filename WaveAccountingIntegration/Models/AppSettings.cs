@@ -31,5 +31,4 @@ namespace WaveAccountingIntegration.Models
 		
 	}
 
-	
 }
