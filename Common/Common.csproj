@@ -12,6 +12,8 @@
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -36,6 +38,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -44,12 +47,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\Address.cs" />
     <Compile Include="Models\GoogleAccountSettings.cs" />
     <Compile Include="Models\RestResult.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\FileSettingsService.cs" />
     <Compile Include="Services\HeadersParser.cs" />
     <Compile Include="Services\HttpClientService.cs" />
     <Compile Include="Services\HttpClientServiceFactory.cs" />
+    <Compile Include="Services\IFileSettingsService.cs" />
     <Compile Include="Services\IHeadersParser.cs" />
     <Compile Include="Services\IHttpClientService.cs" />
     <Compile Include="Services\IHttpClientServiceFactory.cs" />

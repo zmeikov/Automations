@@ -28,8 +28,8 @@ namespace WaveAccountingIntegration.Controllers
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
 
 			_sendGmail = new SendGmail();
-			_fileSettingsServiceService = new FileSettingsServiceService();
-			_appSettings = _fileSettingsServiceService.GetSettings();
+			_fileSettingsServiceService = new FileSettingsService();
+			_appSettings = _fileSettingsServiceService.GetSettings<AppSettings>(System.Web.Hosting.HostingEnvironment.MapPath(@"~/App_Data/AppSettings.json"));
 
 			
 

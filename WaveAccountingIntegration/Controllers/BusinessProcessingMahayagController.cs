@@ -27,7 +27,7 @@ namespace WaveAccountingIntegration.Controllers
 
 			if (DateTime.Today.DayOfWeek == day && DateTime.Now.Hour < 14 && DateTime.Now.Hour > 8)
 			{
-				var propertyIds = _appSettings.MahayagAddresses.Select(x => x.id);
+				var propertyIds = _appSettings.MahayagAddresses.Select(x => x.Id);
 
 				if (DateTime.Today.Date >= DateTime.Parse(testDateString))
 					propertyIds = propertyIds.Where(x => x == "0000");
@@ -196,7 +196,7 @@ namespace WaveAccountingIntegration.Controllers
 			if (form == null)
 				return View(customerStatement);
 
-			var address = _appSettings.MahayagAddresses.FirstOrDefault(x => x.id == customer.name.Substring(0, 4));
+			var address = _appSettings.MahayagAddresses.FirstOrDefault(x => x.Id == customer.name.Substring(0, 4));
 
 			List<Tennant> tenants = GetTennatsFromName(customer.name);
 
@@ -599,8 +599,8 @@ namespace WaveAccountingIntegration.Controllers
 					$"and your last payment of: ${lastPayment?.total} " +
 					$"was received on: {lastPayment?.date.Value.ToUSADateFormat()}. " +
 					$"You can see your history here: {custSettings.StatementUrl} ." +
-					$"Please let me know when can you make your next payment. " +
-					$"IMPORTANT NOTE: Starting March 2018 there will be: {dailyRate}; daily charge for any past due balance! ";
+					$"IMPORTANT: You must reply to this message and let me know when will you make your next payment or else I will assume abandonment. " +
+					$"Delinquent accounts are subject to: {dailyRate}; daily charge for any past due balance! ";
 		}
 
 		private string GetAutoPinResetAndTextSmsAlertBody(string name, string oldPin, string newPin)

@@ -223,9 +223,7 @@
     <Compile Include="Models\WaveObjects.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CustomerService.cs" />
-    <Compile Include="Services\FileSettingsServiceService.cs" />
     <Compile Include="Services\ICustomerService.cs" />
-    <Compile Include="Services\IFileSettingsService.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -343,7 +341,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>52683</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:52666/</IISUrl>
+          <IISUrl>http://localhost:52667/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

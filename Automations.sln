@@ -7,6 +7,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WaveAccountingIntegration",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Common", "Common\Common.csproj", "{882E5F51-A328-4B53-8034-5161A7701BD5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BillPay", "BillPay\BillPay.csproj", "{883D6185-8EFB-44F5-AAFF-7049196D0EB1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Misc", "Misc\Misc.csproj", "{4BC548B5-164C-4475-9672-4DC473ED6C4B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +25,14 @@ Global
 		{882E5F51-A328-4B53-8034-5161A7701BD5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{882E5F51-A328-4B53-8034-5161A7701BD5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{882E5F51-A328-4B53-8034-5161A7701BD5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{883D6185-8EFB-44F5-AAFF-7049196D0EB1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{883D6185-8EFB-44F5-AAFF-7049196D0EB1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{883D6185-8EFB-44F5-AAFF-7049196D0EB1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{883D6185-8EFB-44F5-AAFF-7049196D0EB1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4BC548B5-164C-4475-9672-4DC473ED6C4B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4BC548B5-164C-4475-9672-4DC473ED6C4B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4BC548B5-164C-4475-9672-4DC473ED6C4B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4BC548B5-164C-4475-9672-4DC473ED6C4B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
