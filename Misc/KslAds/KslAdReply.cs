@@ -34,7 +34,8 @@ namespace Misc.KslAds
 			var googleCreds = _settingsService.GetSettings<AppSettings>(settingsJsonPath).GoogleSettings;
 
 			///*
-			chrome = new ChromeDriver {Url = "https://www.google.com/voice/b/0#inbox" }; Thread.Sleep(5000);
+			chrome = new ChromeDriver {Url = "https://www.google.com/voice/b/0#inbox" }; Thread.Sleep(2000);
+			chrome.Manage().Window.Minimize(); Thread.Sleep(5000);
 
 			//login to GV
 			chrome.FindElementById("identifierId").SendKeys(googleCreds.UserName); Thread.Sleep(2000);
@@ -54,11 +55,11 @@ namespace Misc.KslAds
 					string itemName = null;
 					string itemPrice = null;
 					///*
-					firefox = new FirefoxDriver {Url = url};
-					Thread.Sleep(5000);
+					firefox = new FirefoxDriver {Url = url}; Thread.Sleep(2000);
+					firefox.Manage().Window.Minimize(); Thread.Sleep(5000);
 
 					//fill data form KSL classifeds template
-					try{sellerName = firefox.FindElementByCssSelector("span.listingContactSeller-firstName-value").Text;} catch (Exception ex) { }
+					try {sellerName = firefox.FindElementByCssSelector("span.listingContactSeller-firstName-value").Text;} catch (Exception ex) { }
 					try{sellerPhone = firefox.FindElementByCssSelector("span.listingContactSeller-optionText").Text.Replace("-", "");} catch (Exception ex) { }
 					try{itemName = firefox.FindElementByCssSelector("h1.listingDetails-title").Text;} catch (Exception ex) { }
 					try{itemPrice = firefox.FindElementByCssSelector("h2.listingDetails-price").Text;} catch (Exception ex) { }
@@ -80,7 +81,7 @@ namespace Misc.KslAds
 					//go to legacy GV
 					chrome.Url = "https://voice.google.com/"; Thread.Sleep(2000);
 					chrome.FindElementByCssSelector(".md-icon-button > .material-icons-extended").Click(); Thread.Sleep(2000);
-					chrome.FindElementByXPath("//ul[@id=\'gb$:o\']/gv-nav-bar/div/div/gv-nav-item/div/div").Click(); Thread.Sleep(2000);
+					chrome.FindElementByXPath("//div/div/gv-nav-item/div/div").Click(); Thread.Sleep(2000);
 
 					chrome.SwitchTo().Window(chrome.WindowHandles.Last()); Thread.Sleep(2000);
 

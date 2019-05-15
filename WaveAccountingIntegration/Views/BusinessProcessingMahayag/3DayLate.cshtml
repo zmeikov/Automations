@@ -81,7 +81,7 @@
 			period(s):
 		</div>
 		<div class="t m0 x5 h5 ye ff5 fs2 fc1 sc0 ls0 ws0">
-			Unpaid/Short paid rent from @entry.Value.events.Where(x => x.event_type == "invoice" && x.invoice.invoice_amount_due > 0).OrderBy(x => x.date).FirstOrDefault().date.Value.ToUSADateFormat() up to and including @DateTime.Today.GetEndOfTheMonth().ToUSADateFormat()
+			Unpaid/Short paid rent from @entry.Value.events.Where(x => x.event_type == "invoice" && x.invoice.invoice_amount_due > 0).OrderBy(x => x.date).FirstOrDefault().date.Value.ToUSADateFormat() up to and including @ViewBag.EndOfLeaseDate
 		</div>
 		<div class="t m0 x5 h5 yf ff5 fs2 fc1 sc0 ls0 ws0">
 			___________________________________________________________________________

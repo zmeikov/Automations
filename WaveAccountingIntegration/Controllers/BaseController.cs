@@ -36,8 +36,7 @@ namespace WaveAccountingIntegration.Controllers
 			_customerService = new CustomerService();
 
 			_headersParser = new HeadersParser();
-			_headers = _headersParser.ParseHeadersFromFile(
-				System.Web.Hosting.HostingEnvironment.MapPath(@"~/App_Data/RequestHeaders.txt"));
+			_headers = _headersParser.ParseHeadersFromFile(System.Web.Hosting.HostingEnvironment.MapPath(@"~/App_Data/RequestHeaders.txt"));
 
 			_restService = new RestService(new HttpClientServiceFactory());
 
@@ -59,8 +58,6 @@ namespace WaveAccountingIntegration.Controllers
 				throw new InvalidCredentialException();
 			}
 			#endregion
-
-
 		}
 
 

@@ -205,8 +205,9 @@ namespace WaveAccountingIntegration.Controllers
 			ViewBag.AppSettings = _appSettings;
 			ViewBag.Tenants = tenants;
 			var total = customerStatement.First().Value.ending_balance;
-			ViewBag.invoice = customerStatement.Values.First().events.First(x=>x.invoice.invoice_amount_due == total && x.event_type == "invoice").invoice;
+			ViewBag.invoice = customerStatement.Values.First().events.First(x => x.invoice.invoice_amount_due == total && x.event_type == "invoice").invoice;
 			ViewBag.invoice_items = _restService.Get<List<InvoiceItem>>(ViewBag.invoice.items_url).Result;
+			ViewBag.EndOfLeaseDate = customerStatement.Values.First().events.OrderByDescending(x=>x.date).First(x => x.event_type == "invoice").invoice.invoice_date.GetEndOfLeaseDate().ToUSADateFormat();
 			return View(form, customerStatement);
 		}
 		

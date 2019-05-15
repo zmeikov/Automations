@@ -22,6 +22,11 @@ namespace WaveAccountingIntegration
 			return new DateTime(today.Year, today.Month, 1).AddMonths(1).AddDays(-1);
 		}
 
+		public static DateTime GetEndOfLeaseDate(this DateTime invoiceDate)
+		{
+			return DateTime.Now.GetEndOfTheMonth().AddDays(invoiceDate.Day - 1);
+		}
+
 		public static string ToCurrency(this decimal amount)
 		{
 			return amount.ToString("C");
