@@ -30,6 +30,7 @@ namespace WaveAccountingIntegration.Models
 		public string pdf_url { get; set; }
 		public Sharing_Urls sharing_urls { get; set; }
 		public string items_url { get; set; }
+		public List<InvoiceItem> items { get; set; }
 		public string payments_url { get; set; }
 		public DateTime? last_sent { get; set; }
 		public string last_sent_via { get; set; }
@@ -50,6 +51,12 @@ namespace WaveAccountingIntegration.Models
 		public bool? hide_price { get; set; }
 		public bool? hide_amount { get; set; }
 		public Customer customer { get; set; }
+	}
+
+	public class InvoiceItemsOnly
+	{
+		public List<InvoiceItem> items { get; set; }
+		
 	}
 
 	public class InvoiceDisablePayments

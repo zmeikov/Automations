@@ -126,7 +126,7 @@ namespace WaveAccountingIntegration.Controllers
 
 				var lastPayment = customerKvp.Value.events.Where(x => x.event_type == "payment").OrderByDescending(x => x.date).FirstOrDefault();
 				var lastInvoice = customerKvp.Value.events.Where(x => x.event_type == "invoice" && x.total > 0).OrderByDescending(x => x.date).First();
-
+				var invoiceDue = _restService.Get<Invoice>(lastInvoice.invoice.url).Result;
 				var daysSinceLastPayment = (DateTime.Now - (lastPayment?.date?? DateTime.Now.AddYears(-10))).Days;
 
 				if (
@@ -141,7 +141,7 @@ namespace WaveAccountingIntegration.Controllers
 					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
 					{
 						var name = customer.first_name.ToUpper().Trim();
-						var body = GetLateCustomerSmsAlertBody(name, customerKvp, lastPayment, custSettings);
+						var body = GetLateCustomerSmsAlertBody(name, customerKvp, lastPayment, invoiceDue, custSettings);
 						           
 						messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address1)}");
 						_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings.GoogleSettings);
@@ -151,7 +151,7 @@ namespace WaveAccountingIntegration.Controllers
 					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
 					{
 						var name = customer.last_name.ToUpper().Trim();
-						var body = GetLateCustomerSmsAlertBody(name, customerKvp, lastPayment, custSettings);
+						var body = GetLateCustomerSmsAlertBody(name, customerKvp, lastPayment, invoiceDue, custSettings);
 
 						messages.Add($"alerting late customer: {name} on {ExtractEmailFromString(customer.address2)}");
 						_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
@@ -186,7 +186,7 @@ namespace WaveAccountingIntegration.Controllers
 				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{id}/").Result;
 			
 			var statement = _restService.Get<TransactionHistory>(
-				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{id}/statements/transaction-history/").Result;
+				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{id}/statements/transaction-history/?embed_items=true").Result;
 
 			var trxHistory = statement.transaction_history.FirstOrDefault();
 
@@ -206,7 +206,8 @@ namespace WaveAccountingIntegration.Controllers
 			ViewBag.Tenants = tenants;
 			var total = customerStatement.First().Value.ending_balance;
 			ViewBag.invoice = customerStatement.Values.First().events.First(x => x.invoice.invoice_amount_due == total && x.event_type == "invoice").invoice;
-			ViewBag.invoice_items = _restService.Get<List<InvoiceItem>>(ViewBag.invoice.items_url).Result;
+			var invoice = _restService.Get<Invoice>(ViewBag.invoice.url + "?embed_items=true").Result;
+			ViewBag.invoice_items = invoice.items;
 			ViewBag.EndOfLeaseDate = customerStatement.Values.First().events.OrderByDescending(x=>x.date).First(x => x.event_type == "invoice").invoice.invoice_date.GetEndOfLeaseDate().ToUSADateFormat();
 			return View(form, customerStatement);
 		}
@@ -342,15 +343,14 @@ namespace WaveAccountingIntegration.Controllers
 			return View(processedCsutomers);
 		}
 
-		public ActionResult ConsolidateInvoices(int narrrowByCustomerId = 0)
+		public ActionResult ConsolidateInvoices(int narrowByCustomerId = 0)
 		{
 			var processedInvoices = new List<Invoice>();
 
-			var url =
-				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?embed_customer=true";
+			var url = $"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?embed_customer=true&embed_items=true";
 
-			if (narrrowByCustomerId != 0)
-				url = url + $"&customer.id={narrrowByCustomerId}";
+			if (narrowByCustomerId != 0)
+				url = url + $"&customer.id={narrowByCustomerId}";
 
 			var invoicesDue = _restService.Get<List<Invoice>>(url).Result
 				.Where(x=> x.invoice_amount_due != 0)
@@ -368,18 +368,26 @@ namespace WaveAccountingIntegration.Controllers
 				//consolidate more than 2 invoices when settings allow it
 				if (customerInvoicesDue.Count() > 1 && custSettings.ConsolidateInvoices == true && !customerInvoicesDue.First().customer.name.StartsWith("XXX"))
 				{
-					var targetInvoice = customerInvoicesDue.Last();
-					var sourceInvoices = customerInvoicesDue.Where(x => x.id != targetInvoice.id);
 
-					foreach (var sourceInvoice in sourceInvoices)
+					var target = customerInvoicesDue.Last();
+					var sourceInvoices = customerInvoicesDue.Where(x => x.id != target.id);
+
+					var targetInvoice = _restService.Get<Invoice>(target.url + "?&embed_items=true").Result;
+
+					foreach (var sourceInv in sourceInvoices)
 					{
+						var sourceInvoice = _restService.Get<Invoice>(sourceInv.url + "?&embed_items=true").Result;
+
 						//check for payments
 						var payments = _restService.Get<List<Payment>>(sourceInvoice.payments_url).Result;
 						if (payments.Count == 0)
 						{
 							//process src invoice only if there are no payments
 							#region transfer Items
-							var sourceItems = _restService.Get<List<InvoiceItem>>(sourceInvoice.items_url).Result;
+							var sourceItems = sourceInvoice.items;
+
+							decimal amountAdded = 0;
+							string itemsAdded = "";
 
 							foreach (var sourceItem in sourceItems.Where(x=> x.quantity * x.price != 0))
 							{
@@ -394,26 +402,26 @@ namespace WaveAccountingIntegration.Controllers
 									price = sourceItem.price
 								};
 
-								var addResult = _restService.Post<AddInvoiceItemResponse, InvoiceItem>(targetInvoice.items_url, movedItem);
+								targetInvoice.items.Add(movedItem);
+								targetInvoice.invoice_amount_due += (movedItem.price * movedItem.quantity);
 
-								if (addResult.IsSuccessStatusCode)
+								itemsAdded += $"[{sourceItem.description}],";
+								amountAdded += (movedItem.price * movedItem.quantity);
+
+								if (UpdateInvoiceItems(targetInvoice))
 								{
-									
+
 									#region zero out source item price
 
+									sourceItem.description = $"[{sourceItem.description}] " +
+									                         $"price: {movedItem.price} " +
+									                         $"was moved to invoice: {targetInvoice.invoice_number} " +
+									                         $"on: {DateTime.Now.ToShortDateString()}";
+									sourceItem.price = 0;
 
-									var zeroSourceInvoiceItemResult = _restService.Patch<UpdateInvoiceItemResponse, InvoiceItem>(sourceItem.url, new InvoiceItem()
-									{
-										product = new Product() { id = sourceItem.product.id },
-										description = $"[{sourceItem.description}] " +
-										              $"price: {movedItem.price} " +
-										              $"was moved to invoice: {targetInvoice.invoice_number} " +
-										              $"on: {DateTime.Now.ToShortDateString()}",
-										quantity = sourceItem.quantity,
-										price = 0,
-									});
+									
 
-									if (zeroSourceInvoiceItemResult.IsSuccessStatusCode == false)
+									if (UpdateInvoiceItems(sourceInvoice) == false)
 									{
 										throw new InvalidOperationException("Saving zeroSourceInvoiceItem failed");
 									}
@@ -428,6 +436,28 @@ namespace WaveAccountingIntegration.Controllers
 							#endregion
 
 							processedInvoices.Add(sourceInvoice);
+
+							#region sms alert customers for new invoice. 
+							//sent alert to name 1
+							if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
+							{
+								var name = customer.first_name.ToUpper().Trim();
+								var body = GetConsolidatedInvoiceSmsAlertBody(name, sourceInv, targetInvoice, custSettings, amountAdded, itemsAdded);
+
+								//messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address1)}");
+								_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings.GoogleSettings);
+							}
+
+							//sent alert to name 2
+							if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
+							{
+								var name = customer.last_name.ToUpper().Trim();
+								var body = GetConsolidatedInvoiceSmsAlertBody(name, sourceInv, targetInvoice, custSettings, amountAdded, itemsAdded);
+
+								//messages.Add($"alerting late customer: {name} on {ExtractEmailFromString(customer.address2)}");
+								_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
+							}
+							#endregion
 						}
 						else
 						{
@@ -441,10 +471,11 @@ namespace WaveAccountingIntegration.Controllers
 			return View(processedInvoices);
 		}
 
+		
 		public ActionResult DisableInvoicePayments()
 		{
 			var invoices = _restService.Get<List<Invoice>>(
-				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/");
+				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?embed_customer=true&embed_items=true");
 
 			var updatedInvoices = new ConcurrentBag<Invoice>();
 
@@ -457,7 +488,7 @@ namespace WaveAccountingIntegration.Controllers
 					(x.disable_bank_payments == false || x.disable_credit_card_payments == false)
 				);
 
-				Parallel.ForEach(invoicesToProcess, (invoice) =>
+				foreach (var invoice in invoicesToProcess)
 				{
 					var disablePaymentInvoice = new InvoiceDisablePayments
 					{
@@ -475,7 +506,42 @@ namespace WaveAccountingIntegration.Controllers
 					{
 						throw new InvalidOperationException("Failed to save disable_payments = true");
 					}
-				});
+
+					var disabledInvoice = _restService.Get<Invoice>(invoice.url + "?&embed_items=true").Result;
+
+					decimal amountAdded = 0;
+					string itemsAdded = "";
+					var custSettings = _customerService.ExctractSettingsFromCustomerObject(invoice.customer);
+
+					foreach (var invoiceItem in disabledInvoice.items)
+					{
+						itemsAdded += $"[{invoiceItem.description}],";
+						amountAdded += (invoiceItem.price * invoiceItem.quantity);
+					}
+
+					#region sms alert customers for new invoice. 
+					//sent alert to name 1
+					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(invoice.customer.address1)))
+					{
+						var name = invoice.customer.first_name.ToUpper().Trim();
+						var body = GetConsolidatedInvoiceSmsAlertBody(name, invoice, invoice, custSettings, amountAdded, itemsAdded);
+
+						//messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address1)}");
+						_sendGmail.SendSMS(ExtractEmailFromString(invoice.customer.address1), body, _appSettings.GoogleSettings);
+					}
+
+					//sent alert to name 2
+					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(invoice.customer.address2)))
+					{
+						var name = invoice.customer.last_name.ToUpper().Trim();
+						var body = GetConsolidatedInvoiceSmsAlertBody(name, invoice, invoice, custSettings, amountAdded, itemsAdded);
+
+						//messages.Add($"alerting late customer: {name} on {ExtractEmailFromString(customer.address2)}");
+						_sendGmail.SendSMS(ExtractEmailFromString(invoice.customer.address2), body, _appSettings.GoogleSettings);
+					}
+					#endregion
+
+				};
 			}
 			else
 			{
@@ -493,7 +559,7 @@ namespace WaveAccountingIntegration.Controllers
 			List<Invoice> addedFeeInvoices = new List<Invoice>();
 
 			var overdueInvoices = _restService.Get<List<Invoice>>(
-				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?status=overdue&embed_customer=true");
+				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?status=overdue&embed_customer=true&embed_items=true");
 			
 
 			//TODO: handle multiple invoices per single customer
@@ -517,9 +583,11 @@ namespace WaveAccountingIntegration.Controllers
 						price = invoice.invoice_amount_due * (custSettings.LateFeePercentRate ?? defaultLatePercentRate)
 					};
 
-					var addResult = _restService.Post<AddInvoiceItemResponse, InvoiceItem>(invoice.items_url, lateFee);
+					invoice.items.Add(lateFee);
 
-					if (addResult.IsSuccessStatusCode)
+
+
+					if (UpdateInvoiceItems(invoice))
 					{
 						addedFeeInvoices.Add(invoice);
 
@@ -527,8 +595,7 @@ namespace WaveAccountingIntegration.Controllers
 
 						custSettings.NextLateFeeChargeDate = custSettings.NextLateFeeChargeDate.Value.AddDays(1).Date;
 
-						var updatedCustomerResult =
-							_customerService.SaveUpdatedCustomerSettings(invoice.customer, custSettings, _restService);
+						var updatedCustomerResult = _customerService.SaveUpdatedCustomerSettings(invoice.customer, custSettings, _restService);
 
 						if (updatedCustomerResult.IsSuccessStatusCode == false)
 						{
@@ -591,7 +658,7 @@ namespace WaveAccountingIntegration.Controllers
 			return tenants;
 		}
 
-		private string GetLateCustomerSmsAlertBody(string name, KeyValuePair<Customer, Transaction_History> customerKvp, Event lastPayment, CustomerSettings custSettings)
+		private string GetLateCustomerSmsAlertBody(string name, KeyValuePair<Customer, Transaction_History> customerKvp, Event lastPayment, Invoice lastInvoice, CustomerSettings custSettings)
 		{
 			var dailyRate = custSettings.SignedLeaseAgreement == true ? $"${custSettings.LateFeeDailyAmount}" : $"{custSettings.LateFeePercentRate * 100}%";
 			return $"Hello {name}, " +
@@ -599,9 +666,23 @@ namespace WaveAccountingIntegration.Controllers
 					$"your balance due is ${customerKvp.Value.ending_balance} " +
 					$"and your last payment of: ${lastPayment?.total} " +
 					$"was received on: {lastPayment?.date.Value.ToUSADateFormat()}. " +
-					$"You can see your history here: {custSettings.StatementUrl} ." +
+					$"Please double check your payments here: {lastInvoice.pdf_url} ." +
+					$"You can see your entire history here: {custSettings.StatementUrl} ." +
 					$"IMPORTANT: You must reply to this message and let me know when will you make your next payment or else I will assume abandonment. " +
 					$"Delinquent accounts are subject to: {dailyRate}; daily charge for any past due balance! ";
+		}
+
+		private string GetConsolidatedInvoiceSmsAlertBody(string name, Invoice sourceInv, Invoice targetInvoice, CustomerSettings custSettings, decimal amountAdded, string itemsAdded)
+		{
+			return $"Hello {name}, " +
+			       $"today {DateTime.Today.ToUSADateFormat()} " +
+			       $"a new amount of {amountAdded.ToCurrency()} " +
+			       $"was added to cover the item(s): {itemsAdded} " +
+			       $"for the period from: {sourceInv.invoice_date.ToUSADateFormat()} to: {sourceInv.due_date.ToUSADateFormat()} " +
+			       $"resulting of remaining balance due: {targetInvoice.invoice_amount_due.ToCurrency()}. " +
+			       $"Please double check your current balance and payments here: {targetInvoice.pdf_url} ." +
+				   $"You can see your entire history here: {custSettings.StatementUrl} . " +
+			       $"IMPORTANT: You must reply to this message and let me know when are you planning to bring your balance to $0. ";
 		}
 
 		private string GetAutoPinResetAndTextSmsAlertBody(string name, string oldPin, string newPin)
@@ -661,9 +742,19 @@ namespace WaveAccountingIntegration.Controllers
 			return activeCustomers;
 		}
 
-
-		private class AddInvoiceItemResponse
+		private bool UpdateInvoiceItems(Invoice invoice)
 		{
+			var itemsOnly = new InvoiceItemsOnly
+			{
+				items = invoice.items
+			};
+
+			var result = _restService.Patch<UpdateInvoiceItemResponse, InvoiceItemsOnly>(invoice.url, itemsOnly);
+
+			if (result.IsSuccessStatusCode)
+				return true;
+
+			return false;
 		}
 
 		private class UpdateInvoiceItemResponse
