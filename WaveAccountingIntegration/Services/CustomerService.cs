@@ -12,9 +12,16 @@ namespace WaveAccountingIntegration.Services
 		{
 			if (customer.shipping_details?.delivery_instructions != null)
 			{
-				var custSettings = JsonConvert.DeserializeObject<CustomerSettings>(customer.shipping_details.delivery_instructions);
-
-				return custSettings;
+				try
+				{
+					var custSettings = JsonConvert.DeserializeObject<CustomerSettings>(customer.shipping_details.delivery_instructions);
+					return custSettings;
+				}
+				catch (Exception ex)
+				{
+					//swallow exception
+				}
+				
 			}
 			return null;
 		}
