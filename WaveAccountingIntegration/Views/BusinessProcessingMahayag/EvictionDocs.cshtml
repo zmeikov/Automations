@@ -66,24 +66,33 @@
 			Date
 		</th>
 		<th>
-			Amount
+			Total Amt invoiced/ -Paid
+		</th>
+		<th>
+			invoice_amount_due
 		</th>
 	</tr>
 
-	@foreach (var item in Model.Values.First().events.Where(x => x.total > 0).OrderByDescending(x => x.date))
+	@foreach (var item in Model.Values.First().events.Where(x => x.total != 0).OrderByDescending(x => x.date))
 	{
-		<tr>
-			<td>
-				@Html.DisplayFor(modelItem => item.event_type)
-			</td>
-			<td>
-				@item.date.Value.ToUSADateFormat()
-			</td>
-			<td>
-				$@Html.DisplayFor(modelItem => item.total)
-			</td>
-
-		</tr>
+	<tr>
+		<td>
+			@Html.DisplayFor(modelItem => item.event_type)
+		</td>
+		<td>
+			@item.date.Value.ToISODateFormat()
+		</td>
+		<td>
+			@if (item.event_type == "payment")
+			{
+				@:-
+			}
+			$@Html.DisplayFor(modelItem => item.total)
+		</td>
+		<td>
+			$@Html.DisplayFor(modelItem => item.invoice.invoice_amount_due)
+		</td>
+	</tr>
 	}
 
 </table>

@@ -5,14 +5,14 @@ namespace WaveAccountingIntegration.Models
 {
 	public class Invoice
 	{
-		public int id { get; set; }
+		public ulong id { get; set; }
 		public string url { get; set; }
 		public Address address { get; set; }
 		public string subhead { get; set; }
 		public string footer { get; set; }
 		public string po_so_number { get; set; }
 		public string memo { get; set; }
-		public DateTime invoice_date { get; set; }
+		public string invoice_date { get; set; }
 		public string invoice_number_label { get; set; }
 		public string invoice_number { get; set; }
 		public Invoice_Currency invoice_currency { get; set; }
@@ -21,8 +21,8 @@ namespace WaveAccountingIntegration.Models
 		public decimal invoice_tax_total { get; set; }
 		public decimal invoice_amount_paid { get; set; }
 		public decimal invoice_amount_due { get; set; }
-		public DateTime due_date { get; set; }
-		public DateTime? last_payment_date { get; set; }
+		public string due_date { get; set; }
+		public string last_payment_date { get; set; }
 		public string status { get; set; }
 		public bool disable_credit_card_payments { get; set; }
 		public bool disable_bank_payments { get; set; }
@@ -32,13 +32,13 @@ namespace WaveAccountingIntegration.Models
 		public string items_url { get; set; }
 		public List<InvoiceItem> items { get; set; }
 		public string payments_url { get; set; }
-		public DateTime? last_sent { get; set; }
+		public string last_sent { get; set; }
 		public string last_sent_via { get; set; }
-		public DateTime? last_viewed { get; set; }
-		public DateTime date_created { get; set; }
-		public DateTime date_modified { get; set; }
+		public string last_viewed { get; set; }
+		public string date_created { get; set; }
+		public string date_modified { get; set; }
 		public string source_type { get; set; }
-		public object source_invoice_number { get; set; }
+		public string source_invoice_number { get; set; }
 		public string source_url { get; set; }
 		public string item_title { get; set; }
 		public string description_title { get; set; }
@@ -55,6 +55,7 @@ namespace WaveAccountingIntegration.Models
 
 	public class InvoiceItemsOnly
 	{
+		public ulong id { get; set; }
 		public List<InvoiceItem> items { get; set; }
 		
 	}
@@ -67,7 +68,7 @@ namespace WaveAccountingIntegration.Models
 
 	public class InvoiceItem
 	{
-		public int id { get; set; }
+		public ulong id { get; set; }
 		public string url { get; set; }
 		public Product product { get; set; }
 		public decimal price { get; set; }
@@ -80,7 +81,7 @@ namespace WaveAccountingIntegration.Models
 
 	public class Product
 	{
-		public int id { get; set; }
+		public ulong id { get; set; }
 		public string url { get; set; }
 		public string name { get; set; }
 		public decimal price { get; set; }
@@ -97,13 +98,13 @@ namespace WaveAccountingIntegration.Models
 
 	public class Income_Account
 	{
-		public int id { get; set; }
+		public ulong id { get; set; }
 		public string url { get; set; }
 	}
 
 	public class Expense_Account
 	{
-		public int id { get; set; }
+		public ulong id { get; set; }
 		public string url { get; set; }
 	}
 
@@ -134,7 +135,7 @@ namespace WaveAccountingIntegration.Models
 
 	public class Customer
 	{
-		public int id { get; set; }
+		public ulong id { get; set; }
 		public string url { get; set; }
 		public string account_number { get; set; }
 		public bool active { get; set; }
@@ -218,7 +219,7 @@ namespace WaveAccountingIntegration.Models
 
 	public class Payment
 	{
-		public int id { get; set; }
+		public ulong id { get; set; }
 		public string url { get; set; }
 		public string payment_date { get; set; }
 		public string memo { get; set; }
@@ -234,7 +235,7 @@ namespace WaveAccountingIntegration.Models
 
 	public class Payment_Account
 	{
-		public int id { get; set; }
+		public ulong id { get; set; }
 		public string url { get; set; }
 	}
 
@@ -249,7 +250,7 @@ namespace WaveAccountingIntegration.Models
 		public Column_Settings column_settings { get; set; }
 		public string notes { get; set; }
 		public DateTime date_added { get; set; }
-		public int? num_generated_to_date { get; set; }
+		public ulong? num_generated_to_date { get; set; }
 		public RecurringInvoiceCustomer customer { get; set; }
 		public string previous_invoice_date { get; set; }
 		public List<Line_Items> line_items { get; set; }
@@ -303,13 +304,13 @@ namespace WaveAccountingIntegration.Models
 		public string timezone_id { get; set; }
 		public object end_date { get; set; }
 		public object repeat_on_day_of_week { get; set; }
-		public int? recurrence_interval { get; set; }
+		public ulong? recurrence_interval { get; set; }
 		public object max_invoices { get; set; }
 		public bool repeat_at_end_of_month { get; set; }
 		public string start_date { get; set; }
 		public string recurrence_unit { get; set; }
 		public object repeat_on_month_of_year { get; set; }
-		public int? repeat_on_day_of_month { get; set; }
+		public ulong? repeat_on_day_of_month { get; set; }
 		public object final_invoice_date { get; set; }
 	}
 
@@ -336,7 +337,7 @@ namespace WaveAccountingIntegration.Models
 
 	public class Line_Items
 	{
-		public int product_id { get; set; }
+		public ulong product_id { get; set; }
 		public object sort_order_index { get; set; }
 		public decimal quantity { get; set; }
 		public string description { get; set; }
@@ -370,7 +371,7 @@ namespace WaveAccountingIntegration.Models
 
 	public class Connected_Site
 	{
-		public int id { get; set; }
+		public ulong id { get; set; }
 		public List<Contentservice_Set> contentservice_set { get; set; }
 		public Yodlee_Site yodlee_site { get; set; }
 		public string latest_update_time { get; set; }
@@ -378,12 +379,12 @@ namespace WaveAccountingIntegration.Models
 		public bool is_owner { get; set; }
 		public DateTime created { get; set; }
 		public bool has_unmapped_accounts { get; set; }
-		public int site_account_id { get; set; }
+		public ulong site_account_id { get; set; }
 	}
 
 	public class Yodlee_Site
 	{
-		public int id { get; set; }
+		public ulong id { get; set; }
 		public string display_name { get; set; }
 		public string base_url { get; set; }
 		public List<string> site_container_types { get; set; }
@@ -399,13 +400,13 @@ namespace WaveAccountingIntegration.Models
 
 	public class Contentservice_Set
 	{
-		public int id { get; set; }
+		public ulong id { get; set; }
 		public List<Account_Set> account_set { get; set; }
 	}
 
 	public class Account_Set
 	{
-		public int id { get; set; }
+		public ulong id { get; set; }
 		public string display_name { get; set; }
 		public string short_display_name { get; set; }
 		public string account_number { get; set; }
@@ -415,7 +416,7 @@ namespace WaveAccountingIntegration.Models
 		public string currency { get; set; }
 		public string currency_code_with_symbol { get; set; }
 		public DateTime? start_date { get; set; }
-		public int? payment_account_pk { get; set; }
+		public ulong? payment_account_pk { get; set; }
 		public string business { get; set; }
 		public string account_state { get; set; }
 	}
@@ -518,7 +519,7 @@ namespace WaveAccountingIntegration.Models
 		public DateTime? date { get; set; }
 		public decimal total { get; set; }
 		public Invoice invoice { get; set; }
-		public Payment payment { get; set; }
+		//public Payment payment { get; set; }
 	}
 
 

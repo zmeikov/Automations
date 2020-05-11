@@ -11,6 +11,13 @@ namespace WaveAccountingIntegration
 		{
 			return $"{date.Month:00}/{date.Day:00}/{date.Year:0000}";
 		}
+		public static string ToUSADateFormat(this string stringDate)
+		{
+			var date = DateTime.Parse(stringDate);
+			return $"{date.Month:00}/{date.Day:00}/{date.Year:0000}";
+		}
+
+
 
 		public static string ToISODateFormat(this DateTime date)
 		{
@@ -22,15 +29,27 @@ namespace WaveAccountingIntegration
 			return new DateTime(today.Year, today.Month, 1).AddMonths(1).AddDays(-1);
 		}
 
+
+
+
+		public static DateTime GetEndOfLeaseDate(this string invdate)
+		{
+			var invoiceDate = DateTime.Parse(invdate);
+			return DateTime.Now.GetEndOfTheMonth().AddDays(invoiceDate.Day - 1);
+		}
 		public static DateTime GetEndOfLeaseDate(this DateTime invoiceDate)
 		{
 			return DateTime.Now.GetEndOfTheMonth().AddDays(invoiceDate.Day - 1);
 		}
 
+
+
 		public static string ToCurrency(this decimal amount)
 		{
 			return amount.ToString("C");
 		}
+
+
 
 		public static string ToCurrency(this int amount)
 		{

@@ -11,8 +11,8 @@ namespace WaveAccountingIntegration.Models
 		public string PersonalGuid { get; set; }
 
 		public string MahayagBusinessGuid { get; set; }
-		public int MahayagBusinessId { get; set; }
-		public int MahayagLateFeeProductId { get; set; }
+		public ulong MahayagBusinessId { get; set; }
+		public ulong MahayagLateFeeProductId { get; set; }
 
 
 		public List<Common.Models.Address> MahayagAddresses { get; set; }

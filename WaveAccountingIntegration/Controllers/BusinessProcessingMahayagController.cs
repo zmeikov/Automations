@@ -115,7 +115,7 @@ namespace WaveAccountingIntegration.Controllers
 			var lateCustomers = GetLateCustomers();
 			var messages = new ConcurrentBag<string>();
 
-			Parallel.ForEach(lateCustomers, (customerKvp) =>
+			Parallel.ForEach(lateCustomers.Where(w=>w.Value.ending_balance > 0), (customerKvp) =>
 			{
 				var customer = customerKvp.Key;
 				var custSettings = _customerService.ExctractSettingsFromCustomerObject(customer);
@@ -178,15 +178,14 @@ namespace WaveAccountingIntegration.Controllers
 			return View();
 		}
 		
-		public ActionResult EvictionDocs(int id, string form)
+		public ActionResult EvictionDocs(ulong id, string form)
 		{
 			var customerStatement = new Dictionary<Customer, Transaction_History>();
 
 			var customer = _restService.Get<Customer>(
 				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{id}/").Result;
 			
-			var statement = _restService.Get<TransactionHistory>(
-				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{id}/statements/transaction-history/?embed_items=true").Result;
+			var statement = GetStatement(id);
 
 			var trxHistory = statement.transaction_history.FirstOrDefault();
 
@@ -205,7 +204,14 @@ namespace WaveAccountingIntegration.Controllers
 			ViewBag.AppSettings = _appSettings;
 			ViewBag.Tenants = tenants;
 			var total = customerStatement.First().Value.ending_balance;
-			ViewBag.invoice = customerStatement.Values.First().events.First(x => x.invoice.invoice_amount_due > 0 && x.event_type == "invoice").invoice;
+			ViewBag.invoice = customerStatement.Values.First().events.First(x => 
+				( 
+					//x.invoice.invoice_amount_due == total
+					//|| 
+					x.invoice.invoice_amount_due > 0
+				) 
+				&& x.event_type == "invoice")
+				.invoice;
 			var invoice = _restService.Get<Invoice>(ViewBag.invoice.url + "?embed_items=true").Result;
 			ViewBag.invoice_items = invoice.items;
 			ViewBag.EndOfLeaseDate = customerStatement.Values.First().events.OrderByDescending(x=>x.date).First(x => x.event_type == "invoice").invoice.invoice_date.GetEndOfLeaseDate().ToUSADateFormat();
@@ -572,8 +578,7 @@ namespace WaveAccountingIntegration.Controllers
 						#region sms alert customers for new invoice. 
 
 
-						var statement = _restService.Get<TransactionHistory>($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}" + 
-							$"/customers/{invoice.customer.id}/statements/transaction-history/?embed_items=true").Result;
+						var statement = GetStatement(invoice.customer.id);
 
 						//sent alert to name 1
 						if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(invoice.customer.address1)))
@@ -633,7 +638,7 @@ namespace WaveAccountingIntegration.Controllers
 					#region add late fee
 					var lateFee = new InvoiceItem
 					{
-						product = new Product{ id = _appSettings.MahayagLateFeeProductId },
+						product = new Product{ id = (ulong)_appSettings.MahayagLateFeeProductId },
 						description = $"Late Charge: {100 * (custSettings.LateFeePercentRate?? defaultLatePercentRate)}% " +
 						              $"from PastDueAmount: {invoice.invoice_amount_due} " +
 						              $"as of date: {custSettings.NextLateFeeChargeDate.Value.Date.ToUSADateFormat()} " +
@@ -725,8 +730,8 @@ namespace WaveAccountingIntegration.Controllers
 					$"your balance due is ${customerKvp.Value.ending_balance} " +
 					$"and your last payment of: ${lastPayment?.total} " +
 					$"was received on: {lastPmt}. " +
-					$"Please double check your new/consolidated invoice remaining balance and payment(s) here: {lastInvoice.pdf_url.Replace("?pdf=1","")} ." +
-					$"You can see your entire history here: {custSettings.StatementUrl} ." +
+					//$"Please double check your new/consolidated invoice remaining balance and payment(s) here: {lastInvoice.pdf_url.Replace("?pdf=1","")} ." +
+					$"Please double check your payment history and remaining balance on this link: {custSettings.StatementUrl} ." +
 					$"IMPORTANT: You must reply to this message and let me know when will you make your next payment or else I will assume abandonment. " +
 					$"Delinquent accounts are subject to: {dailyRate}; daily charge for any past due balance! ";
 		}
@@ -742,7 +747,7 @@ namespace WaveAccountingIntegration.Controllers
 					$"resulting of remaining balance due: {statement.transaction_history.FirstOrDefault()?.ending_balance.ToCurrency()}. " +
 					$"Please double check your single invoice balance and payments here: {targetInvoice.pdf_url.Replace("?pdf=1", "")} ." +
 					$"You can see your entire history here: {custSettings.StatementUrl} . " +
-					$"IMPORTANT: You must reply to this message and let me know when are you planning to bring your balance to $0. ";
+					$"IMPORTANT: You must reply to this message and let me know when and how will bring your balance to $0 if above. ";
 		}
 
 		private string GetAutoPinResetAndTextSmsAlertBody(string name, string oldPin, string newPin)
@@ -765,31 +770,101 @@ namespace WaveAccountingIntegration.Controllers
 			var allCustomerStatements = new Dictionary<Customer, Transaction_History>();
 
 			Parallel.ForEach(activeCustomers, (customer) =>
+			//foreach (var customer in activeCustomers)
 			{
 				try
 				{
-					var statement = _restService.Get<TransactionHistory>(
-							$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{customer.id}/statements/transaction-history/")
-						.Result;
+					//var statement = _restService.Get<TransactionHistory>($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{customer.id}/statements/transaction-history/").Result;
 
-					var trxHistory = statement.transaction_history.FirstOrDefault();
+					//var trxHistory = statement.transaction_history.FirstOrDefault();
+					var trxHistory = GetStatementTrxHistory(customer.id);
 
-					if (trxHistory != null)
-						allCustomerStatements.Add(customer, trxHistory);
+					allCustomerStatements.Add(customer, trxHistory);
 				}
-				catch
+				catch (Exception ex)
 				{
 					// ignored
 				}
 			});
+			//}
 
-
-			foreach (var keyValuePair in allCustomerStatements.Where(x => x.Value.ending_balance > 0).OrderByDescending(x => x.Value.ending_balance))
+			foreach (var keyValuePair in allCustomerStatements/*.Where(x => x.Value.ending_balance > 0)*/.OrderByDescending(x => x.Value.ending_balance))
 			{
 				toReturn.Add(keyValuePair.Key, keyValuePair.Value);
 			}
 
 			return toReturn;
+		}
+
+		private TransactionHistory GetStatement(ulong customerId)
+		{
+			var stHistory = GetStatementTrxHistory(customerId);
+			return new TransactionHistory {transaction_history = new List<Transaction_History>{ stHistory } };
+		}
+
+		private Transaction_History GetStatementTrxHistory(ulong customerId)
+		{
+			var trxHistory = new Transaction_History { events = new List<Event>() };
+
+			var allCustInvoices = _restService.Get<List<Invoice>>
+					($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?customer.id={customerId}")
+				.Result;
+
+			var allCustInvPayments = new List<Payment>();
+
+			Parallel.ForEach(allCustInvoices.Where(i=>i.invoice_amount_paid != 0), inv =>
+				//foreach (var inv in allCustInvoices)
+			{
+				var invPayments = _restService.Get<List<Payment>>(inv.payments_url).Result;
+				foreach (var pm in invPayments)
+				{
+					allCustInvPayments.Add(pm);
+				}
+
+				//}
+			});
+
+			foreach (var inv in allCustInvoices)
+			{
+				trxHistory.events.Add(new Event
+				{
+					date = DateTime.Parse(inv.invoice_date),
+					event_type = "invoice",
+					total = inv.invoice_total,
+					invoice = inv
+				});
+			}
+
+			var separatePayments = new List<Event> ();
+
+			foreach (var pmt in allCustInvPayments)
+			{
+				separatePayments.Add(new Event
+				{
+					date = DateTime.Parse(pmt.payment_date),
+					event_type = "payment",
+					total = pmt.amount,
+					//payment = pmt
+				});
+			}
+
+			var aggregatePayments = from sp in separatePayments
+									group sp by sp.date into p
+									select new Event
+									{
+										date =p.First().date,
+										event_type = p.First().event_type,
+										total = p.Sum(s=>s.total),
+									};
+
+			foreach(var p in aggregatePayments)
+			{
+				trxHistory.events.Add(p);
+			}
+
+			trxHistory.ending_balance = allCustInvoices.Sum(s => s.invoice_amount_due);
+
+			return trxHistory;
 		}
 
 		private List<Customer> GetActiveCustomers()
@@ -804,12 +879,15 @@ namespace WaveAccountingIntegration.Controllers
 
 		private bool UpdateInvoiceItems(Invoice invoice)
 		{
-			var itemsOnly = new InvoiceItemsOnly
-			{
-				items = invoice.items
-			};
+			//var itemsOnly = new InvoiceItemsOnly
+			//{
+			//	items = invoice.items,
+			//	id = invoice.id,
+			//};
 
-			var result = _restService.Patch<UpdateInvoiceItemResponse, InvoiceItemsOnly>(invoice.url, itemsOnly);
+			//invoice.source_invoice_number = "1";
+
+			var result = _restService.Put(invoice.url, invoice);
 
 			if (result.IsSuccessStatusCode)
 				return true;

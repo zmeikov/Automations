@@ -46,7 +46,7 @@
 		        @(lastPayment?.total)
 	        </td>
 	        <td>
-		        @(lastPayment?.date.Value.ToUSADateFormat())
+		        @(lastPayment?.date.Value.ToISODateFormat())
 	        </td>
 	        <td>
 		        @Html.ActionLink("EvictionDocs", "EvictionDocs", new { item.Key.id })
