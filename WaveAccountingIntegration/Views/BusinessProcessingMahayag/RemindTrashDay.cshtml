@@ -1,0 +1,15 @@
+﻿@{
+	Layout = null;
+
+	ViewBag.Title = "RemindTrashDay";
+
+	string Message = ViewBag.Message;
+}
+
+<h2>RemindTrashDay</h2>
+
+<div>
+	@{
+		Html.RenderPartial("Pre", Message);
+	}
+</div>

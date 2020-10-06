@@ -301,6 +301,7 @@
     <Content Include="Views\BusinessProcessingMahayag\5DayTennantAtWill.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\SmsAlertLateCustomers.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\AutoPinResetAndtext.cshtml" />
+    <Content Include="Views\BusinessProcessingMahayag\RemindTrashDay.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

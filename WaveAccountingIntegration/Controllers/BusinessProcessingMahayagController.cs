@@ -286,12 +286,13 @@ namespace WaveAccountingIntegration.Controllers
 					SignedLeaseAgreement = false,
 					LastPinResetDate = DateTime.Today,
 					LastSmsAlertSent = DateTime.Today,
+					LastTrashSmsAlertSent = DateTime.Today,
 					CustomDaysBetweenSmsAlerts = 5,
 					SendSmsAlerts = true,
 					StatementUrl = "StatementUrl",
 					EvictonNoticeDate = DateTime.Parse("2000-01-01"),
-					EvictionCourtCaseNumber = "",
-					EvictionCourtAssignedJudge = ""
+					EvictionCourtCaseNumber = "________",
+					EvictionCourtAssignedJudge = "________"
 				};
 
 				if (custSettings == null)
@@ -325,27 +326,28 @@ namespace WaveAccountingIntegration.Controllers
 				{
 					var changesMade = false;
 
-					if (custSettings.ChargeLateFee == null) { custSettings.ChargeLateFee = defaultCustSettings.ChargeLateFee; messages.Add($"Setting deafult value ChargeLateFee to {custSettings.ChargeLateFee} for customer: {customer.name}"); changesMade = true; }
-					if (custSettings.NextLateFeeChargeDate == null) { custSettings.NextLateFeeChargeDate = defaultCustSettings.NextLateFeeChargeDate; messages.Add($"Setting deafult value NextLateFeeChargeDate to {custSettings.NextLateFeeChargeDate} for customer: {customer.name}"); changesMade = true; }
-					if (custSettings.LateFeePercentRate == null) { custSettings.LateFeePercentRate = defaultCustSettings.LateFeePercentRate; messages.Add($"Setting deafult value LateFeePercentRate to {custSettings.LateFeePercentRate} for customer: {customer.name}"); changesMade = true; }
-					if (custSettings.LateFeeDailyAmount == null) { custSettings.LateFeeDailyAmount = defaultCustSettings.LateFeeDailyAmount; messages.Add($"Setting deafult value LateFeeDailyAmount to {custSettings.LateFeeDailyAmount} for customer: {customer.name}"); changesMade = true; }
-					if (custSettings.LateFeeChargeAboveBalance == null) { custSettings.LateFeeChargeAboveBalance = defaultCustSettings.LateFeeChargeAboveBalance; messages.Add($"Setting deafult value LateFeeChargeAboveBalance to {custSettings.LateFeeChargeAboveBalance} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.ChargeLateFee == null) { custSettings.ChargeLateFee = defaultCustSettings.ChargeLateFee; messages.Add($"Setting default value ChargeLateFee to {custSettings.ChargeLateFee} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.NextLateFeeChargeDate == null) { custSettings.NextLateFeeChargeDate = defaultCustSettings.NextLateFeeChargeDate; messages.Add($"Setting default value NextLateFeeChargeDate to {custSettings.NextLateFeeChargeDate} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.LateFeePercentRate == null) { custSettings.LateFeePercentRate = defaultCustSettings.LateFeePercentRate; messages.Add($"Setting default value LateFeePercentRate to {custSettings.LateFeePercentRate} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.LateFeeDailyAmount == null) { custSettings.LateFeeDailyAmount = defaultCustSettings.LateFeeDailyAmount; messages.Add($"Setting default value LateFeeDailyAmount to {custSettings.LateFeeDailyAmount} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.LateFeeChargeAboveBalance == null) { custSettings.LateFeeChargeAboveBalance = defaultCustSettings.LateFeeChargeAboveBalance; messages.Add($"Setting default value LateFeeChargeAboveBalance to {custSettings.LateFeeChargeAboveBalance} for customer: {customer.name}"); changesMade = true; }
 					//set NextLateFeeChargeDate to today if  ChargeLateFee is false
 					if (custSettings.ChargeLateFee == false && custSettings.NextLateFeeChargeDate < DateTime.Today) { custSettings.NextLateFeeChargeDate = defaultCustSettings.NextLateFeeChargeDate; messages.Add($"Setting todays date for NextLateFeeChargeDate to {custSettings.NextLateFeeChargeDate} for customer: {customer.name}"); changesMade = true; }
 					
-					if (custSettings.ConsolidateInvoices == null) { custSettings.ConsolidateInvoices = defaultCustSettings.ConsolidateInvoices; messages.Add($"Setting deafult value ConsolidateInvoices to {custSettings.ConsolidateInvoices} for customer: {customer.name}"); changesMade = true; }
-					if (custSettings.SignedLeaseAgreement == null) { custSettings.SignedLeaseAgreement = defaultCustSettings.SignedLeaseAgreement; messages.Add($"Setting deafult value SignedLeaseAgreement to {custSettings.SignedLeaseAgreement} for customer: {customer.name}"); changesMade = true; }
-					if (custSettings.LastPinResetDate == null) { custSettings.LastPinResetDate = defaultCustSettings.LastPinResetDate; messages.Add($"Setting deafult value LastPinResetDate to {custSettings.LastPinResetDate} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.ConsolidateInvoices == null) { custSettings.ConsolidateInvoices = defaultCustSettings.ConsolidateInvoices; messages.Add($"Setting default value ConsolidateInvoices to {custSettings.ConsolidateInvoices} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.SignedLeaseAgreement == null) { custSettings.SignedLeaseAgreement = defaultCustSettings.SignedLeaseAgreement; messages.Add($"Setting default value SignedLeaseAgreement to {custSettings.SignedLeaseAgreement} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.LastPinResetDate == null) { custSettings.LastPinResetDate = defaultCustSettings.LastPinResetDate; messages.Add($"Setting default value LastPinResetDate to {custSettings.LastPinResetDate} for customer: {customer.name}"); changesMade = true; }
 
-					if (custSettings.LastSmsAlertSent == null) { custSettings.LastSmsAlertSent = defaultCustSettings.LastSmsAlertSent; messages.Add($"Setting deafult value LastSmsAlertSent to {custSettings.LastSmsAlertSent} for customer: {customer.name}"); changesMade = true; }
-					if (custSettings.CustomDaysBetweenSmsAlerts == null) { custSettings.CustomDaysBetweenSmsAlerts = defaultCustSettings.CustomDaysBetweenSmsAlerts; messages.Add($"Setting deafult value CustomDaysBetweenSmsAlerts to {custSettings.CustomDaysBetweenSmsAlerts} for customer: {customer.name}"); changesMade = true; }
-					if (custSettings.SendSmsAlerts == null) { custSettings.SendSmsAlerts = defaultCustSettings.SendSmsAlerts; messages.Add($"Setting deafult value SendSmsAlerts to {custSettings.SendSmsAlerts} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.LastSmsAlertSent == null) { custSettings.LastSmsAlertSent = defaultCustSettings.LastSmsAlertSent; messages.Add($"Setting default value LastSmsAlertSent to {custSettings.LastSmsAlertSent} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.LastTrashSmsAlertSent == null) { custSettings.LastTrashSmsAlertSent = defaultCustSettings.LastTrashSmsAlertSent; messages.Add($"Setting default value LastTrashSmsAlertSent to {custSettings.LastTrashSmsAlertSent} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.CustomDaysBetweenSmsAlerts == null) { custSettings.CustomDaysBetweenSmsAlerts = defaultCustSettings.CustomDaysBetweenSmsAlerts; messages.Add($"Setting default value CustomDaysBetweenSmsAlerts to {custSettings.CustomDaysBetweenSmsAlerts} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.SendSmsAlerts == null) { custSettings.SendSmsAlerts = defaultCustSettings.SendSmsAlerts; messages.Add($"Setting default value SendSmsAlerts to {custSettings.SendSmsAlerts} for customer: {customer.name}"); changesMade = true; }
 
-					if (custSettings.StatementUrl == null) { custSettings.StatementUrl = defaultCustSettings.StatementUrl; messages.Add($"Setting deafult value StatementUrl to {custSettings.StatementUrl} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.StatementUrl == null) { custSettings.StatementUrl = defaultCustSettings.StatementUrl; messages.Add($"Setting default value StatementUrl to {custSettings.StatementUrl} for customer: {customer.name}"); changesMade = true; }
 
-					if (custSettings.EvictonNoticeDate == null) { custSettings.EvictonNoticeDate = defaultCustSettings.EvictonNoticeDate; messages.Add($"Setting deafult value EvictonNoticeDate to {custSettings.EvictonNoticeDate} for customer: {customer.name}"); changesMade = true; }
-					if (custSettings.EvictionCourtCaseNumber == null) { custSettings.EvictionCourtCaseNumber = defaultCustSettings.EvictionCourtCaseNumber; messages.Add($"Setting deafult value EvictionCourtCaseNumber to {custSettings.EvictionCourtCaseNumber} for customer: {customer.name}"); changesMade = true; }
-					if (custSettings.EvictionCourtAssignedJudge == null) { custSettings.EvictionCourtAssignedJudge = defaultCustSettings.EvictionCourtAssignedJudge; messages.Add($"Setting deafult value EvictionCourtAssignedJudge to {custSettings.EvictionCourtAssignedJudge} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.EvictonNoticeDate == null) { custSettings.EvictonNoticeDate = defaultCustSettings.EvictonNoticeDate; messages.Add($"Setting default value EvictonNoticeDate to {custSettings.EvictonNoticeDate} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.EvictionCourtCaseNumber == null) { custSettings.EvictionCourtCaseNumber = defaultCustSettings.EvictionCourtCaseNumber; messages.Add($"Setting default value EvictionCourtCaseNumber to {custSettings.EvictionCourtCaseNumber} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.EvictionCourtAssignedJudge == null) { custSettings.EvictionCourtAssignedJudge = defaultCustSettings.EvictionCourtAssignedJudge; messages.Add($"Setting default value EvictionCourtAssignedJudge to {custSettings.EvictionCourtAssignedJudge} for customer: {customer.name}"); changesMade = true; }
 
 					if (changesMade)
 					{
@@ -521,7 +523,75 @@ namespace WaveAccountingIntegration.Controllers
 			return View(processedInvoices);
 		}
 
-		
+
+		public ActionResult RemindTrashDay(string propertyId = "0000")
+		{
+			ViewBag.Message = "RemindTrashDay\r\n";
+
+			var activeCustomers = GetActiveCustomers();
+
+			foreach (var customer in activeCustomers.Where(x => x.name.StartsWith(propertyId)))
+			{
+
+				var custSettings = _customerService.ExctractSettingsFromCustomerObject(customer);
+
+				try
+				{
+					if (custSettings.SendSmsAlerts == true && DateTime.Now.TimeOfDay >= TimeSpan.FromHours(8) && custSettings.LastTrashSmsAlertSent < DateTime.Today)
+					{
+						#region sms alert customers for trash pickup.
+
+						//sent alert to name 1
+						if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
+						{
+
+							var name = customer.first_name.ToUpper().Trim();
+							var body = GetTrashSmsAlertBody(name);
+
+							ViewBag.Message += $"alerting trash for customer:{name} on {ExtractEmailFromString(customer.address1)}\r\n";
+							_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings.GoogleSettings);
+						}
+
+						//sent alert to name 2
+						if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
+						{
+							var name = customer.last_name.ToUpper().Trim();
+							var body = GetTrashSmsAlertBody(name);
+
+							ViewBag.Message += $"alerting trash for customer:{name} on {ExtractEmailFromString(customer.address2)}\r\n";
+							_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
+						}
+
+						#endregion
+
+						custSettings.LastTrashSmsAlertSent = DateTime.Now;
+						_customerService.SaveUpdatedCustomerSettings(customer, custSettings, _restService);
+					}
+					else
+					{
+						ViewBag.Message += $"skipping trash for customer:{customer.name.Substring(0,10)} because " +
+						                   $"SendSmsAlerts: {(custSettings.SendSmsAlerts == true ? "true" : "false")}" +
+						                   $"TimeOfDay: {DateTime.Now.TimeOfDay}" +
+						                   $"LastTrashSmsAlertSent: {custSettings.LastTrashSmsAlertSent}" +
+						                   $"\r\n";
+
+					}
+
+
+				}
+				catch (Exception ex)
+				{
+					ViewBag.Message += $"\r\nRemind Trash Day failed for customer: {customer.name} error: {ex.Message}";
+					ViewBag.Message += $"\r\n";
+				}
+
+
+
+			}
+			return View();
+		}
+
+
 		public ActionResult DisableInvoicePayments()
 		{
 			var invoices = _restService.Get<List<Invoice>>(
@@ -749,6 +819,16 @@ namespace WaveAccountingIntegration.Controllers
 					$"You can see your entire history here: {custSettings.StatementUrl} . " +
 					$"IMPORTANT: You must reply to this message and let me know when and how will bring your balance to $0 if above. ";
 		}
+
+
+		private string GetTrashSmsAlertBody(string name)
+		{
+			return $"Hello {name}, " +
+			       $"today is {DateTime.Today.ToUSADateFormat()} " +
+				   $"and Tomorrow is trash day so if you could Please make sure the trash cans are pushed to the curb tonight so they can be collected tomorrow." +
+			       $"Thank you and let me know if it is done. ";
+		}
+
 
 		private string GetAutoPinResetAndTextSmsAlertBody(string name, string oldPin, string newPin)
 		{
