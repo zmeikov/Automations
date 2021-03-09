@@ -13,9 +13,9 @@
 	WaveAccountingIntegration.Models.AppSettings appSettings = ViewBag.AppSettings;
 
 	WaveAccountingIntegration.Models.Invoice invoice = ViewBag.invoice;
-	List<WaveAccountingIntegration.Models.InvoiceItem> invoice_items = ViewBag.invoice_items;
+	//List<WaveAccountingIntegration.Models.InvoiceItem> invoice_items = ViewBag.invoice_items;
 
-	var lateFeesAmount = invoice_items.Where(x => x.product.id == appSettings.MahayagLateFeeProductId).Select(x => x.price).Sum();
+	var lateFeesAmount = 0;//invoice_items.Where(x => x.product.id == appSettings.MahayagLateFeeProductId).Select(x => x.price).Sum();
 	var pastDueRentAmount = entry.Value.ending_balance - lateFeesAmount;
 
 	var totalSubjectToTrebling = pastDueRentAmount + lateFeesAmount;
@@ -1005,11 +1005,11 @@
  the above address.
 </div>
 <div class="t m0 x3 h6 yc8 ff8 fs3 fc1 sc0 ls0 ws0">
- 4. <span class="ff7">Todor Peykov</span> is evicting defendant(s) for the following reasons:
+ 4. <span class="ff7">Todor Peykov</span> is evicting defendant(s) for the following reason(s):
 </div>
 <div class="t m0 x16 h10 yc9 ff7 fs3 fc1 sc0 ls0 ws0">
- The defendant(s) failed to catch up on late rent.
- The defendant(s) failed to coply with 3 day notice.
+ The defendant(s) failed to come to an agreement with Landlord/Owner.
+ The defendant(s) failed to coply with eviction notice(s).
 </div>
 <div class="t m0 x16 h10 yca ff7 fs3 fc1 sc0 ls0 ws0">
 </div>

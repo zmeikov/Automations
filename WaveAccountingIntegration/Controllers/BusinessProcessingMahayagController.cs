@@ -204,16 +204,16 @@ namespace WaveAccountingIntegration.Controllers
 			ViewBag.AppSettings = _appSettings;
 			ViewBag.Tenants = tenants;
 			var total = customerStatement.First().Value.ending_balance;
-			ViewBag.invoice = customerStatement.Values.First().events.First(x => 
-				( 
-					//x.invoice.invoice_amount_due == total
-					//|| 
-					x.invoice.invoice_amount_due > 0
-				) 
-				&& x.event_type == "invoice")
-				.invoice;
-			var invoice = _restService.Get<Invoice>(ViewBag.invoice.url + "?embed_items=true").Result;
-			ViewBag.invoice_items = invoice.items;
+			//ViewBag.invoice = customerStatement.Values.First().events.First(x => 
+			//	( 
+			//		//x.invoice.invoice_amount_due == total
+			//		//|| 
+			//		x.invoice.invoice_amount_due > 0
+			//	) 
+			//	&& x.event_type == "invoice")
+			//	.invoice;
+			//var invoice = _restService.Get<Invoice>(ViewBag.invoice.url + "?embed_items=true").Result;
+			//ViewBag.invoice_items = invoice.items;
 			ViewBag.EndOfLeaseDate = customerStatement.Values.First().events.OrderByDescending(x=>x.date).First(x => x.event_type == "invoice").invoice.invoice_date.GetEndOfLeaseDate().ToUSADateFormat();
 			return View(form, customerStatement);
 		}
@@ -284,11 +284,12 @@ namespace WaveAccountingIntegration.Controllers
 					LateFeeChargeAboveBalance = 340,
 					ConsolidateInvoices = true,
 					SignedLeaseAgreement = false,
-					LastPinResetDate = DateTime.Today,
-					LastSmsAlertSent = DateTime.Today,
-					LastTrashSmsAlertSent = DateTime.Today,
+					LastPinResetDate = DateTime.Today.AddDays(-10),
+					LastSmsAlertSent = DateTime.Today.AddDays(-10),
+					LastTrashSmsAlertSent = DateTime.Today.AddDays(-10),
 					CustomDaysBetweenSmsAlerts = 5,
 					SendSmsAlerts = true,
+					SendTrashSmsAlerts = true,
 					StatementUrl = "StatementUrl",
 					EvictonNoticeDate = DateTime.Parse("2000-01-01"),
 					EvictionCourtCaseNumber = "________",
@@ -341,7 +342,10 @@ namespace WaveAccountingIntegration.Controllers
 					if (custSettings.LastSmsAlertSent == null) { custSettings.LastSmsAlertSent = defaultCustSettings.LastSmsAlertSent; messages.Add($"Setting default value LastSmsAlertSent to {custSettings.LastSmsAlertSent} for customer: {customer.name}"); changesMade = true; }
 					if (custSettings.LastTrashSmsAlertSent == null) { custSettings.LastTrashSmsAlertSent = defaultCustSettings.LastTrashSmsAlertSent; messages.Add($"Setting default value LastTrashSmsAlertSent to {custSettings.LastTrashSmsAlertSent} for customer: {customer.name}"); changesMade = true; }
 					if (custSettings.CustomDaysBetweenSmsAlerts == null) { custSettings.CustomDaysBetweenSmsAlerts = defaultCustSettings.CustomDaysBetweenSmsAlerts; messages.Add($"Setting default value CustomDaysBetweenSmsAlerts to {custSettings.CustomDaysBetweenSmsAlerts} for customer: {customer.name}"); changesMade = true; }
+
+
 					if (custSettings.SendSmsAlerts == null) { custSettings.SendSmsAlerts = defaultCustSettings.SendSmsAlerts; messages.Add($"Setting default value SendSmsAlerts to {custSettings.SendSmsAlerts} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.SendTrashSmsAlerts == null) { custSettings.SendTrashSmsAlerts = defaultCustSettings.SendTrashSmsAlerts; messages.Add($"Setting default value SendTrashSmsAlerts to {custSettings.SendTrashSmsAlerts} for customer: {customer.name}"); changesMade = true; }
 
 					if (custSettings.StatementUrl == null) { custSettings.StatementUrl = defaultCustSettings.StatementUrl; messages.Add($"Setting default value StatementUrl to {custSettings.StatementUrl} for customer: {customer.name}"); changesMade = true; }
 
@@ -537,7 +541,10 @@ namespace WaveAccountingIntegration.Controllers
 
 				try
 				{
-					if (custSettings.SendSmsAlerts == true && DateTime.Now.TimeOfDay >= TimeSpan.FromHours(8) && custSettings.LastTrashSmsAlertSent < DateTime.Today)
+					if (custSettings.SendSmsAlerts == true && 
+						custSettings.SendTrashSmsAlerts == true && 
+						DateTime.Now.TimeOfDay >= TimeSpan.FromHours(8) && 
+						custSettings.LastTrashSmsAlertSent < DateTime.Today)
 					{
 						#region sms alert customers for trash pickup.
 

@@ -21,6 +21,7 @@ namespace WaveAccountingIntegration.Models
 		public DateTime? LastTrashSmsAlertSent { get; set; }
 		public int? CustomDaysBetweenSmsAlerts { get; set; }
 		public bool? SendSmsAlerts { get; set; }
+		public bool? SendTrashSmsAlerts { get; set; }
 		public string StatementUrl { get; set; }
 
 		public DateTime? EvictonNoticeDate { get; set; }
