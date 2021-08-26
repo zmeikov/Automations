@@ -26,7 +26,8 @@ namespace WaveAccountingIntegration
 
 		public static DateTime GetEndOfTheMonth(this DateTime today)
 		{
-			return new DateTime(today.Year, today.Month, 1).AddMonths(1).AddDays(-1);
+			var result = new DateTime(today.Year, today.Month, 1).AddMonths(1).AddDays(-1);
+			return result;
 		}
 
 
@@ -35,7 +36,12 @@ namespace WaveAccountingIntegration
 		public static DateTime GetEndOfLeaseDate(this string invdate)
 		{
 			var invoiceDate = DateTime.Parse(invdate);
-			return DateTime.Now.GetEndOfTheMonth().AddDays(invoiceDate.Day - 1);
+			var eol = invoiceDate.AddMonths(1).AddDays(-1);
+			if(eol <= DateTime.Today.AddDays(15))
+			{
+				eol = eol.AddMonths(1);
+			}
+			return eol;
 		}
 		public static DateTime GetEndOfLeaseDate(this DateTime invoiceDate)
 		{

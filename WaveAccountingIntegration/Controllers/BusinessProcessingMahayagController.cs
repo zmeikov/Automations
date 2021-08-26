@@ -134,7 +134,8 @@ namespace WaveAccountingIntegration.Controllers
 					daysSinceLastPayment >= 7 &&
 					lastInvoice.date <= DateTime.Today.Date.AddDays(-5) &&
 					DateTime.Now.Hour > 8 &&
-					custSettings.SendSmsAlerts == true
+					custSettings.SendSmsAlerts == true &&
+					customerKvp.Value.ending_balance >= 25
 				)
 				{
 					//sent alert to name 1
@@ -169,6 +170,7 @@ namespace WaveAccountingIntegration.Controllers
 					             $"lastInvoice.date: {lastInvoice.date.Value.ToUSADateFormat()}, " +
 					             $"daysSinceLastPayment: {daysSinceLastPayment}, " +
 					             $"SendSmsAlerts: {custSettings.SendSmsAlerts}, " +
+					             $"ending_balance: {customerKvp.Value.ending_balance}, < $25" +
 					             $"for: {customerKvp.Key.name}.");
 				}
 			});
@@ -195,7 +197,16 @@ namespace WaveAccountingIntegration.Controllers
 			if (form == null)
 				return View(customerStatement);
 
-			var address = _appSettings.MahayagAddresses.FirstOrDefault(x => x.Id == customer.name.Substring(0, 4));
+			var address = _appSettings.MahayagAddresses.FirstOrDefault(x => x.Id == customer.name.Substring(0, customer.name.IndexOf('-')));
+			//if (customer.name.Contains('#'))
+			//{
+			//	var ponudPos = customer.name.IndexOf('#');
+			//	var dashPos = customer.name.IndexOf('-');
+
+			//	var diff = dashPos - ponudPos;
+
+			//	address.Address1 += $" APT # {customer.name.Substring(ponudPos+1, diff - 1)}";
+			//}
 
 			List<Tennant> tenants = GetTennatsFromName(customer.name);
 
@@ -528,7 +539,7 @@ namespace WaveAccountingIntegration.Controllers
 		}
 
 
-		public ActionResult RemindTrashDay(string propertyId = "0000")
+		public ActionResult RemindTrashDay(string propertyId = "0000", bool? recycle = null)
 		{
 			ViewBag.Message = "RemindTrashDay\r\n";
 
@@ -553,7 +564,7 @@ namespace WaveAccountingIntegration.Controllers
 						{
 
 							var name = customer.first_name.ToUpper().Trim();
-							var body = GetTrashSmsAlertBody(name);
+							var body = GetTrashSmsAlertBody(name, recycle);
 
 							ViewBag.Message += $"alerting trash for customer:{name} on {ExtractEmailFromString(customer.address1)}\r\n";
 							_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings.GoogleSettings);
@@ -563,7 +574,7 @@ namespace WaveAccountingIntegration.Controllers
 						if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
 						{
 							var name = customer.last_name.ToUpper().Trim();
-							var body = GetTrashSmsAlertBody(name);
+							var body = GetTrashSmsAlertBody(name, recycle);
 
 							ViewBag.Message += $"alerting trash for customer:{name} on {ExtractEmailFromString(customer.address2)}\r\n";
 							_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
@@ -802,6 +813,7 @@ namespace WaveAccountingIntegration.Controllers
 		{
 			var dailyRate = custSettings.SignedLeaseAgreement == true ? $"${custSettings.LateFeeDailyAmount}" : $"{custSettings.LateFeePercentRate * 100}%";
 			var lastPmt = (lastPayment != null ? (lastPayment.date != null ? lastPayment.date.Value.ToUSADateFormat() : string.Empty) : string.Empty);
+			var pmtUrl = "http://tiny.one/PayRentToTodor";
 			return  $"Hello {name}, " +
 					$"as of today {DateTime.Today.ToUSADateFormat()} " +
 					$"your balance due is ${customerKvp.Value.ending_balance} " +
@@ -809,6 +821,8 @@ namespace WaveAccountingIntegration.Controllers
 					$"was received on: {lastPmt}. " +
 					//$"Please double check your new/consolidated invoice remaining balance and payment(s) here: {lastInvoice.pdf_url.Replace("?pdf=1","")} ." +
 					$"Please double check your payment history and remaining balance on this link: {custSettings.StatementUrl} ." +
+					//$"For Payment instructions please visit {pmtUrl} . "+
+					$"You may apply for rent relief here: https://rentrelief.utah.gov/  or here: https://www.utahca.org/housing/ ." +
 					$"IMPORTANT: You must reply to this message and let me know when will you make your next payment or else I will assume abandonment. " +
 					$"Delinquent accounts are subject to: {dailyRate}; daily charge for any past due balance! ";
 		}
@@ -828,11 +842,15 @@ namespace WaveAccountingIntegration.Controllers
 		}
 
 
-		private string GetTrashSmsAlertBody(string name)
+		private string GetTrashSmsAlertBody(string name, bool? recycle = null)
 		{
+			string recycleText = null;
+			if (recycle == true)
+				recycleText = "And recycle cans";
+
 			return $"Hello {name}, " +
 			       $"today is {DateTime.Today.ToUSADateFormat()} " +
-				   $"and Tomorrow is trash day so if you could Please make sure the trash cans are pushed to the curb tonight so they can be collected tomorrow." +
+				   $"and Tomorrow is trash day so if you could Please make sure the trash cans {recycleText} are pushed to the curb tonight so they can be collected tomorrow at 7am." +
 			       $"Thank you and let me know if it is done. ";
 		}
 
