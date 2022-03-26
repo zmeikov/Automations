@@ -194,8 +194,6 @@ namespace WaveAccountingIntegration.Controllers
 			if (trxHistory != null)
 				customerStatement.Add(customer, trxHistory);
 
-			if (form == null)
-				return View(customerStatement);
 
 			var address = _appSettings.MahayagAddresses.FirstOrDefault(x => x.Id == customer.name.Substring(0, customer.name.IndexOf('-')));
 			//if (customer.name.Contains('#'))
@@ -215,6 +213,8 @@ namespace WaveAccountingIntegration.Controllers
 			ViewBag.AppSettings = _appSettings;
 			ViewBag.Tenants = tenants;
 			var total = customerStatement.First().Value.ending_balance;
+			ViewBag.customerName = customer.name;
+			ViewBag.Title = customer.name;
 			//ViewBag.invoice = customerStatement.Values.First().events.First(x => 
 			//	( 
 			//		//x.invoice.invoice_amount_due == total
@@ -226,7 +226,13 @@ namespace WaveAccountingIntegration.Controllers
 			//var invoice = _restService.Get<Invoice>(ViewBag.invoice.url + "?embed_items=true").Result;
 			//ViewBag.invoice_items = invoice.items;
 			ViewBag.EndOfLeaseDate = customerStatement.Values.First().events.OrderByDescending(x=>x.date).First(x => x.event_type == "invoice").invoice.invoice_date.GetEndOfLeaseDate().ToUSADateFormat();
-			return View(form, customerStatement);
+
+			if (form == null)
+				return View(customerStatement);
+			else
+			{
+				return View(form, customerStatement);
+			}
 		}
 		
 		public ActionResult LateCustomers()
@@ -813,16 +819,16 @@ namespace WaveAccountingIntegration.Controllers
 		{
 			var dailyRate = custSettings.SignedLeaseAgreement == true ? $"${custSettings.LateFeeDailyAmount}" : $"{custSettings.LateFeePercentRate * 100}%";
 			var lastPmt = (lastPayment != null ? (lastPayment.date != null ? lastPayment.date.Value.ToUSADateFormat() : string.Empty) : string.Empty);
-			var pmtUrl = "http://tiny.one/PayRentToTodor";
+			var pmtUrl = "http://mahayagcbb.hostfree.pw/pmt_accounts.html";
 			return  $"Hello {name}, " +
 					$"as of today {DateTime.Today.ToUSADateFormat()} " +
 					$"your balance due is ${customerKvp.Value.ending_balance} " +
 					$"and your last payment of: ${lastPayment?.total} " +
 					$"was received on: {lastPmt}. " +
 					//$"Please double check your new/consolidated invoice remaining balance and payment(s) here: {lastInvoice.pdf_url.Replace("?pdf=1","")} ." +
-					$"Please double check your payment history and remaining balance on this link: {custSettings.StatementUrl} ." +
-					//$"For Payment instructions please visit {pmtUrl} . "+
-					$"You may apply for rent relief here: https://rentrelief.utah.gov/  or here: https://www.utahca.org/housing/ ." +
+					$"Please double check your payment history and remaining balance here: {custSettings.StatementUrl} ." +
+					$"If you are ready to make a Payment please follow the instructions here {pmtUrl} . "+
+					$"If you are struggling please call 211 for help or apply for rent relief directly here: https://rentrelief.utah.gov/  or here: https://www.utahca.org/housing/ ." +
 					$"IMPORTANT: You must reply to this message and let me know when will you make your next payment or else I will assume abandonment. " +
 					$"Delinquent accounts are subject to: {dailyRate}; daily charge for any past due balance! ";
 		}
