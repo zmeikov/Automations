@@ -307,6 +307,8 @@ namespace WaveAccountingIntegration.Controllers
 					CustomDaysBetweenSmsAlerts = 5,
 					SendSmsAlerts = true,
 					SendTrashSmsAlerts = true,
+					HideLastPaymentDetails = false,
+					HideStatementUrl = false,
 					StatementUrl = "StatementUrl",
 					EvictonNoticeDate = DateTime.Parse("2000-01-01"),
 					EvictionCourtCaseNumber = "________",
@@ -337,7 +339,7 @@ namespace WaveAccountingIntegration.Controllers
 					}
 
 					processedCsutomers.Add(customer);
-					messages.Add($"Creating new defaults for customer: {customer.name}");
+					messages.Add($"Creating new default settings for customer: {customer.name}");
 
 				}
 				else
@@ -363,7 +365,10 @@ namespace WaveAccountingIntegration.Controllers
 
 					if (custSettings.SendSmsAlerts == null) { custSettings.SendSmsAlerts = defaultCustSettings.SendSmsAlerts; messages.Add($"Setting default value SendSmsAlerts to {custSettings.SendSmsAlerts} for customer: {customer.name}"); changesMade = true; }
 					if (custSettings.SendTrashSmsAlerts == null) { custSettings.SendTrashSmsAlerts = defaultCustSettings.SendTrashSmsAlerts; messages.Add($"Setting default value SendTrashSmsAlerts to {custSettings.SendTrashSmsAlerts} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.HideLastPaymentDetails == null) { custSettings.HideLastPaymentDetails = defaultCustSettings.HideLastPaymentDetails; messages.Add($"Setting default value HideLastPaymentDetails to {custSettings.HideLastPaymentDetails} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.HideStatementUrl == null) { custSettings.HideStatementUrl = defaultCustSettings.HideStatementUrl; messages.Add($"Setting default value HideStatementUrl to {custSettings.HideStatementUrl} for customer: {customer.name}"); changesMade = true; }
 
+					
 					if (custSettings.StatementUrl == null) { custSettings.StatementUrl = defaultCustSettings.StatementUrl; messages.Add($"Setting default value StatementUrl to {custSettings.StatementUrl} for customer: {customer.name}"); changesMade = true; }
 
 					if (custSettings.EvictonNoticeDate == null) { custSettings.EvictonNoticeDate = defaultCustSettings.EvictonNoticeDate; messages.Add($"Setting default value EvictonNoticeDate to {custSettings.EvictonNoticeDate} for customer: {customer.name}"); changesMade = true; }
@@ -376,6 +381,24 @@ namespace WaveAccountingIntegration.Controllers
 						processedCsutomers.Add(customer);
 					}
 					
+				}
+
+				if (string.IsNullOrWhiteSpace(customer.city))
+				{
+					var addressId = customer.name.SubstringUpToFirst('-');
+					var address = _appSettings.MahayagAddresses.First(x => x.Id == addressId);
+					customer.city = $"{address.Address1}, {address.City} {address.State} {address.ZipCode}";
+
+					var updatedCustomerResult =
+						_restService.Patch<UpdateCustomerResult, Customer>(customer.url, customer);
+
+					if (updatedCustomerResult.IsSuccessStatusCode == false)
+					{
+						throw new InvalidOperationException("Set customer.city failed");
+					}
+
+					processedCsutomers.Add(customer);
+					messages.Add($"Updated customer.city = {customer.city} for customer: {customer.name}");
 				}
 			});
 
@@ -820,13 +843,28 @@ namespace WaveAccountingIntegration.Controllers
 			var dailyRate = custSettings.SignedLeaseAgreement == true ? $"${custSettings.LateFeeDailyAmount}" : $"{custSettings.LateFeePercentRate * 100}%";
 			var lastPmt = (lastPayment != null ? (lastPayment.date != null ? lastPayment.date.Value.ToUSADateFormat() : string.Empty) : string.Empty);
 			var pmtUrl = "http://mahayagcbb.hostfree.pw/pmt_accounts.html";
+			var lastPaymentText = (custSettings.HideLastPaymentDetails != null && custSettings.HideLastPaymentDetails == true)
+				?
+					string.Empty
+				:
+					$"and your last payment of: ${lastPayment?.total} " +
+					$"was received on: {lastPmt}"
+				;
+
+			var statementUrlText = (custSettings.HideStatementUrl != null && custSettings.HideStatementUrl == true)
+				?
+					string.Empty
+				:
+					$"Please double check your payment history and remaining balance here: {custSettings.StatementUrl} "
+				;
+
+			 
 			return  $"Hello {name}, " +
 					$"as of today {DateTime.Today.ToUSADateFormat()} " +
 					$"your balance due is ${customerKvp.Value.ending_balance} " +
-					$"and your last payment of: ${lastPayment?.total} " +
-					$"was received on: {lastPmt}. " +
+					$"{lastPaymentText} ." +
 					//$"Please double check your new/consolidated invoice remaining balance and payment(s) here: {lastInvoice.pdf_url.Replace("?pdf=1","")} ." +
-					$"Please double check your payment history and remaining balance here: {custSettings.StatementUrl} ." +
+					$"{statementUrlText} ." +
 					$"If you are ready to make a Payment please follow the instructions here {pmtUrl} . "+
 					$"If you are struggling please call 211 for help or apply for rent relief directly here: https://rentrelief.utah.gov/  or here: https://www.utahca.org/housing/ ." +
 					$"IMPORTANT: You must reply to this message and let me know when will you make your next payment or else I will assume abandonment. " +

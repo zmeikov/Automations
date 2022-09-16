@@ -37,7 +37,7 @@ namespace WaveAccountingIntegration
 		{
 			var invoiceDate = DateTime.Parse(invdate);
 			var eol = invoiceDate.AddMonths(1).AddDays(-1);
-			if(eol <= DateTime.Today.AddDays(15))
+			if(eol < DateTime.Today.AddDays(15))
 			{
 				eol = eol.AddMonths(1);
 			}

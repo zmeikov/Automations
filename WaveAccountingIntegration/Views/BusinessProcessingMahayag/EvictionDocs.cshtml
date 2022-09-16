@@ -60,16 +60,22 @@
 <table>
 	<tr>
 		<th>
-			Event
+			| Event
 		</th>
 		<th>
-			Date
+			| Date
 		</th>
 		<th>
-			Total Amt invoiced/ -Paid
+			| Payment Amt
 		</th>
 		<th>
-			invoice_amount_due
+			| Inv Amt Total
+		</th>
+		<th>
+			| Inv Amt Paid
+		</th>
+		<th>
+			| Inv Amt Remaining
 		</th>
 	</tr>
 
@@ -77,20 +83,31 @@
 	{
 	<tr>
 		<td>
-			@Html.DisplayFor(modelItem => item.event_type)
+			| @Html.DisplayFor(modelItem => item.event_type)
 		</td>
 		<td>
-			@item.date.Value.ToISODateFormat()
+			| @item.date.Value.ToISODateFormat()
 		</td>
 		<td>
-			@if (item.event_type == "payment")
+			| @if (item.event_type == "payment")
 			{
-				@:-
+				@: -@Html.DisplayFor(modelItem => item.total)
 			}
-			$@Html.DisplayFor(modelItem => item.total)
 		</td>
 		<td>
-			$@Html.DisplayFor(modelItem => item.invoice.invoice_amount_due)
+			| @if (item.event_type != "payment")
+			{
+				@Html.DisplayFor(modelItem => item.total)
+			}
+		</td>
+		<td>
+			| @if (item.event_type != "payment")
+			{
+				@: @(item.total - item.invoice.invoice_amount_due)
+			}
+		</td>
+		<td>
+			| @Html.DisplayFor(modelItem => item.invoice.invoice_amount_due)
 		</td>
 	</tr>
 	}
