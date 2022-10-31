@@ -1,0 +1,56 @@
+﻿@{
+	Layout = null;
+	ViewBag.Title = "BrodcastAlertCustomers";
+
+	string Message = ViewBag.Message;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+	<meta name="viewport" content="width=device-width" />
+	<title>LateCustomers</title>
+</head>
+<body>
+
+
+	@if (ViewBag.displayForm == true)
+	{
+		using (Html.BeginForm("BrodcastAlertCustomers", "BusinessProcessingMahayag"))
+		{
+			<div>
+				Message*:
+				<p>
+					@Html.TextArea("message")
+				</p>
+			</div>
+			<div>
+				nameStartsWith:
+				<p>
+					@Html.TextBox("nameStartsWith")
+				</p>
+			</div>
+
+
+
+			<p>
+				<button type = "submit" class="btn btn-default" id="submit">submit</button>
+			</p>
+		}
+	}
+	else
+	{
+		<h2>BrodcastAlertCustomers</h2>
+
+		<div>
+			@{
+				Html.RenderPartial("Pre", Message);
+			}
+		</div>
+
+	}
+
+
+
+</body>
+</html>

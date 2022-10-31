@@ -179,7 +179,70 @@ namespace WaveAccountingIntegration.Controllers
 			ViewBag.Message = string.Join(Environment.NewLine, messages);
 			return View();
 		}
-		
+
+		public ActionResult BrodcastAlertCustomers(string message, string nameStartsWith)
+		{
+			if (string.IsNullOrEmpty(message))
+			{
+				ViewBag.displayForm = true;
+				return View();
+			}
+
+			var customersToAlert = GetActiveCustomers().Where(w => !w.name.StartsWith("?"));
+
+			if (!string.IsNullOrWhiteSpace(nameStartsWith))
+			{
+				customersToAlert = customersToAlert.Where(w => w.name.StartsWith(nameStartsWith));
+			}
+
+			var messages = new ConcurrentBag<string>();
+
+			Parallel.ForEach(customersToAlert, (customer) =>
+			{
+				var custSettings = _customerService.ExctractSettingsFromCustomerObject(customer);
+
+				if 
+				(
+					custSettings.SendSmsAlerts == true
+				)
+				{
+					//sent alert to name 1
+					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
+					{
+						var name = customer.first_name.ToUpper().Trim();
+						var body = $"Hello {name}, {message}";
+
+						messages.Add($"BrodcastAlert customer:{name} on {ExtractEmailFromString(customer.address1)}");
+						_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings.GoogleSettings);
+					}
+
+					//sent alert to name 2
+					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
+					{
+						var name = customer.last_name.ToUpper().Trim();
+						var body = $"Hello {name}, {message}";
+
+						messages.Add($"BrodcastAlert customer: {name} on {ExtractEmailFromString(customer.address2)}");
+						_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
+					}
+
+					custSettings.LastSmsAlertSent = DateTime.Now;
+					_customerService.SaveUpdatedCustomerSettings(customer, custSettings, _restService);
+
+				}
+				else
+				{
+					//skip alert
+					messages.Add($"Skipping BrodcastAlert Customer: SendSmsAlerts: {custSettings.SendSmsAlerts}, " +
+								 $"for: {customer.name}.");
+				}
+			});
+
+
+			ViewBag.Message = string.Join(Environment.NewLine, messages);
+			return View();
+		}
+
 		public ActionResult EvictionDocs(ulong id, string form)
 		{
 			var customerStatement = new Dictionary<Customer, Transaction_History>();
@@ -214,7 +277,8 @@ namespace WaveAccountingIntegration.Controllers
 			ViewBag.Tenants = tenants;
 			var total = customerStatement.First().Value.ending_balance;
 			ViewBag.customerName = customer.name;
-			ViewBag.Title = customer.name;
+			var customernames = string.Join(" + ", GetTennatsFromName(customer.name));
+			ViewBag.Title = $"{customernames} {DateTime.Now.Date.ToISODateFormat()}";
 			//ViewBag.invoice = customerStatement.Values.First().events.First(x => 
 			//	( 
 			//		//x.invoice.invoice_amount_due == total
@@ -843,12 +907,13 @@ namespace WaveAccountingIntegration.Controllers
 			var dailyRate = custSettings.SignedLeaseAgreement == true ? $"${custSettings.LateFeeDailyAmount}" : $"{custSettings.LateFeePercentRate * 100}%";
 			var lastPmt = (lastPayment != null ? (lastPayment.date != null ? lastPayment.date.Value.ToUSADateFormat() : string.Empty) : string.Empty);
 			var pmtUrl = "http://mahayagcbb.hostfree.pw/pmt_accounts.html";
+			var rentHelpUrl = "http://mahayagcbb.hostfree.pw/rent-help.php";
 			var lastPaymentText = (custSettings.HideLastPaymentDetails != null && custSettings.HideLastPaymentDetails == true)
 				?
 					string.Empty
 				:
 					$"and your last payment of: ${lastPayment?.total} " +
-					$"was received on: {lastPmt}"
+					$"was accounted/credited on: {lastPmt}"
 				;
 
 			var statementUrlText = (custSettings.HideStatementUrl != null && custSettings.HideStatementUrl == true)
@@ -865,9 +930,10 @@ namespace WaveAccountingIntegration.Controllers
 					$"{lastPaymentText} ." +
 					//$"Please double check your new/consolidated invoice remaining balance and payment(s) here: {lastInvoice.pdf_url.Replace("?pdf=1","")} ." +
 					$"{statementUrlText} ." +
+					$"If you made a payment in the last 2 to 4 business days it may still not be accounted for so please disregard this message . " +
 					$"If you are ready to make a Payment please follow the instructions here {pmtUrl} . "+
-					$"If you are struggling please call 211 for help or apply for rent relief directly here: https://rentrelief.utah.gov/  or here: https://www.utahca.org/housing/ ." +
-					$"IMPORTANT: You must reply to this message and let me know when will you make your next payment or else I will assume abandonment. " +
+					$"If you are struggling please look into for possible assistance resources here: {rentHelpUrl} ." +
+					$"IMPORTANT: You must reply to this message every time and let me know when will you make your next payment or else I will pursue eviction. " +
 					$"Delinquent accounts are subject to: {dailyRate}; daily charge for any past due balance! ";
 		}
 
