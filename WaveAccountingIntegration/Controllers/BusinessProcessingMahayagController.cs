@@ -250,7 +250,7 @@ namespace WaveAccountingIntegration.Controllers
 			var customer = _restService.Get<Customer>(
 				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{id}/").Result;
 			
-			var statement = GetStatement(id);
+			var statement = GetStatement(id, string.IsNullOrWhiteSpace(form) || form.Contains("Court"));
 
 			var trxHistory = statement.transaction_history.FirstOrDefault();
 
@@ -1011,13 +1011,13 @@ namespace WaveAccountingIntegration.Controllers
 			return toReturn;
 		}
 
-		private TransactionHistory GetStatement(ulong customerId)
+		private TransactionHistory GetStatement(ulong customerId, bool getItems = false)
 		{
-			var stHistory = GetStatementTrxHistory(customerId);
+			var stHistory = GetStatementTrxHistory(customerId, getItems);
 			return new TransactionHistory {transaction_history = new List<Transaction_History>{ stHistory } };
 		}
 
-		private Transaction_History GetStatementTrxHistory(ulong customerId)
+		private Transaction_History GetStatementTrxHistory(ulong customerId, bool getItems = false)
 		{
 			var trxHistory = new Transaction_History { events = new List<Event>() };
 
@@ -1031,10 +1031,18 @@ namespace WaveAccountingIntegration.Controllers
 				//foreach (var inv in allCustInvoices)
 			{
 				var invPayments = _restService.Get<List<Payment>>(inv.payments_url).Result;
-				foreach (var pm in invPayments)
+				if(invPayments != null)
 				{
-					allCustInvPayments.Add(pm);
+					foreach (var pm in invPayments)
+					{
+						allCustInvPayments.Add(pm);
+					}
 				}
+				else
+				{
+
+				}
+				
 
 				//}
 			});
@@ -1048,6 +1056,16 @@ namespace WaveAccountingIntegration.Controllers
 					total = inv.invoice_total,
 					invoice = inv
 				});
+
+				if(getItems == true)
+				{
+					var fullInvoice = _restService.Get<Invoice>
+						($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/{inv.id}/?embed_accounts=true&embed_customer=true&embed_discounts=true&embed_deposits=true&embed_items=true&embed_payments=true&embed_products=true&embed_sales_taxes=true")
+						.Result;
+
+					inv.items = fullInvoice.items;
+				}
+				
 			}
 
 			var separatePayments = new List<Event> ();
