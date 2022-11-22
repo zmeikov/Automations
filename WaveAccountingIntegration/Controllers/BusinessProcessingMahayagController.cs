@@ -257,8 +257,8 @@ namespace WaveAccountingIntegration.Controllers
 			if (trxHistory != null)
 				customerStatement.Add(customer, trxHistory);
 
-
-			var address = _appSettings.MahayagAddresses.FirstOrDefault(x => x.Id == customer.name.Substring(0, customer.name.IndexOf('-')));
+			var addressId = customer.name.ToUpper().Replace("XXXX", "").Substring(0, customer.name.ToUpper().Replace("XXXX", "").IndexOf('-'));
+			var address = _appSettings.MahayagAddresses.FirstOrDefault(x => x.Id == addressId);
 			//if (customer.name.Contains('#'))
 			//{
 			//	var ponudPos = customer.name.IndexOf('#');
@@ -475,7 +475,7 @@ namespace WaveAccountingIntegration.Controllers
 			var processedInvoices = new List<Invoice>();
 			ViewBag.Message = "ConsolidateInvoices\r\n";
 
-			var url = $"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?embed_customer=true&embed_items=true";
+			var url = $"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?page_size=10000&embed_customer=true&embed_items=true";
 
 			if (narrowByCustomerId != 0)
 				url = url + $"&customer.id={narrowByCustomerId}";
@@ -490,7 +490,7 @@ namespace WaveAccountingIntegration.Controllers
 
 			foreach (var customerId in distinctCustomerIds)
 			{
-				var customerInvoicesDue = _restService.Get<List<Invoice>>($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?embed_customer=true&embed_items=true&customer.id={customerId}").Result
+				var customerInvoicesDue = _restService.Get<List<Invoice>>($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?page_size=10000&embed_customer=true&embed_items=true&customer.id={customerId}").Result
 					.Where(x => x.invoice_amount_due != 0)
 					.OrderByDescending(x => x.invoice_date)
 					.ToList();
@@ -706,7 +706,7 @@ namespace WaveAccountingIntegration.Controllers
 		public ActionResult DisableInvoicePayments()
 		{
 			var invoices = _restService.Get<List<Invoice>>(
-				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?embed_customer=true&embed_items=true");
+				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?page_size=10000&embed_customer=true&embed_items=true");
 
 			var updatedInvoices = new ConcurrentBag<Invoice>();
 
@@ -803,7 +803,7 @@ namespace WaveAccountingIntegration.Controllers
 			List<Invoice> addedFeeInvoices = new List<Invoice>();
 
 			var overdueInvoices = _restService.Get<List<Invoice>>(
-				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?status=overdue&embed_customer=true&embed_items=true");
+				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?page_size=10000&status=overdue&embed_customer=true&embed_items=true");
 			
 
 			//TODO: handle multiple invoices per single customer
@@ -984,8 +984,8 @@ namespace WaveAccountingIntegration.Controllers
 
 			var allCustomerStatements = new Dictionary<Customer, Transaction_History>();
 
-			Parallel.ForEach(activeCustomers, (customer) =>
-			//foreach (var customer in activeCustomers)
+			//Parallel.ForEach(activeCustomers, (customer) =>
+			foreach (var customer in activeCustomers)
 			{
 				try
 				{
@@ -1000,8 +1000,10 @@ namespace WaveAccountingIntegration.Controllers
 				{
 					// ignored
 				}
-			});
-			//}
+			}
+			//})
+
+			;
 
 			foreach (var keyValuePair in allCustomerStatements/*.Where(x => x.Value.ending_balance > 0)*/.OrderByDescending(x => x.Value.ending_balance))
 			{
@@ -1021,14 +1023,30 @@ namespace WaveAccountingIntegration.Controllers
 		{
 			var trxHistory = new Transaction_History { events = new List<Event>() };
 
-			var allCustInvoices = _restService.Get<List<Invoice>>
-					($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?customer.id={customerId}")
+			var allCustInvoices = new List<Invoice>();
+
+			int count = 0;
+			int page = 1;
+			do
+			{
+				var list = _restService.Get<List<Invoice>>
+					($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?page_size=50&page={page}&customer.id={customerId}")
 				.Result;
+
+				allCustInvoices.AddRange(list);
+
+				page++;
+				count = list.Count;
+
+				if (page > 50)
+					break;
+			}
+			while (count == 50);
 
 			var allCustInvPayments = new List<Payment>();
 
-			Parallel.ForEach(allCustInvoices.Where(i=>i.invoice_amount_paid != 0), inv =>
-				//foreach (var inv in allCustInvoices)
+			//Parallel.ForEach(allCustInvoices.Where(i=>i.invoice_amount_paid != 0), inv =>
+			foreach (var inv in allCustInvoices)
 			{
 				var invPayments = _restService.Get<List<Payment>>(inv.payments_url).Result;
 				if(invPayments != null)
@@ -1044,9 +1062,11 @@ namespace WaveAccountingIntegration.Controllers
 				}
 				
 
-				//}
-			});
+			}
+			//})
+			;
 
+			//Parallel.ForEach(allCustInvoices, inv =>
 			foreach (var inv in allCustInvoices)
 			{
 				trxHistory.events.Add(new Event
@@ -1057,7 +1077,7 @@ namespace WaveAccountingIntegration.Controllers
 					invoice = inv
 				});
 
-				if(getItems == true)
+				if (getItems == true)
 				{
 					var fullInvoice = _restService.Get<Invoice>
 						($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/{inv.id}/?embed_accounts=true&embed_customer=true&embed_discounts=true&embed_deposits=true&embed_items=true&embed_payments=true&embed_products=true&embed_sales_taxes=true")
@@ -1065,8 +1085,10 @@ namespace WaveAccountingIntegration.Controllers
 
 					inv.items = fullInvoice.items;
 				}
-				
+
 			}
+			//})
+			;
 
 			var separatePayments = new List<Event> ();
 
@@ -1092,7 +1114,12 @@ namespace WaveAccountingIntegration.Controllers
 
 			foreach(var p in aggregatePayments)
 			{
-				trxHistory.events.Add(p);
+				if(p == null)
+				{
+
+				}
+				else
+					trxHistory.events.Add(p);
 			}
 
 			trxHistory.ending_balance = allCustInvoices.Sum(s => s.invoice_amount_due);

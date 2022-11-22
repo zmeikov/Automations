@@ -14,6 +14,7 @@
 
 	};
 
+	var runningBalance = Model.First().Value.ending_balance;
 }
 
 <!DOCTYPE html>
@@ -46,6 +47,9 @@
 		<tr>
 			<td>
 				@Html.DisplayFor(modelItem => item.Key.name)
+				<br />
+				<br />
+				@Html.DisplayFor(modelItem => item.Key.city)
 			</td>
 			<td>
 				$@Html.DisplayFor(modelItem => item.Value.ending_balance)
@@ -60,28 +64,28 @@
 <table>
 	<tr>
 		<th>
-			| Event
-		</th>
-		<th>
 			| Date
 		</th>
 		<th>
-			| Payment
+			| Balance
 		</th>
 		<th>
-			| Inv Total
+			| Event
 		</th>
 		<th>
-			| Inv Paid
+			| Amount
 		</th>
 		<th>
-			| Inv Due
+			| Paid
+		</th>
+		<th>
+			| Due
 		</th>
 		<th>
 			| Dep/Rent Base
 		</th>
 		<th>
-			| Late/Pet Fees
+			| Late/Pet
 		</th>
 		<th>
 			| Utilities
@@ -90,43 +94,72 @@
 			| Credits
 		</th>
 		<th>
-			| Court/Sheriff Eviction
+			| Court/Sheriff Ev
 		</th>
 
 	</tr>
 
-	@foreach (var item in Model.Values.First().events/*.Where(x => x.total != 0)*/.OrderByDescending(x => x.date))
+	@foreach (var item in Model.Values.First().events/*.Where(x => x.total != 0)*/.OrderByDescending(x => x.date).ThenByDescending(x=>x.event_type))
 	{
 	<tr>
-		<td>
-			| @Html.DisplayFor(modelItem => item.event_type)
-		</td>
 		<td>
 			| @item.date.Value.ToISODateFormat()
 		</td>
 		<td>
-			| @if (item.event_type == "payment")
-			{
-				if (item.total >= 0)
+			|
+			@{
+				@: @runningBalance.ToString("0.##")
+
+
+
+
+				if (item.event_type != "payment")
 				{
-					@: @Html.DisplayFor(modelItem => item.total)
+					runningBalance -= item.total;
 				}
 				else
 				{
-					@: (@Html.DisplayFor(modelItem => item.total))
+					runningBalance += item.total;
 				}
 			}
 		</td>
 		<td>
 			| @if (item.event_type != "payment")
 			{
+				@: <span style="background-color:lightyellow">new month</span>
+			}
+			else
+			{
 				if (item.total >= 0)
 				{
-					@: @Html.DisplayFor(modelItem => item.total)
+					@: <span style="background-color:lightgreen">payment</span>
+				}
+				else
+				{
+					@: <span style="background-color:lightpink">refund</span>
+				}
+			}
+		</td>
+		<td>
+			| @if (item.event_type == "payment")
+			{
+				if (item.total >= 0)
+				{
+					@: -@Html.DisplayFor(modelItem => item.total)
 				}
 				else
 				{
 					@: (@Html.DisplayFor(modelItem => item.total))
+				}
+			}else if (item.event_type != "payment")
+			{
+				if (item.total >= 0)
+				{
+					@: +@Html.DisplayFor(modelItem => item.total)
+				}
+				else
+				{
+					@: -(@Html.DisplayFor(modelItem => item.total))
 				}
 			}
 		</td>
@@ -167,7 +200,7 @@
 		<td>
 			| @if (item.event_type != "payment")
 			{
-				@:  (@(item.invoice.items.Where(x => x.description.ToUpper().Contains("CREDIT FOR")).Sum(x => x.price * x.quantity)))
+				@:  (@(item.invoice.items.Where(x => x.description.ToUpper().Contains("CREDIT FOR")).Sum(x => x.price * x.quantity).ToString("0.##")))
 			}
 		</td>
 		<td>
