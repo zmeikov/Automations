@@ -108,10 +108,7 @@
 		<td>
 			|
 			@{
-				@: @runningBalance.ToString("0.##")
-
-
-
+				<span style="background-color:lightcyan"> @runningBalance.ToString("0.##")</span>
 
 				if (item.event_type != "payment")
 				{
@@ -209,10 +206,8 @@
 				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("COURT EV")).Sum(x => x.price * x.quantity)) / @(item.invoice.items.Where(x => x.description.ToUpper().Contains("SL SHER") && x.product.name.ToUpper().Contains("MISC")).Sum(x => x.price * x.quantity))
 			}
 		</td>
-
 	</tr>
 	}
-
 </table>
 </body>
 </html>

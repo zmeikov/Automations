@@ -30,14 +30,19 @@ namespace Common.Services
 
 			_httpClient = new HttpClient(handler) { BaseAddress = new Uri(baseApiUrl) };
 
-			_httpClient.DefaultRequestHeaders.Accept.Clear();
+			//_httpClient.DefaultRequestHeaders.Accept.Clear();
 			if (headers == null)
-				throw new InvalidEnumArgumentException("headres cannot be null");
-
-			foreach (var header in headers)
 			{
-				_httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+				//throw new InvalidEnumArgumentException("headres cannot be null");
 			}
+			else
+			{
+				foreach (var header in headers)
+				{
+					_httpClient.DefaultRequestHeaders.Add(header.Key, header.Value);
+				}
+			}
+
 
 		}
 

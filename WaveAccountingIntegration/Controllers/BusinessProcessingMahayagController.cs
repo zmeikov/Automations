@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Xml.Schema;
 using Microsoft.Ajax.Utilities;
+using Microsoft.Extensions.Caching.Memory;
 using Newtonsoft.Json;
 using WaveAccountingIntegration.Models;
 
@@ -17,6 +18,8 @@ namespace WaveAccountingIntegration.Controllers
 {
 	public class BusinessProcessingMahayagController : BaseController
 	{
+		private static MemoryCache memoryCache;
+
 		public ActionResult AutoPinResetAndText(DayOfWeek day = DayOfWeek.Sunday)
 		{
 			var messages = new ConcurrentBag<string>();
@@ -110,12 +113,15 @@ namespace WaveAccountingIntegration.Controllers
 			return View();
 		}
 
-		public ActionResult SmsAlertLateCustomers(int daysBetweenAlerts = 3)
+		public ActionResult SmsAlertLateCustomers(int daysBetweenAlerts = 3, ulong narrowByCustomerId = 0)
 		{
-			var lateCustomers = GetLateCustomers();
+			var lateCustomers = GetLateCustomers(narrowByCustomerId);
 			var messages = new ConcurrentBag<string>();
 
-			Parallel.ForEach(lateCustomers.Where(w=>w.Value.ending_balance > 0), (customerKvp) =>
+			var customersWithBalance = lateCustomers.Where(w => w.Value.ending_balance > 0);
+
+			//Parallel.ForEach(customersWithBalance, (customerKvp) =>
+			foreach(var customerKvp in customersWithBalance)
 			{
 				var customer = customerKvp.Key;
 				var custSettings = _customerService.ExctractSettingsFromCustomerObject(customer);
@@ -133,7 +139,10 @@ namespace WaveAccountingIntegration.Controllers
 					daysSinceLastSmsAlert >= minDaysBetweenAlerts &&
 					daysSinceLastPayment >= 7 &&
 					lastInvoice.date <= DateTime.Today.Date.AddDays(-5) &&
-					DateTime.Now.Hour > 8 &&
+					DateTime.Now.Hour > 7 &&
+					DateTime.Now.Hour < 13 &&
+					DateTime.Now.DayOfWeek != DayOfWeek.Saturday &&
+					DateTime.Now.DayOfWeek != DayOfWeek.Sunday &&
 					custSettings.SendSmsAlerts == true &&
 					customerKvp.Value.ending_balance >= 25
 				)
@@ -173,7 +182,8 @@ namespace WaveAccountingIntegration.Controllers
 					             $"ending_balance: {customerKvp.Value.ending_balance}, < $25" +
 					             $"for: {customerKvp.Key.name}.");
 				}
-			});
+			}
+			//});
 
 
 			ViewBag.Message = string.Join(Environment.NewLine, messages);
@@ -352,7 +362,8 @@ namespace WaveAccountingIntegration.Controllers
 
 			var activeCustomersToSetup = allCustomers.Where(x => x.active && !x.name.StartsWith("XX") && !x.name.StartsWith("??"));
 
-			Parallel.ForEach(activeCustomersToSetup, (customer) =>
+			//Parallel.ForEach(activeCustomersToSetup, (customer) =>
+			foreach(var customer in activeCustomersToSetup)
 			{
 				var custSettings = _customerService.ExctractSettingsFromCustomerObject(customer);
 
@@ -447,11 +458,36 @@ namespace WaveAccountingIntegration.Controllers
 					
 				}
 
-				if (string.IsNullOrWhiteSpace(customer.city))
+				if (string.IsNullOrWhiteSpace(customer.city) || (!customer.name.ToUpper().Contains("XX.XX") && !customer.city.ToUpper().Contains("ROOM")))
 				{
 					var addressId = customer.name.SubstringUpToFirst('-');
 					var address = _appSettings.MahayagAddresses.First(x => x.Id == addressId);
-					customer.city = $"{address.Address1}, {address.City} {address.State} {address.ZipCode}";
+
+					var roomName = "";
+					
+					if((!customer.name.ToUpper().Contains("XX.XX") && customer.city != null && !customer.city.ToUpper().Contains("ROOM")))
+					{
+						var roomId = customer.name.Substring(addressId.Length + 1, customer.name.IndexOfAny(new char[] { '(', '[' }) - 1 - addressId.Length).Replace(".", "").Replace("xx", "");
+
+						roomName = " - " +
+									roomId
+									.Replace("F", "Floor ")
+									.Replace("B", "Basement Floor ")
+									.Replace("E", " East ")
+									.Replace("W", " West ")
+									.Replace("S", " South ")
+									.Replace("N", " North ")
+									+ $" Room ({roomId})"
+								.Replace("   ", " ")
+								.Replace("  ", " ")
+								.Replace("   ", " ")
+								.Replace("  ", " ")
+								;
+					}
+					
+					
+
+					customer.city = $"{address.Address1}{roomName}, {address.City} {address.State} {address.ZipCode}";
 
 					var updatedCustomerResult =
 						_restService.Patch<UpdateCustomerResult, Customer>(customer.url, customer);
@@ -464,7 +500,8 @@ namespace WaveAccountingIntegration.Controllers
 					processedCsutomers.Add(customer);
 					messages.Add($"Updated customer.city = {customer.city} for customer: {customer.name}");
 				}
-			});
+			//});
+			}
 
 			ViewBag.Message = string.Join(Environment.NewLine, messages); 
 			return View(processedCsutomers);
@@ -906,8 +943,8 @@ namespace WaveAccountingIntegration.Controllers
 		{
 			var dailyRate = custSettings.SignedLeaseAgreement == true ? $"${custSettings.LateFeeDailyAmount}" : $"{custSettings.LateFeePercentRate * 100}%";
 			var lastPmt = (lastPayment != null ? (lastPayment.date != null ? lastPayment.date.Value.ToUSADateFormat() : string.Empty) : string.Empty);
-			var pmtUrl = "http://mahayagcbb.hostfree.pw/pmt_accounts.html";
-			var rentHelpUrl = "http://mahayagcbb.hostfree.pw/rent-help.php";
+			var pmtUrl = "http://www.mahayagcbb.com/payment.html";
+			var rentHelpUrl = "http://www.mahayagcbb.com/rent-help.html";
 			var lastPaymentText = (custSettings.HideLastPaymentDetails != null && custSettings.HideLastPaymentDetails == true)
 				?
 					string.Empty
@@ -976,39 +1013,72 @@ namespace WaveAccountingIntegration.Controllers
 			       $"IMPORTANT NOTE: Do not share your pin code with anyone for any reason !!! ";
 		}
 
-		private Dictionary<Customer, Transaction_History> GetLateCustomers()
+		private Dictionary<Customer, Transaction_History> GetLateCustomers(ulong narrowByCustomerId = 0)
 		{
 			var toReturn = new Dictionary<Customer, Transaction_History>();
 
+			if (memoryCache == null)
+				memoryCache = new MemoryCache(new MemoryCacheOptions
+				{
+
+				});
+
+			
+
 			var activeCustomers = GetActiveCustomers();
+			if (narrowByCustomerId > 0)
+				activeCustomers = activeCustomers.Where(x => x.id == narrowByCustomerId).ToList();
 
 			var allCustomerStatements = new Dictionary<Customer, Transaction_History>();
 
-			//Parallel.ForEach(activeCustomers, (customer) =>
-			foreach (var customer in activeCustomers)
+			Parallel.ForEach(activeCustomers, (customer) =>
+			//foreach (var customer in activeCustomers)
 			{
+
+				//var statement = _restService.Get<TransactionHistory>($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{customer.id}/statements/transaction-history/").Result;
+
+				//var trxHistory = statement.transaction_history.FirstOrDefault();
+
+				string serializedObject = "";
+				Transaction_History trxHistory = null;
+				var key = $"Transaction_History-{customer.id}";
+
 				try
 				{
-					//var statement = _restService.Get<TransactionHistory>($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{customer.id}/statements/transaction-history/").Result;
+					if (memoryCache.TryGetValue(key, out serializedObject))
+					{
+						trxHistory = JsonConvert.DeserializeObject<Transaction_History>(serializedObject);
+					}
+					else
+					{
+						trxHistory = GetStatementTrxHistory(customer.id);
 
-					//var trxHistory = statement.transaction_history.FirstOrDefault();
-					var trxHistory = GetStatementTrxHistory(customer.id);
+
+						memoryCache.Set(
+							key,
+							JsonConvert.SerializeObject(trxHistory),
+							new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(43200))
+						);
+					}
 
 					allCustomerStatements.Add(customer, trxHistory);
 				}
 				catch (Exception ex)
 				{
-					// ignored
-				}
-			}
-			//})
 
+				}
+			//}
+			})
 			;
 
 			foreach (var keyValuePair in allCustomerStatements/*.Where(x => x.Value.ending_balance > 0)*/.OrderByDescending(x => x.Value.ending_balance))
 			{
 				toReturn.Add(keyValuePair.Key, keyValuePair.Value);
 			}
+
+
+				
+			
 
 			return toReturn;
 		}
@@ -1049,18 +1119,11 @@ namespace WaveAccountingIntegration.Controllers
 			foreach (var inv in allCustInvoices)
 			{
 				var invPayments = _restService.Get<List<Payment>>(inv.payments_url).Result;
-				if(invPayments != null)
-				{
-					foreach (var pm in invPayments)
-					{
-						allCustInvPayments.Add(pm);
-					}
-				}
-				else
-				{
 
+				foreach (var pm in invPayments)
+				{
+					allCustInvPayments.Add(pm);
 				}
-				
 
 			}
 			//})
@@ -1094,9 +1157,14 @@ namespace WaveAccountingIntegration.Controllers
 
 			foreach (var pmt in allCustInvPayments)
 			{
+				DateTime? creditonDifferentDate = null;
+				if (pmt.memo.Contains("creditDate"))
+				{
+					//var memoObject = JsonConvert.DeserializeObject(pmt.memo);
+				}
 				separatePayments.Add(new Event
 				{
-					date = DateTime.Parse(pmt.payment_date),
+					date = creditonDifferentDate ?? DateTime.Parse(pmt.payment_date),
 					event_type = "payment",
 					total = pmt.amount,
 					//payment = pmt
@@ -1107,7 +1175,7 @@ namespace WaveAccountingIntegration.Controllers
 									group sp by sp.date into p
 									select new Event
 									{
-										date =p.First().date,
+										date = p.First().date,
 										event_type = p.First().event_type,
 										total = p.Sum(s=>s.total),
 									};

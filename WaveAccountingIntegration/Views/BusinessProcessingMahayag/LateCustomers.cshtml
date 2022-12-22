@@ -22,53 +22,67 @@
 				balance
 			</th>
 			<th>
-				last Payment <br /> amount
+				last
+				<br /> Payment
+				<br /> amount
 			</th>
 			<th>
-				last Payment <br /> date
+				last Payment
+				<br /> date
 			</th>
-
+			<th>
+				days 
+				<br /> behind
+			</th>
 			<th></th>
 		</tr>
 
 		@foreach (var item in Model)
 		{
 
-			try
+			var lastPayment = item.Value?.events?.Where(x => x != null && x.event_type == "payment")?.OrderByDescending(x => x.date).FirstOrDefault();
+			DateTime result;
+			var lastInvoice = item.Value?.events?
+				.Where(x => x != null && x.event_type == "invoice" && x.invoice.invoice_amount_due <= 25)?
+				.OrderByDescending(x => x.date).FirstOrDefault();
+
+			if (lastInvoice == null)
 			{
-				if (item.Value?.events == null)
-				{
-
-				}
-
-				var lastPayment = item.Value?.events?.Where(x => x != null && x.event_type == "payment")?.OrderByDescending(x => x.date).FirstOrDefault();
-
-				<tr>
-					<td>
-						@Html.DisplayFor(modelItem => item.Key.name)
-					</td>
-					<td>
-						@Html.DisplayFor(modelItem => item.Value.ending_balance)
-					</td>
-					<td>
-						@(lastPayment?.total)
-					</td>
-					<td>
-						@(lastPayment?.date.Value.ToISODateFormat())
-					</td>
-					<td>
-						@Html.ActionLink("EvictionDocs", "EvictionDocs", new { item.Key.id })
-					</td>
-
-				</tr>
-			}
-			catch(Exception ex)
-			{
-
+				lastInvoice = item.Value?.events?
+					.Where(x => x != null && x.event_type == "invoice")?
+					.OrderByDescending(x => x.date).FirstOrDefault();
 			}
 
+			var daysSinceLastFullyPaidInvoice = DateTime.Now -
+				(DateTime.TryParse(lastInvoice?.invoice.due_date, out result)
+						?
+							result
+						:
+							DateTime.MinValue
+				);
+
+			<tr>
+				<td>
+					| @Html.DisplayFor(modelItem => item.Key.name)
+				</td>
+				<td>
+					| @Html.DisplayFor(modelItem => item.Value.ending_balance)
+				</td>
+				<td>
+					| @(lastPayment?.total)
+				</td>
+				<td>
+					| @(lastPayment?.date.Value.ToISODateFormat())
+				</td>
+				<td>
+					| @if (daysSinceLastFullyPaidInvoice.Days < 10000)
+					{ @(daysSinceLastFullyPaidInvoice.Days) }
+				</td>
+				<td>
+					| @Html.ActionLink("EvictionDocs", "EvictionDocs", new { item.Key.id })
+				</td>
+			</tr>
 		}
-
 	</table>
 </body>
 </html>
