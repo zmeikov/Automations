@@ -139,9 +139,9 @@ namespace WaveAccountingIntegration.Models
 		public string url { get; set; }
 		public string account_number { get; set; }
 		public bool active { get; set; }
-		public string name { get; set; }
-		public string first_name { get; set; }
-		public string last_name { get; set; }
+		public string name { get; set; } = string.Empty;
+		public string first_name { get; set; } = string.Empty;
+		public string last_name { get; set; } = string.Empty;
 		public string email { get; set; }
 		public string fax_number { get; set; }
 		public string mobile_number { get; set; }
@@ -149,9 +149,9 @@ namespace WaveAccountingIntegration.Models
 		public string toll_free_number { get; set; }
 		public string website { get; set; }
 		public Currency currency { get; set; }
-		public string address1 { get; set; }
-		public string address2 { get; set; }
-		public string city { get; set; }
+		public string address1 { get; set; } = string.Empty;
+		public string address2 { get; set; } = string.Empty;
+		public string city { get; set; } = string.Empty;
 		public Province province { get; set; }
 		public Country country { get; set; }
 		public string postal_code { get; set; }
@@ -169,13 +169,27 @@ namespace WaveAccountingIntegration.Models
 		public class Update_Shipping_Details
 		{
 			public string ship_to_contact { get; set; }
+
 			public string delivery_instructions { get; set; }
+
+			public string phone_number { get; set; }
+			public string address1 { get; set; }
+			public string address2 { get; set; }
+			public string city { get; set; }
+			public string province { get; set; }
+			public string country { get; set; }
+			public string postal_code { get; set; }
 		}
 	}
 
 	public class CustomerUpdatePhone
 	{
 		public string phone_number { get; set; }
+	}
+
+	public class PaymentMemoObject
+	{
+		public DateTime creditDate { get; set; }
 	}
 
 	public class Address

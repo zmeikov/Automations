@@ -61,8 +61,13 @@ namespace WaveAccountingIntegration.Controllers
 		}
 
 
-		public string ExtractEmailFromString(string input)
+		public static string ExtractEmailFromString(string input)
 		{
+			if(input == null)
+			{
+				return null;
+			}
+
 			var RegexPattern = @"\b[A-Z0-9._-]+@[A-Z0-9][A-Z0-9.-]{0,61}[A-Z0-9]\.[A-Z.]{2,6}\b";
 
 			var emailRegex = new Regex(RegexPattern, RegexOptions.IgnoreCase);

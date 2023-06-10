@@ -66,7 +66,7 @@
 					| @Html.DisplayFor(modelItem => item.Key.name)
 				</td>
 				<td>
-					| @Html.DisplayFor(modelItem => item.Value.ending_balance)
+					@Html.DisplayFor(modelItem => item.Value.ending_balance)
 				</td>
 				<td>
 					| @(lastPayment?.total)
@@ -79,7 +79,7 @@
 					{ @(daysSinceLastFullyPaidInvoice.Days) }
 				</td>
 				<td>
-					| @Html.ActionLink("EvictionDocs", "EvictionDocs", new { item.Key.id })
+					@Html.ActionLink("EvictionDocs", "EvictionDocs", new { item.Key.id })
 				</td>
 			</tr>
 		}

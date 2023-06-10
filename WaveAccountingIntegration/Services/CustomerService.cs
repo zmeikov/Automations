@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading;
 using Common.Models;
 using Common.Services;
 using Newtonsoft.Json;
@@ -28,16 +29,23 @@ namespace WaveAccountingIntegration.Services
 
 		public RestResult<Customer> SaveUpdatedCustomerSettings(Customer customer, CustomerSettings updatedSettings, IRestService _restService)
 		{
-			var updatedCustomerSettings = new CustomerUpdateSettings
-			{
-				shipping_details = new CustomerUpdateSettings.Update_Shipping_Details
-				{
-					ship_to_contact = customer.shipping_details.ship_to_contact,
-					delivery_instructions = JsonConvert.SerializeObject(updatedSettings)
-				}
-			};
+			//var updatedCustomerSettings = new CustomerUpdateSettings
+			//{
+			//	shipping_details = new CustomerUpdateSettings.Update_Shipping_Details
+			//	{
+			//		ship_to_contact = customer.shipping_details.ship_to_contact,
+			//		delivery_instructions = JsonConvert.SerializeObject(updatedSettings)
+			//	}
+			//};
 
-			var updatedCustomerResult = _restService.Patch<Customer, CustomerUpdateSettings>(customer.url, updatedCustomerSettings);
+			//var updatedCustomerResult = _restService.Patch<Customer, CustomerUpdateSettings>(customer.url, updatedCustomerSettings);
+
+			customer.shipping_details.ship_to_contact = customer.shipping_details.ship_to_contact;
+			customer.shipping_details.delivery_instructions = JsonConvert.SerializeObject(updatedSettings);
+
+			var updatedCustomerResult = _restService.Patch<Customer, Customer>(customer.url, customer);
+
+			Thread.Sleep(5000);
 
 			return updatedCustomerResult;
 		}

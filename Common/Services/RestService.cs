@@ -108,7 +108,7 @@ namespace Common.Services
 
 			using (var httpClient = _httpClientServiceFactory.Create(url, _authenticationHeader))
 			{
-				var httpContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.UTF8, "application/json");
+				var httpContent = new StringContent(JsonConvert.SerializeObject(body), Encoding.ASCII, "application/json");
 
 				var response = httpClient.PatchAsync(string.Empty, httpContent).Result;
 

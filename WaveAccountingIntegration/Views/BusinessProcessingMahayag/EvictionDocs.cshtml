@@ -34,10 +34,10 @@
 <table class="table">
 	<tr>
 		<th>
-			customer.name
+			Name
 		</th>
 		<th>
-			ending_balance
+			Ending Balance
 		</th>
 
 	</tr>
@@ -64,22 +64,16 @@
 <table>
 	<tr>
 		<th>
-			| Date
-		</th>
-		<th>
-			| Balance
-		</th>
-		<th>
 			| Event
 		</th>
 		<th>
 			| Amount
 		</th>
 		<th>
-			| Paid
+			| Balance
 		</th>
 		<th>
-			| Due
+			| Date
 		</th>
 		<th>
 			| Dep/Rent Base
@@ -96,30 +90,17 @@
 		<th>
 			| Court/Sheriff Ev
 		</th>
-
+		<th>
+			| Paid
+		</th>
+		<th>
+			| Due
+		</th>
 	</tr>
 
 	@foreach (var item in Model.Values.First().events/*.Where(x => x.total != 0)*/.OrderByDescending(x => x.date).ThenByDescending(x=>x.event_type))
 	{
 	<tr>
-		<td>
-			| @item.date.Value.ToISODateFormat()
-		</td>
-		<td>
-			|
-			@{
-				<span style="background-color:lightcyan"> @runningBalance.ToString("0.##")</span>
-
-				if (item.event_type != "payment")
-				{
-					runningBalance -= item.total;
-				}
-				else
-				{
-					runningBalance += item.total;
-				}
-			}
-		</td>
 		<td>
 			| @if (item.event_type != "payment")
 			{
@@ -148,7 +129,8 @@
 				{
 					@: (@Html.DisplayFor(modelItem => item.total))
 				}
-			}else if (item.event_type != "payment")
+			}
+			else if (item.event_type != "payment")
 			{
 				if (item.total >= 0)
 				{
@@ -161,20 +143,22 @@
 			}
 		</td>
 		<td>
-			| @if (item.event_type != "payment")
-			{
-				if ((item.total - item.invoice.invoice_amount_due) >= 0)
+			|
+			@{
+				<span style="background-color:lightcyan"> @runningBalance.ToString("0.##")</span>
+
+				if (item.event_type != "payment")
 				{
-					@: @(item.total - item.invoice.invoice_amount_due)
+					runningBalance -= item.total;
 				}
 				else
 				{
-					@: (@(item.total - item.invoice.invoice_amount_due))
+					runningBalance += item.total;
 				}
 			}
 		</td>
 		<td>
-			| @Html.DisplayFor(modelItem => item.invoice.invoice_amount_due)
+			| @item.date.Value.ToISODateFormat()
 		</td>
 		<td>
 			| @if (item.event_type != "payment")
@@ -205,6 +189,22 @@
 			{
 				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("COURT EV")).Sum(x => x.price * x.quantity)) / @(item.invoice.items.Where(x => x.description.ToUpper().Contains("SL SHER") && x.product.name.ToUpper().Contains("MISC")).Sum(x => x.price * x.quantity))
 			}
+		</td>
+		<td>
+			| @if (item.event_type != "payment")
+			{
+				if ((item.total - item.invoice.invoice_amount_due) >= 0)
+				{
+					@: @(item.total - item.invoice.invoice_amount_due)
+				}
+				else
+				{
+					@: (@(item.total - item.invoice.invoice_amount_due))
+				}
+			}
+		</td>
+		<td>
+			| @Html.DisplayFor(modelItem => item.invoice.invoice_amount_due)
 		</td>
 	</tr>
 	}

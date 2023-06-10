@@ -79,7 +79,7 @@ namespace WaveAccountingIntegration.Controllers
 									//sent alert to name 1
 									if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
 									{
-										var name = customer.first_name.ToUpper().Trim();
+										var name = customer.first_name ?? "".ToUpper().Trim();
 										var body = GetAutoPinResetAndTextSmsAlertBody(name, oldPin, newPin);
 
 										messages.Add($"alerting new/old pin: {newPin}/{oldPin} for customer:{name} on {ExtractEmailFromString(customer.address1)}");
@@ -89,7 +89,7 @@ namespace WaveAccountingIntegration.Controllers
 									//sent alert to name 2
 									if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
 									{
-										var name = customer.last_name.ToUpper().Trim();
+										var name = customer.last_name?? "".ToUpper().Trim();
 										var body = GetAutoPinResetAndTextSmsAlertBody(name, oldPin, newPin);
 
 										messages.Add($"alerting new/old pin: {newPin}/{oldPin} for customer:{name} on {ExtractEmailFromString(customer.address1)}");
@@ -139,18 +139,18 @@ namespace WaveAccountingIntegration.Controllers
 					daysSinceLastSmsAlert >= minDaysBetweenAlerts &&
 					daysSinceLastPayment >= 7 &&
 					lastInvoice.date <= DateTime.Today.Date.AddDays(-5) &&
-					DateTime.Now.Hour > 7 &&
-					DateTime.Now.Hour < 13 &&
+					DateTime.Now.Hour >= 10 &&
+					DateTime.Now.Hour < 20 &&
 					DateTime.Now.DayOfWeek != DayOfWeek.Saturday &&
 					DateTime.Now.DayOfWeek != DayOfWeek.Sunday &&
 					custSettings.SendSmsAlerts == true &&
-					customerKvp.Value.ending_balance >= 25
+					customerKvp.Value.ending_balance >= 45
 				)
 				{
 					//sent alert to name 1
 					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
 					{
-						var name = customer.first_name.ToUpper().Trim();
+						var name = customer.first_name?? "".ToUpper().Trim();
 						var body = GetLateCustomerSmsAlertBody(name, customerKvp, lastPayment, invoiceDue, custSettings);
 						           
 						messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address1)}");
@@ -160,7 +160,7 @@ namespace WaveAccountingIntegration.Controllers
 					//sent alert to name 2
 					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
 					{
-						var name = customer.last_name.ToUpper().Trim();
+						var name = customer.last_name?? "".ToUpper().Trim();
 						var body = GetLateCustomerSmsAlertBody(name, customerKvp, lastPayment, invoiceDue, custSettings);
 
 						messages.Add($"alerting late customer: {name} on {ExtractEmailFromString(customer.address2)}");
@@ -175,11 +175,14 @@ namespace WaveAccountingIntegration.Controllers
 				{
 					//skip alert
 					messages.Add($"Skipping SmsAlert LastSmsAlertSent: {(custSettings.LastSmsAlertSent.HasValue ? custSettings.LastSmsAlertSent.Value.ToUSADateFormat() : string.Empty)}, " +
+					             $"daysSinceLastSmsAlert: {daysSinceLastSmsAlert:00}, " +
 					             $"minDaysBetweenAlerts: {minDaysBetweenAlerts:00}, " +
-					             $"lastInvoice.date: {lastInvoice.date.Value.ToUSADateFormat()}, " +
+								 $"lastInvoice.date: {lastInvoice.date.Value.ToUSADateFormat()}, " +
 					             $"daysSinceLastPayment: {daysSinceLastPayment}, " +
 					             $"SendSmsAlerts: {custSettings.SendSmsAlerts}, " +
-					             $"ending_balance: {customerKvp.Value.ending_balance}, < $25" +
+					             //$"DateTime.Now.DayOfWeek: {DateTime.Now.DayOfWeek} (not between Mon to Fri), " +
+					             $"DateTime.Now.Hour: {DateTime.Now.Hour} (not between 10 and 20), " +
+								 $"ending_balance: {customerKvp.Value.ending_balance}, (less than $45)" +
 					             $"for: {customerKvp.Key.name}.");
 				}
 			}
@@ -207,19 +210,21 @@ namespace WaveAccountingIntegration.Controllers
 
 			var messages = new ConcurrentBag<string>();
 
-			Parallel.ForEach(customersToAlert, (customer) =>
+			//Parallel.ForEach(customersToAlert, (customer) =>
+			foreach (var customer in customersToAlert)
 			{
 				var custSettings = _customerService.ExctractSettingsFromCustomerObject(customer);
 
-				if 
+				if
 				(
-					custSettings.SendSmsAlerts == true
+					custSettings.SendSmsAlerts == true 
+					//&& (custSettings.LastBrodcastAlertSmsAlertSent ?? DateTime.MaxValue).Date < DateTime.Now.Date
 				)
 				{
 					//sent alert to name 1
 					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
 					{
-						var name = customer.first_name.ToUpper().Trim();
+						var name = customer.first_name ?? "".ToUpper().Trim();
 						var body = $"Hello {name}, {message}";
 
 						messages.Add($"BrodcastAlert customer:{name} on {ExtractEmailFromString(customer.address1)}");
@@ -229,14 +234,14 @@ namespace WaveAccountingIntegration.Controllers
 					//sent alert to name 2
 					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
 					{
-						var name = customer.last_name.ToUpper().Trim();
+						var name = customer.last_name ?? "".ToUpper().Trim();
 						var body = $"Hello {name}, {message}";
 
 						messages.Add($"BrodcastAlert customer: {name} on {ExtractEmailFromString(customer.address2)}");
 						_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
 					}
 
-					custSettings.LastSmsAlertSent = DateTime.Now;
+					custSettings.LastBrodcastAlertSmsAlertSent = DateTime.Now;
 					_customerService.SaveUpdatedCustomerSettings(customer, custSettings, _restService);
 
 				}
@@ -244,9 +249,11 @@ namespace WaveAccountingIntegration.Controllers
 				{
 					//skip alert
 					messages.Add($"Skipping BrodcastAlert Customer: SendSmsAlerts: {custSettings.SendSmsAlerts}, " +
+								$"(custSettings.LastBrodcastAlertSmsAlertSent ?? DateTime.MaxValue).Date: {(custSettings.LastBrodcastAlertSmsAlertSent ?? DateTime.MaxValue).Date < DateTime.Now.Date}; < DateTime.Now.Date: {DateTime.Now.Date }; " +
 								 $"for: {customer.name}.");
 				}
-			});
+			}
+			//});
 
 
 			ViewBag.Message = string.Join(Environment.NewLine, messages);
@@ -379,6 +386,7 @@ namespace WaveAccountingIntegration.Controllers
 					LastPinResetDate = DateTime.Today.AddDays(-10),
 					LastSmsAlertSent = DateTime.Today.AddDays(-10),
 					LastTrashSmsAlertSent = DateTime.Today.AddDays(-10),
+					LastBrodcastAlertSmsAlertSent = DateTime.Today.AddDays(-10),
 					CustomDaysBetweenSmsAlerts = 5,
 					SendSmsAlerts = true,
 					SendTrashSmsAlerts = true,
@@ -435,6 +443,7 @@ namespace WaveAccountingIntegration.Controllers
 
 					if (custSettings.LastSmsAlertSent == null) { custSettings.LastSmsAlertSent = defaultCustSettings.LastSmsAlertSent; messages.Add($"Setting default value LastSmsAlertSent to {custSettings.LastSmsAlertSent} for customer: {customer.name}"); changesMade = true; }
 					if (custSettings.LastTrashSmsAlertSent == null) { custSettings.LastTrashSmsAlertSent = defaultCustSettings.LastTrashSmsAlertSent; messages.Add($"Setting default value LastTrashSmsAlertSent to {custSettings.LastTrashSmsAlertSent} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.LastBrodcastAlertSmsAlertSent == null) { custSettings.LastBrodcastAlertSmsAlertSent = defaultCustSettings.LastBrodcastAlertSmsAlertSent; messages.Add($"Setting default value LastBrodcastAlertSmsAlertSent to {custSettings.LastBrodcastAlertSmsAlertSent} for customer: {customer.name}"); changesMade = true; }
 					if (custSettings.CustomDaysBetweenSmsAlerts == null) { custSettings.CustomDaysBetweenSmsAlerts = defaultCustSettings.CustomDaysBetweenSmsAlerts; messages.Add($"Setting default value CustomDaysBetweenSmsAlerts to {custSettings.CustomDaysBetweenSmsAlerts} for customer: {customer.name}"); changesMade = true; }
 
 
@@ -624,7 +633,7 @@ namespace WaveAccountingIntegration.Controllers
 									if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
 									{
 										
-										var name = customer.first_name.ToUpper().Trim();
+										var name = customer.first_name?? "".ToUpper().Trim();
 										var body = GetNewlyAddedConsolidatedInvoiceSmsAlertBody(name, sourceInv, targetInvoice, custSettings, amountAdded, itemsAdded, statement, "consolidated");
 
 										//messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address1)}");
@@ -634,7 +643,7 @@ namespace WaveAccountingIntegration.Controllers
 									//sent alert to name 2
 									if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
 									{
-										var name = customer.last_name.ToUpper().Trim();
+										var name = customer.last_name?? "".ToUpper().Trim();
 										var body = GetNewlyAddedConsolidatedInvoiceSmsAlertBody(name, sourceInv, targetInvoice, custSettings, amountAdded, itemsAdded, statement, "consolidated");
 
 										//messages.Add($"alerting late customer: {name} on {ExtractEmailFromString(customer.address2)}");
@@ -685,7 +694,7 @@ namespace WaveAccountingIntegration.Controllers
 					if (custSettings.SendSmsAlerts == true && 
 						custSettings.SendTrashSmsAlerts == true && 
 						DateTime.Now.TimeOfDay >= TimeSpan.FromHours(8) && 
-						custSettings.LastTrashSmsAlertSent < DateTime.Today)
+						custSettings.LastTrashSmsAlertSent?.Date < DateTime.Today.Date)
 					{
 						#region sms alert customers for trash pickup.
 
@@ -693,7 +702,7 @@ namespace WaveAccountingIntegration.Controllers
 						if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
 						{
 
-							var name = customer.first_name.ToUpper().Trim();
+							var name = customer.first_name?? "".ToUpper().Trim();
 							var body = GetTrashSmsAlertBody(name, recycle);
 
 							ViewBag.Message += $"alerting trash for customer:{name} on {ExtractEmailFromString(customer.address1)}\r\n";
@@ -703,7 +712,7 @@ namespace WaveAccountingIntegration.Controllers
 						//sent alert to name 2
 						if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
 						{
-							var name = customer.last_name.ToUpper().Trim();
+							var name = customer.last_name?? "".ToUpper().Trim();
 							var body = GetTrashSmsAlertBody(name, recycle);
 
 							ViewBag.Message += $"alerting trash for customer:{name} on {ExtractEmailFromString(customer.address2)}\r\n";
@@ -801,7 +810,7 @@ namespace WaveAccountingIntegration.Controllers
 						//sent alert to name 1
 						if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(invoice.customer.address1)))
 						{
-							var name = invoice.customer.first_name.ToUpper().Trim();
+							var name = invoice.customer.first_name?? "".ToUpper().Trim();
 							var body = GetNewlyAddedConsolidatedInvoiceSmsAlertBody(name, invoice, invoice, custSettings, amountAdded, itemsAdded, statement, "newly created");
 
 							//messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address1)}");
@@ -811,7 +820,7 @@ namespace WaveAccountingIntegration.Controllers
 						//sent alert to name 2
 						if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(invoice.customer.address2)))
 						{
-							var name = invoice.customer.last_name.ToUpper().Trim();
+							var name = invoice.customer.last_name?? "".ToUpper().Trim();
 							var body = GetNewlyAddedConsolidatedInvoiceSmsAlertBody(name, invoice, invoice, custSettings, amountAdded, itemsAdded, statement, "newly created");
 
 							//messages.Add($"alerting late customer: {name} on {ExtractEmailFromString(customer.address2)}");
@@ -1071,7 +1080,7 @@ namespace WaveAccountingIntegration.Controllers
 			})
 			;
 
-			foreach (var keyValuePair in allCustomerStatements/*.Where(x => x.Value.ending_balance > 0)*/.OrderByDescending(x => x.Value.ending_balance))
+			foreach (var keyValuePair in allCustomerStatements/*.Where(x => x.Value.ending_balance > 0)*/.OrderByDescending(x => x.Value.ending_balance).ThenBy(x=>x.Key.name))
 			{
 				toReturn.Add(keyValuePair.Key, keyValuePair.Value);
 			}
@@ -1160,7 +1169,15 @@ namespace WaveAccountingIntegration.Controllers
 				DateTime? creditonDifferentDate = null;
 				if (pmt.memo.Contains("creditDate"))
 				{
-					//var memoObject = JsonConvert.DeserializeObject(pmt.memo);
+					try
+					{
+						var memoObject = JsonConvert.DeserializeObject<PaymentMemoObject>(pmt.memo);
+						creditonDifferentDate = memoObject.creditDate;
+					}
+					catch (Exception ex)
+					{
+						//ignore
+					}
 				}
 				separatePayments.Add(new Event
 				{

@@ -19,6 +19,8 @@ namespace WaveAccountingIntegration.Models
 
 		public DateTime? LastSmsAlertSent { get; set; }
 		public DateTime? LastTrashSmsAlertSent { get; set; }
+		public DateTime? LastBrodcastAlertSmsAlertSent { get; set; }
+		
 		public int? CustomDaysBetweenSmsAlerts { get; set; }
 
 
