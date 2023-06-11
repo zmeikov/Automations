@@ -319,7 +319,7 @@
     <Content Include="Views\BusinessProcessingMahayag\ConsolidateInvoices.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\SetCustomerDefaults.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\RefreshBankConnections.cshtml" />
-    <Content Include="Views\BusinessProcessingMahayag\LateCustomers.cshtml" />
+    <Content Include="Views\BusinessProcessingMahayag\AllCustomers.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\EvictionDocs.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\CourtDox3DayLate.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\15DayNoCause.cshtml" />

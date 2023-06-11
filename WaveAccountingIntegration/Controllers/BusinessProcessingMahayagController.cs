@@ -115,7 +115,7 @@ namespace WaveAccountingIntegration.Controllers
 
 		public ActionResult SmsAlertLateCustomers(int daysBetweenAlerts = 3, ulong narrowByCustomerId = 0)
 		{
-			var lateCustomers = GetLateCustomers(narrowByCustomerId);
+			var lateCustomers = Customers(narrowByCustomerId);
 			var messages = new ConcurrentBag<string>();
 
 			var customersWithBalance = lateCustomers.Where(w => w.Value.ending_balance > 0);
@@ -316,11 +316,6 @@ namespace WaveAccountingIntegration.Controllers
 			}
 		}
 		
-		public ActionResult LateCustomers()
-		{
-			return View(GetLateCustomers());
-		}
-
 		public ActionResult RefreshBankConnections()
 		{
 			var refreshedSites = new ConcurrentBag<Connected_Site>();
@@ -1022,7 +1017,11 @@ namespace WaveAccountingIntegration.Controllers
 			       $"IMPORTANT NOTE: Do not share your pin code with anyone for any reason !!! ";
 		}
 
-		private Dictionary<Customer, Transaction_History> GetLateCustomers(ulong narrowByCustomerId = 0)
+		public ActionResult AllCustomers(ulong narrowByCustomerId = 0)
+		{
+			return View(Customers(narrowByCustomerId));
+		}
+		private Dictionary<Customer, Transaction_History> Customers(ulong narrowByCustomerId = 0)
 		{
 			var toReturn = new Dictionary<Customer, Transaction_History>();
 
