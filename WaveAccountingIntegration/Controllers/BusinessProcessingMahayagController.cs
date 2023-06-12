@@ -144,7 +144,7 @@ namespace WaveAccountingIntegration.Controllers
 					DateTime.Now.DayOfWeek != DayOfWeek.Saturday &&
 					DateTime.Now.DayOfWeek != DayOfWeek.Sunday &&
 					custSettings.SendSmsAlerts == true &&
-					customerKvp.Value.ending_balance >= 45
+					customerKvp.Value.ending_balance >= 65
 				)
 				{
 					//sent alert to name 1
@@ -260,7 +260,7 @@ namespace WaveAccountingIntegration.Controllers
 			return View();
 		}
 
-		public ActionResult EvictionDocs(ulong id, string form)
+		public ActionResult Ledger(ulong id, string form)
 		{
 			var customerStatement = new Dictionary<Customer, Transaction_History>();
 
@@ -1017,11 +1017,11 @@ namespace WaveAccountingIntegration.Controllers
 			       $"IMPORTANT NOTE: Do not share your pin code with anyone for any reason !!! ";
 		}
 
-		public ActionResult AllCustomers(ulong narrowByCustomerId = 0)
+		public ActionResult AllCustomers(ulong narrowByCustomerId = 0, bool? inactive = false)
 		{
-			return View(Customers(narrowByCustomerId));
+			return View(Customers(narrowByCustomerId, inactive));
 		}
-		private Dictionary<Customer, Transaction_History> Customers(ulong narrowByCustomerId = 0)
+		private Dictionary<Customer, Transaction_History> Customers(ulong? narrowByCustomerId = 0, bool? inactive = false)
 		{
 			var toReturn = new Dictionary<Customer, Transaction_History>();
 
@@ -1031,16 +1031,30 @@ namespace WaveAccountingIntegration.Controllers
 
 				});
 
-			
+			var customers = new List<Customer>();
 
-			var activeCustomers = GetActiveCustomers();
-			if (narrowByCustomerId > 0)
-				activeCustomers = activeCustomers.Where(x => x.id == narrowByCustomerId).ToList();
+			if(inactive == true)
+			{
+				var inactiveCustomers = GetInActiveCustomers();
+				if (narrowByCustomerId > 0)
+					inactiveCustomers = inactiveCustomers.Where(x => x.id == narrowByCustomerId).ToList();
+
+				customers = inactiveCustomers;
+			}
+			else
+			{
+				var activeCustomers = GetActiveCustomers();
+				if (narrowByCustomerId > 0)
+					activeCustomers = activeCustomers.Where(x => x.id == narrowByCustomerId).ToList();
+
+				customers = activeCustomers;
+			}
+
 
 			var allCustomerStatements = new Dictionary<Customer, Transaction_History>();
 
-			Parallel.ForEach(activeCustomers, (customer) =>
-			//foreach (var customer in activeCustomers)
+			Parallel.ForEach(customers, (customer) =>
+			//foreach (var customer in customers)
 			{
 
 				//var statement = _restService.Get<TransactionHistory>($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{customer.id}/statements/transaction-history/").Result;
@@ -1105,10 +1119,13 @@ namespace WaveAccountingIntegration.Controllers
 
 			int count = 0;
 			int page = 1;
+			var pageSize = 50;
+			var shufflePageSize = false;
+
 			do
 			{
 				var list = _restService.Get<List<Invoice>>
-					($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?page_size=50&page={page}&customer.id={customerId}")
+					($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?page_size={pageSize}&page={page}&customer.id={customerId}&sort=-invoice_date")
 				.Result;
 
 				allCustInvoices.AddRange(list);
@@ -1117,9 +1134,44 @@ namespace WaveAccountingIntegration.Controllers
 				count = list.Count;
 
 				if (page > 50)
+				{
+					shufflePageSize = true;
 					break;
+				}
+					
 			}
-			while (count == 50);
+			while (count == pageSize);
+
+			if(shufflePageSize == true)
+			{
+				
+				count = 0;
+				page = 1;
+				pageSize = new Random().Next(26, 49);
+				shufflePageSize = false;
+
+				allCustInvoices.Clear();
+
+				do
+				{
+					var list = _restService.Get<List<Invoice>>
+						($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/invoices/?page_size={pageSize}&page={page}&customer.id={customerId}&sort=-invoice_date")
+					.Result;
+
+					allCustInvoices.AddRange(list);
+
+					page++;
+					count = list.Count;
+
+					if (page > 50)
+					{
+						shufflePageSize = true;
+						break;
+					}
+
+				}
+				while (count == pageSize && shufflePageSize == false);
+			}
 
 			var allCustInvPayments = new List<Payment>();
 
@@ -1216,7 +1268,17 @@ namespace WaveAccountingIntegration.Controllers
 			var allCustomers = _restService.Get<List<Customer>>(
 				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/").Result;
 
-			var activeCustomers = allCustomers.Where(x => x.active && !x.name.StartsWith("XX")).ToList();
+			var activeCustomers = allCustomers.Where(x => !x.name.StartsWith("XX")).ToList();
+
+			return activeCustomers;
+		}
+
+		private List<Customer> GetInActiveCustomers()
+		{
+			var allCustomers = _restService.Get<List<Customer>>(
+				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/").Result;
+
+			var activeCustomers = allCustomers.Where(x => x.name.StartsWith("XX")).ToList();
 
 			return activeCustomers;
 		}

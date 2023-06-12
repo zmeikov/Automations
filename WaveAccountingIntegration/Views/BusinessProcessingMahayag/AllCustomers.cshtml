@@ -9,7 +9,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>LateCustomers</title>
+    <title>AllCustomers</title>
 </head>
 <body>
 
@@ -43,7 +43,7 @@
 			var lastPayment = item.Value?.events?.Where(x => x != null && x.event_type == "payment")?.OrderByDescending(x => x.date).FirstOrDefault();
 			DateTime result;
 			var lastInvoice = item.Value?.events?
-				.Where(x => x != null && x.event_type == "invoice" && x.invoice.invoice_amount_due <= 25)?
+				.Where(x => x != null && x.event_type == "invoice" && (x.invoice.invoice_amount_due <= 65 && DateTime.Parse(x.invoice.invoice_date) <= DateTime.Now))?
 				.OrderByDescending(x => x.date).FirstOrDefault();
 
 			if (lastInvoice == null)
@@ -60,6 +60,19 @@
 						:
 							DateTime.MinValue
 				);
+
+			if(item.Value?.events?
+				.Where(x => x != null && x.event_type == "invoice").Count() == 1 && item.Value?.events?
+				.Where(x => x != null && x.event_type == "invoice").First().invoice.invoice_amount_due > 0)
+			{
+				daysSinceLastFullyPaidInvoice = DateTime.Now -
+				(DateTime.TryParse(lastInvoice?.invoice.invoice_date, out result)
+						?
+							result
+						:
+							DateTime.MinValue
+				);
+			}
 
 			<tr>
 				<td>
@@ -79,7 +92,7 @@
 					{ @(daysSinceLastFullyPaidInvoice.Days) }
 				</td>
 				<td>
-					@Html.ActionLink("EvictionDocs", "EvictionDocs", new { item.Key.id })
+					@Html.ActionLink("Ledger", "Ledger", new { item.Key.id })
 				</td>
 			</tr>
 		}
