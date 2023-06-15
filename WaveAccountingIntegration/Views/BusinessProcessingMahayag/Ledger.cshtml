@@ -10,7 +10,7 @@
 		"3DayLate",
 		"5DayTennantAtWill",
 		"15DayNoCause",
-		"CourtDox3DayLate"
+		"CourtForms"
 
 	};
 
@@ -28,7 +28,7 @@
 
 	@foreach (var notice in notices)
 	{
-		@Html.ActionLink(notice, "EvictionDocs", new{id = customerId, form = notice}) @:||
+		@Html.ActionLink(notice, "Ledger", new{id = customerId, form = notice}) @:||
 	}
 
 <table class="table">

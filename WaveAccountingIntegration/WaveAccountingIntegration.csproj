@@ -321,7 +321,7 @@
     <Content Include="Views\BusinessProcessingMahayag\RefreshBankConnections.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\AllCustomers.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\Ledger.cshtml" />
-    <Content Include="Views\BusinessProcessingMahayag\CourtDox3DayLate.cshtml" />
+    <Content Include="Views\BusinessProcessingMahayag\CourtForms.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\15DayNoCause.cshtml" />
     <None Include="Views\BusinessProcessingMahayag\3DayLate.cshtml" />
     <Content Include="Views\BusinessProcessingMahayag\5DayTennantAtWill.cshtml" />

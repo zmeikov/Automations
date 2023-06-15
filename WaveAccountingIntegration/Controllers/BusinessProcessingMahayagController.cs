@@ -260,6 +260,11 @@ namespace WaveAccountingIntegration.Controllers
 			return View();
 		}
 
+		public ActionResult EvictionDocs(ulong id, string form)
+		{
+			return RedirectToAction("Ledger", new { id, form });
+		}
+
 		public ActionResult Ledger(ulong id, string form)
 		{
 			var customerStatement = new Dictionary<Customer, Transaction_History>();
@@ -1015,6 +1020,11 @@ namespace WaveAccountingIntegration.Controllers
 			       $"in order to prevent stale codes and to improve security. " +
 			       $"Please be advised only one code will be active at the same time per tenant. " +
 			       $"IMPORTANT NOTE: Do not share your pin code with anyone for any reason !!! ";
+		}
+
+		public ActionResult LateCustomers()
+		{
+			return RedirectToAction("AllCustomers");
 		}
 
 		public ActionResult AllCustomers(ulong narrowByCustomerId = 0, bool? inactive = false)
