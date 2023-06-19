@@ -1035,8 +1035,9 @@
 <div class="t m0 x16 h10 ycd ff7 fs3 fc1 sc0 ls0 ws0">
 	@{ 
 		var dateFrom = entry.Value.events?.Where(x => x.event_type == "invoice" && x.invoice.invoice_amount_due > 0).OrderBy(x => x.date).FirstOrDefault().date.Value.ToUSADateFormat();
+		var dateTo = entry.Value.events?.Where(x => x.event_type == "invoice" && x.invoice.invoice_amount_due > 0).OrderBy(x => x.date).LastOrDefault().invoice.due_date.ToUSADateFormat();
 	}
- Unpaid/Short paid rent from @dateFrom up to and including @ViewBag.EndOfLeaseDate
+ Unpaid/Short paid rent from @dateFrom up to and including @dateTo
 </div>
 <div class="t m0 x16 h10 yce ff7 fs3 fc1 sc0 ls0 ws0">
  ________________________________________________________________________

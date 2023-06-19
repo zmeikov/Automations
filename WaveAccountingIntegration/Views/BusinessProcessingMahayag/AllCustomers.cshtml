@@ -31,7 +31,11 @@
 				<br /> date
 			</th>
 			<th>
-				days 
+				days since
+				<br /> last Payment
+			</th>
+			<th>
+				days
 				<br /> behind
 			</th>
 			<th></th>
@@ -74,25 +78,36 @@
 				);
 			}
 
+			var daysSinceLaspayment = DateTime.Now -
+				(DateTime.TryParse(lastPayment?.date.Value.ToString(), out result)
+						?
+							result
+						:
+							DateTime.MinValue
+				);
+
 			<tr>
 				<td>
-					| @Html.DisplayFor(modelItem => item.Key.name)
+					@Html.ActionLink(item.Key.name, "Ledger", new { item.Key.id })
 				</td>
 				<td>
-					@Html.DisplayFor(modelItem => item.Value.ending_balance)
+					@Html.ActionLink(item.Value.ending_balance.ToString(), "Ledger", new { item.Key.id })
 				</td>
 				<td>
-					| @(lastPayment?.total)
+					| @Html.ActionLink(lastPayment?.total.ToString(), "Ledger", new { item.Key.id })
 				</td>
 				<td>
-					| @(lastPayment?.date.Value.ToISODateFormat())
+					| @Html.ActionLink(lastPayment?.date.Value.ToISODateFormat(), "Ledger", new { item.Key.id })
+				</td>
+				<td>
+					| @(daysSinceLaspayment.Days.ToString())
 				</td>
 				<td>
 					| @if (daysSinceLastFullyPaidInvoice.Days < 10000)
 					{ @(daysSinceLastFullyPaidInvoice.Days) }
 				</td>
 				<td>
-					@Html.ActionLink("Ledger", "Ledger", new { item.Key.id })
+					@*Html.ActionLink("Ledger", "Ledger", new { item.Key.id })*@
 				</td>
 			</tr>
 		}

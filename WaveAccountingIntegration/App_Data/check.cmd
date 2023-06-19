@@ -1,6 +1,11 @@
 @echo off
 setlocal enabledelayedexpansion
 
+timeout 5
+
+
+
+
 cd C:\Users\todor.peykov\Dropbox\SyncTargets\Code\C#\Web\Automations\WaveAccountingIntegration\App_Data
 
 
