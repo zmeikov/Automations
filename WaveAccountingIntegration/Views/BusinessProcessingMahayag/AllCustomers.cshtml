@@ -94,10 +94,10 @@
 					@Html.ActionLink(item.Value.ending_balance.ToString(), "Ledger", new { item.Key.id })
 				</td>
 				<td>
-					| @Html.ActionLink(lastPayment?.total.ToString(), "Ledger", new { item.Key.id })
+					| @Html.ActionLink(lastPayment?.total.ToString() ?? "none", "Ledger", new { item.Key.id })
 				</td>
 				<td>
-					| @Html.ActionLink(lastPayment?.date.Value.ToISODateFormat(), "Ledger", new { item.Key.id })
+					| @Html.ActionLink(lastPayment?.date.Value.ToISODateFormat() ?? "none", "Ledger", new { item.Key.id })
 				</td>
 				<td>
 					| @(daysSinceLaspayment.Days.ToString())

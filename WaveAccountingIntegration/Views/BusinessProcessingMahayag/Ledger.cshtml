@@ -79,10 +79,10 @@
 			| Dep/Rent Base
 		</th>
 		<th>
-			| Late/Pet
+			| Utilities
 		</th>
 		<th>
-			| Utilities
+			| Late/Pet
 		</th>
 		<th>
 			| Credits
@@ -163,13 +163,7 @@
 		<td>
 			| @if (item.event_type != "payment")
 			{
-				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("DEPOSIT")).Sum(x => x.price * x.quantity)) / @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("RI")).Sum(x => x.price * x.quantity))
-			}
-		</td>
-		<td>
-			| @if (item.event_type != "payment")
-			{
-				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("LATE")).Sum(x => x.price * x.quantity)) / @(item.invoice.items.Where(x => x.description.ToUpper().Contains("PET") && x.product.name.ToUpper().Contains("MISC")).Sum(x => x.price * x.quantity))
+				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("DEPOSIT")).Sum(x => x.price * x.quantity).ToString("0.##")) / @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("RI")).Sum(x => x.price * x.quantity).ToString("0.##"))
 			}
 		</td>
 		<td>
@@ -181,13 +175,19 @@
 		<td>
 			| @if (item.event_type != "payment")
 			{
-				@:  (@(item.invoice.items.Where(x => x.description.ToUpper().Contains("CREDIT FOR")).Sum(x => x.price * x.quantity).ToString("0.##")))
+				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("LATE")).Sum(x => x.price * x.quantity).ToString("0.##")) / @(item.invoice.items.Where(x => x.description.ToUpper().Contains("PET") && x.product.name.ToUpper().Contains("MISC")).Sum(x => x.price * x.quantity).ToString("0.##"))
 			}
 		</td>
 		<td>
 			| @if (item.event_type != "payment")
 			{
-				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("COURT EV")).Sum(x => x.price * x.quantity)) / @(item.invoice.items.Where(x => x.description.ToUpper().Contains("SL SHER") && x.product.name.ToUpper().Contains("MISC")).Sum(x => x.price * x.quantity))
+				@:  (@(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("CREDIT") && x.description.ToUpper().Contains("CREDIT FOR")).Sum(x => x.price * x.quantity).ToString("0.##")))
+			}
+		</td>
+		<td>
+			| @if (item.event_type != "payment")
+			{
+				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("COURT EV")).Sum(x => x.price * x.quantity).ToString("0.##")) / @(item.invoice.items.Where(x => x.description.ToUpper().Contains("SL SHER") && x.product.name.ToUpper().Contains("MISC")).Sum(x => x.price * x.quantity).ToString("0.##"))
 			}
 		</td>
 		<td>

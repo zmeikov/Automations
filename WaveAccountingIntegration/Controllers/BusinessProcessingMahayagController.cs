@@ -272,7 +272,8 @@ namespace WaveAccountingIntegration.Controllers
 			var customer = _restService.Get<Customer>(
 				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{id}/").Result;
 			
-			var statement = GetStatement(id, string.IsNullOrWhiteSpace(form) || form.Contains("Court"));
+			var statement = GetStatement(id, getItems:(string.IsNullOrWhiteSpace(form) || form.Contains("Court")), getOnlyLastPayment:false);
+			//    statement = GetStatement(id, string.IsNullOrWhiteSpace(form) || form.Contains("Court"));
 
 			var trxHistory = statement.transaction_history.FirstOrDefault();
 
@@ -1063,8 +1064,8 @@ namespace WaveAccountingIntegration.Controllers
 
 			var allCustomerStatements = new Dictionary<Customer, Transaction_History>();
 
-			Parallel.ForEach(customers, (customer) =>
-			//foreach (var customer in customers)
+			//Parallel.ForEach(customers, (customer) =>
+			foreach (var customer in customers)
 			{
 
 				//var statement = _restService.Get<TransactionHistory>($"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{customer.id}/statements/transaction-history/").Result;
@@ -1083,13 +1084,14 @@ namespace WaveAccountingIntegration.Controllers
 					}
 					else
 					{
-						trxHistory = GetStatementTrxHistory(customer.id);
+						trxHistory = GetStatementTrxHistory(customer.id, getItems:false, getOnlyLastPayment:true);
 
+						var rnd = new Random();
 
 						memoryCache.Set(
 							key,
 							JsonConvert.SerializeObject(trxHistory),
-							new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(43200))
+							new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(43200 + rnd.Next(0, 43200)))
 						);
 					}
 
@@ -1099,8 +1101,8 @@ namespace WaveAccountingIntegration.Controllers
 				{
 
 				}
-			//}
-			})
+			}
+			//})
 			;
 
 			foreach (var keyValuePair in allCustomerStatements/*.Where(x => x.Value.ending_balance > 0)*/.OrderByDescending(x => x.Value.ending_balance).ThenBy(x=>x.Key.name))
@@ -1115,13 +1117,13 @@ namespace WaveAccountingIntegration.Controllers
 			return toReturn;
 		}
 
-		private TransactionHistory GetStatement(ulong customerId, bool getItems = false)
+		private TransactionHistory GetStatement(ulong customerId, bool getItems = false, bool getOnlyLastPayment = false)
 		{
-			var stHistory = GetStatementTrxHistory(customerId, getItems);
+			var stHistory = GetStatementTrxHistory(customerId, getItems, getOnlyLastPayment);
 			return new TransactionHistory {transaction_history = new List<Transaction_History>{ stHistory } };
 		}
 
-		private Transaction_History GetStatementTrxHistory(ulong customerId, bool getItems = false)
+		private Transaction_History GetStatementTrxHistory(ulong customerId, bool getItems = false, bool getOnlyLastPayment = false)
 		{
 			var trxHistory = new Transaction_History { events = new List<Event>() };
 
@@ -1183,6 +1185,9 @@ namespace WaveAccountingIntegration.Controllers
 				while (count == pageSize && shufflePageSize == false);
 			}
 
+
+			allCustInvoices = allCustInvoices.OrderByDescending(x => x.invoice_date).ToList();
+
 			var allCustInvPayments = new List<Payment>();
 
 			//Parallel.ForEach(allCustInvoices.Where(i=>i.invoice_amount_paid != 0), inv =>
@@ -1195,9 +1200,12 @@ namespace WaveAccountingIntegration.Controllers
 					allCustInvPayments.Add(pm);
 				}
 
+				if (getOnlyLastPayment == true && allCustInvPayments.Select(x => x.payment_date).Distinct().Count() > 5)
+					break;
 			}
 			//})
 			;
+
 
 			//Parallel.ForEach(allCustInvoices, inv =>
 			foreach (var inv in allCustInvoices)
