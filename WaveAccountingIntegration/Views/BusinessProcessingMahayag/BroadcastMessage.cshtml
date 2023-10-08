@@ -1,6 +1,6 @@
 ﻿@{
 	Layout = null;
-	ViewBag.Title = "BrodcastAlertCustomers";
+	ViewBag.Title = "BroadcastMessage";
 
 	string Message = ViewBag.Message;
 }
@@ -9,14 +9,14 @@
 <html>
 <head>
 	<meta name="viewport" content="width=device-width" />
-	<title>LateCustomers</title>
+	<title>BroadcastMessage</title>
 </head>
 <body>
 
 
 	@if (ViewBag.displayForm == true)
 	{
-		using (Html.BeginForm("BrodcastAlertCustomers", "BusinessProcessingMahayag"))
+		using (Html.BeginForm("BroadcastMessage", "BusinessProcessingMahayag"))
 		{
 			<div>
 				Message*:
@@ -40,7 +40,7 @@
 	}
 	else
 	{
-		<h2>BrodcastAlertCustomers</h2>
+		<h2>BroadcastMessage</h2>
 
 		<div>
 			@{

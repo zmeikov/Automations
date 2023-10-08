@@ -14,7 +14,9 @@
 
 	};
 
-	var runningBalance = Model.First().Value.ending_balance;
+	bool? reverseOrder = ViewBag.reverseOrder;
+
+	var runningBalance = reverseOrder == true ? 0 : Model.First().Value.ending_balance;
 }
 
 <!DOCTYPE html>
@@ -28,7 +30,7 @@
 
 	@foreach (var notice in notices)
 	{
-		@Html.ActionLink(notice, "Ledger", new{id = customerId, form = notice}) @:||
+		@Html.ActionLink(notice, "Ledger", new { id = customerId, form = notice }) @:||
 	}
 
 <table class="table">
@@ -60,9 +62,11 @@
 
 </table>
 
-
 <table>
 	<tr>
+		<th>
+			@(Html.ActionLink("#", "Ledger", new { ViewBag.id, reverseOrder = (reverseOrder == true ? false : true) }))
+		</th>
 		<th>
 			| Event
 		</th>
@@ -73,22 +77,31 @@
 			| Balance
 		</th>
 		<th>
-			| Date
+			| @(Html.ActionLink("Date", "Ledger", new { ViewBag.id, reverseOrder = (reverseOrder == true ? false : true) }))
 		</th>
 		<th>
-			| Dep/Rent Base
+			| Rent
 		</th>
 		<th>
-			| Utilities
+			| Depst
 		</th>
 		<th>
-			| Late/Pet
+			| Utils
 		</th>
 		<th>
-			| Credits
+			| Late
 		</th>
 		<th>
-			| Court/Sheriff Ev
+			| Pet
+		</th>
+		<th>
+			| Fees
+		</th>
+		<th>
+			| Credit
+		</th>
+		<th>
+			| Court/Order
 		</th>
 		<th>
 			| Paid
@@ -98,9 +111,27 @@
 		</th>
 	</tr>
 
-	@foreach (var item in Model.Values.First().events/*.Where(x => x.total != 0)*/.OrderByDescending(x => x.date).ThenByDescending(x=>x.event_type))
+	@{
+			var count = reverseOrder == true ? 1 : Model.Values.First().events.Count();
+
+			var orderedList = new List<WaveAccountingIntegration.Models.Event>();
+
+			if (reverseOrder == true)
+			{
+				orderedList = Model.Values.First().events/*.Where(x => x.total != 0)*/.OrderBy(x => x.date).ThenBy(x => x.event_type).ToList();
+			}
+			else
+			{
+				orderedList = Model.Values.First().events/*.Where(x => x.total != 0)*/.OrderByDescending(x => x.date).ThenByDescending(x => x.event_type).ToList();
+			}
+		}
+
+		@foreach (var item in orderedList)
 	{
 	<tr>
+		<td>
+			@(reverseOrder == true ? count++ : count--)
+		</td>
 		<td>
 			| @if (item.event_type != "payment")
 			{
@@ -145,15 +176,30 @@
 		<td>
 			|
 			@{
+				if (reverseOrder == true)
+				{
+					if (item.event_type != "payment")
+					{
+						runningBalance += item.total;
+					}
+					else
+					{
+						runningBalance -= item.total;
+					}
+				}
+
 				<span style="background-color:lightcyan"> @runningBalance.ToString("0.##")</span>
 
-				if (item.event_type != "payment")
+				if (reverseOrder == false)
 				{
-					runningBalance -= item.total;
-				}
-				else
-				{
-					runningBalance += item.total;
+					if (item.event_type != "payment")
+					{
+						runningBalance -= item.total;
+					}
+					else
+					{
+						runningBalance += item.total;
+					}
 				}
 			}
 		</td>
@@ -163,7 +209,13 @@
 		<td>
 			| @if (item.event_type != "payment")
 			{
-				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("DEPOSIT")).Sum(x => x.price * x.quantity).ToString("0.##")) / @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("RI")).Sum(x => x.price * x.quantity).ToString("0.##"))
+				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("RI")).Sum(x => x.price * x.quantity).ToString("0.##"))
+			}
+		</td>
+		<td>
+			| @if (item.event_type != "payment")
+			{
+				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("DEPOSIT")).Sum(x => x.price * x.quantity).ToString("0.##"))
 			}
 		</td>
 		<td>
@@ -175,19 +227,31 @@
 		<td>
 			| @if (item.event_type != "payment")
 			{
-				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("LATE")).Sum(x => x.price * x.quantity).ToString("0.##")) / @(item.invoice.items.Where(x => x.description.ToUpper().Contains("PET") && x.product.name.ToUpper().Contains("MISC")).Sum(x => x.price * x.quantity).ToString("0.##"))
+				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("LATE")).Sum(x => x.price * x.quantity).ToString("0.##")) 
 			}
 		</td>
 		<td>
 			| @if (item.event_type != "payment")
 			{
-				@:  (@(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("CREDIT") && x.description.ToUpper().Contains("CREDIT FOR")).Sum(x => x.price * x.quantity).ToString("0.##")))
+				@: @(item.invoice.items.Where(x => x.description.ToUpper().Contains("PET") && x.product.name.ToUpper().Contains("MISC") || x.product.name.ToUpper().Contains("PET")).Sum(x => x.price * x.quantity).ToString("0.##"))
 			}
 		</td>
 		<td>
 			| @if (item.event_type != "payment")
 			{
-				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("COURT EV")).Sum(x => x.price * x.quantity).ToString("0.##")) / @(item.invoice.items.Where(x => x.description.ToUpper().Contains("SL SHER") && x.product.name.ToUpper().Contains("MISC")).Sum(x => x.price * x.quantity).ToString("0.##"))
+				@:  @(item.invoice.items.Where(x => x.product.name.ToUpper().StartsWith("FEE")).Sum(x => x.price * x.quantity).ToString("0.##"))
+			}
+		</td>
+		<td>
+			| @if (item.event_type != "payment")
+			{
+				@:  @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("CREDIT") && x.description.ToUpper().Contains("CREDIT FOR")).Sum(x => x.price * x.quantity).ToString("0.##"))
+			}
+		</td>
+		<td>
+			| @if (item.event_type != "payment")
+			{
+				@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("COURT EV")).Sum(x => x.price * x.quantity).ToString("0.##")) / @(item.invoice.items.Where(x => (x.product.name.ToUpper().Contains("EV ORDER SERVICE")) || (x.description.ToUpper().Contains("SL SHER") && x.product.name.ToUpper().Contains("MISC"))).Sum(x => x.price * x.quantity).ToString("0.##"))
 			}
 		</td>
 		<td>

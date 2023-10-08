@@ -150,21 +150,63 @@ namespace WaveAccountingIntegration.Controllers
 					//sent alert to name 1
 					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
 					{
-						var name = customer.first_name?? "".ToUpper().Trim();
-						var body = GetLateCustomerSmsAlertBody(name, customerKvp, lastPayment, invoiceDue, custSettings);
-						           
-						messages.Add($"alerting late customer:{name} on {ExtractEmailFromString(customer.address1)}");
-						_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings.GoogleSettings);
+						var mainName = customer.first_name?? "".ToUpper().Trim();
+
+						if (!mainName.Contains(";"))
+						{
+							var body = GetLateCustomerSmsAlertBody(mainName, customerKvp, lastPayment, invoiceDue, custSettings);
+
+							messages.Add($"alerting late customer:{mainName} on {ExtractEmailFromString(customer.address1)}");
+							_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings.GoogleSettings);
+						}
+						else
+						{
+							var names = mainName.Split(';');
+							var emails = customer.address1.Split(';');
+
+							var i = 0;
+							foreach(var name in names)
+							{
+								var body = GetLateCustomerSmsAlertBody(name.Trim(), customerKvp, lastPayment, invoiceDue, custSettings);
+
+								var email = emails[i];
+								i++;
+
+								messages.Add($"alerting late customer:{name.Trim()} on {ExtractEmailFromString(email)}");
+								_sendGmail.SendSMS(ExtractEmailFromString(email), body, _appSettings.GoogleSettings);
+							}
+						}
 					}
 
 					//sent alert to name 2
 					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
 					{
-						var name = customer.last_name?? "".ToUpper().Trim();
-						var body = GetLateCustomerSmsAlertBody(name, customerKvp, lastPayment, invoiceDue, custSettings);
+						var mainName = customer.last_name ?? "".ToUpper().Trim();
 
-						messages.Add($"alerting late customer: {name} on {ExtractEmailFromString(customer.address2)}");
-						_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
+						if (!mainName.Contains(";"))
+						{
+							var body = GetLateCustomerSmsAlertBody(mainName, customerKvp, lastPayment, invoiceDue, custSettings);
+
+							messages.Add($"alerting late customer: {mainName} on {ExtractEmailFromString(customer.address2)}");
+							_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
+						}
+						else
+						{
+							var names = mainName.Split(';');
+							var emails = customer.address2.Split(';');
+
+							var i = 0;
+							foreach (var name in names)
+							{
+								var body = GetLateCustomerSmsAlertBody(name.Trim(), customerKvp, lastPayment, invoiceDue, custSettings);
+
+								var email = emails[i];
+								i++;
+
+								messages.Add($"alerting late customer:{name.Trim()} on {ExtractEmailFromString(email)}");
+								_sendGmail.SendSMS(ExtractEmailFromString(email), body, _appSettings.GoogleSettings);
+							}
+						}
 					}
 
 					custSettings.LastSmsAlertSent = DateTime.Now;
@@ -183,7 +225,7 @@ namespace WaveAccountingIntegration.Controllers
 					             //$"DateTime.Now.DayOfWeek: {DateTime.Now.DayOfWeek} (not between Mon to Fri), " +
 					             $"DateTime.Now.Hour: {DateTime.Now.Hour} (not between 10 and 20), " +
 								 $"ending_balance: {customerKvp.Value.ending_balance}, (less than $45)" +
-					             $"for: {customerKvp.Key.name}.");
+					             $"for: {customerKvp.Key.name.Trim()}.");
 				}
 			}
 			//});
@@ -193,7 +235,7 @@ namespace WaveAccountingIntegration.Controllers
 			return View();
 		}
 
-		public ActionResult BrodcastAlertCustomers(string message, string nameStartsWith)
+		public ActionResult BroadcastMessage(string message, string nameStartsWith)
 		{
 			if (string.IsNullOrEmpty(message))
 			{
@@ -224,21 +266,61 @@ namespace WaveAccountingIntegration.Controllers
 					//sent alert to name 1
 					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
 					{
-						var name = customer.first_name ?? "".ToUpper().Trim();
-						var body = $"Hello {name}, {message}";
+						var mainName = customer.first_name ?? "".ToUpper().Trim();
+						if (!mainName.Contains(";"))
+						{
+							var body = $"Hello {mainName}, {message}";
 
-						messages.Add($"BrodcastAlert customer:{name} on {ExtractEmailFromString(customer.address1)}");
-						_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings.GoogleSettings);
+							messages.Add($"BrodcastAlert customer:{mainName} on {ExtractEmailFromString(customer.address1)}");
+							_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings.GoogleSettings);
+						}
+						else
+						{
+							var names = mainName.Split(';');
+							var emails = customer.address1.Split(';');
+
+							var i = 0;
+							foreach (var name in names)
+							{
+								var body = $"Hello {name.Trim()}, {message}";
+								var email = emails[i];
+								i++;
+
+								messages.Add($"BrodcastAlert customer:{name.Trim()} on {ExtractEmailFromString(email)}");
+								_sendGmail.SendSMS(ExtractEmailFromString(email), body, _appSettings.GoogleSettings);
+							}
+						}
 					}
 
 					//sent alert to name 2
 					if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
 					{
-						var name = customer.last_name ?? "".ToUpper().Trim();
-						var body = $"Hello {name}, {message}";
+						var mainName = customer.last_name ?? "".ToUpper().Trim();
+						if (!mainName.Contains(";"))
+						{
+							var name = customer.last_name ?? "".ToUpper().Trim();
+							var body = $"Hello {name.Trim()}, {message}";
 
-						messages.Add($"BrodcastAlert customer: {name} on {ExtractEmailFromString(customer.address2)}");
-						_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
+							messages.Add($"BrodcastAlert customer: {name.Trim()} on {ExtractEmailFromString(customer.address2)}");
+							_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
+						}
+						else
+						{
+							var names = mainName.Split(';');
+							var emails = customer.address2.Split(';');
+
+							var i = 0;
+							foreach (var name in names)
+							{
+								var body = $"Hello {name.Trim()}, {message}";
+								var email = emails[i];
+								i++;
+
+								messages.Add($"BrodcastAlert customer:{name.Trim()} on {ExtractEmailFromString(email)}");
+								_sendGmail.SendSMS(ExtractEmailFromString(email), body, _appSettings.GoogleSettings);
+							}
+						}
+							
 					}
 
 					custSettings.LastBrodcastAlertSmsAlertSent = DateTime.Now;
@@ -265,7 +347,7 @@ namespace WaveAccountingIntegration.Controllers
 			return RedirectToAction("Ledger", new { id, form });
 		}
 
-		public ActionResult Ledger(ulong id, string form)
+		public ActionResult Ledger(ulong id, string form, bool? reverseOrder = false)
 		{
 			var customerStatement = new Dictionary<Customer, Transaction_History>();
 
@@ -313,6 +395,8 @@ namespace WaveAccountingIntegration.Controllers
 			//var invoice = _restService.Get<Invoice>(ViewBag.invoice.url + "?embed_items=true").Result;
 			//ViewBag.invoice_items = invoice.items;
 			ViewBag.EndOfLeaseDate = customerStatement.Values.First().events.OrderByDescending(x=>x.date).First(x => x.event_type == "invoice").invoice.invoice_date.GetEndOfLeaseDate().ToUSADateFormat();
+			ViewBag.reverseOrder = reverseOrder;
+			ViewBag.id = id;
 
 			if (form == null)
 				return View(customerStatement);
