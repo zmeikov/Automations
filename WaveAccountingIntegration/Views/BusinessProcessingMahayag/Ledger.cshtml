@@ -61,61 +61,10 @@
 </table>
 
 <table>
-	<tr>
-		<th>
-			@(Html.ActionLink("#", "Ledger", new { ViewBag.id, reverseOrder = (reverseOrder == true ? false : true) }))
-		</th>
-		<th>
-			| Event
-		</th>
-		<th>
-			| Amount
-		</th>
-		<th>
-			| Balance
-		</th>
-		<th>
-			| @(Html.ActionLink("Date", "Ledger", new { ViewBag.id, reverseOrder = (reverseOrder == true ? false : true) }))
-		</th>
-		<th>
-			| Rent
-		</th>
-		<th>
-			| Depst
-		</th>
-		<th>
-			| Utils
-		</th>
-		<th>
-			| Late
-		</th>
-		<th>
-			| Pet
-		</th>
-		<th>
-			| Fees
-		</th>
-		<th>
-			| Credit
-		</th>
-		<th>
-			| Court
-		</th>
-		<th>
-			| Order
-		</th>
-		<th>
-			| Paid
-		</th>
-		<th>
-			| Due
-		</th>
-	</tr>
-
 	@{
 		var count = reverseOrder == true ? 1 : Model.Values.First().events.Count();
 
-		var line = 1;
+		var line = 0;
 
 		var orderedList = new List<WaveAccountingIntegration.Models.Event>();
 
@@ -131,6 +80,59 @@
 
 	@foreach (var item in orderedList)
 	{
+		if (line++ % 10 == 0)
+		{
+			<tr>
+				<th>
+					@(Html.ActionLink("#", "Ledger", new { ViewBag.id, reverseOrder = (reverseOrder == true ? false : true) }))
+				</th>
+				<th>
+					| Event
+				</th>
+				<th>
+					| Amount
+				</th>
+				<th>
+					| Balance
+				</th>
+				<th>
+					| @(Html.ActionLink("Date", "Ledger", new { ViewBag.id, reverseOrder = (reverseOrder == true ? false : true) }))
+				</th>
+				<th>
+					| Rent
+				</th>
+				<th>
+					| Depst
+				</th>
+				<th>
+					| Utils
+				</th>
+				<th>
+					| Late
+				</th>
+				<th>
+					| Pet
+				</th>
+				<th>
+					| Fees
+				</th>
+				<th>
+					| Credit
+				</th>
+				<th>
+					| Court
+				</th>
+				<th>
+					| Order
+				</th>
+				<th>
+					| Paid
+				</th>
+				<th>
+					| Due
+				</th>
+			</tr>
+		}
 		<tr>
 			<td>
 				@(reverseOrder == true ? count++ : count--)
@@ -254,7 +256,7 @@
 			<td>
 				| @if (item.event_type != "payment")
 				{
-					@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("COURT EV")).Sum(x => x.price * x.quantity).ToString("0.##")) 
+					@: @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("COURT EV")).Sum(x => x.price * x.quantity).ToString("0.##"))
 				}
 			</td>
 			<td>
@@ -279,61 +281,8 @@
 				| @Html.DisplayFor(modelItem => item.invoice.invoice_amount_due)
 			</td>
 		</tr>
-		if(line++%10 == 0)
-		{
-			<tr>
-				<td>
-					@(Html.ActionLink("#", "Ledger", new { ViewBag.id, reverseOrder = (reverseOrder == true ? false : true) }))
-				</td>
-				<td>
-					| Event
-				</td>
-				<td>
-					| Amount
-				</td>
-				<td>
-					| Balance
-				</td>
-				<td>
-					| @(Html.ActionLink("Date", "Ledger", new { ViewBag.id, reverseOrder = (reverseOrder == true ? false : true) }))
-				</td>
-				<td>
-					| Rent
-				</td>
-				<td>
-					| Depst
-				</td>
-				<td>
-					| Utils
-				</td>
-				<td>
-					| Late
-				</td>
-				<td>
-					| Pet
-				</td>
-				<td>
-					| Fees
-				</td>
-				<td>
-					| Credit
-				</td>
-				<td>
-					| Court
-				</td>
-				<td>
-					| Order
-				</td>
-				<td>
-					| Paid
-				</td>
-				<td>
-					| Due
-				</td>
-			</tr>
-		}
 	}
-	
+
 </table>
 
 <table class="table">

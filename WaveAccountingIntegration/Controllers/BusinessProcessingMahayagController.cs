@@ -786,22 +786,59 @@ namespace WaveAccountingIntegration.Controllers
 						//sent alert to name 1
 						if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address1)))
 						{
+							var mainName = customer.first_name ?? "".ToUpper().Trim();
+							if (!mainName.Contains(";"))
+							{
+								var body = GetTrashSmsAlertBody(mainName, recycle);
 
-							var name = customer.first_name?? "".ToUpper().Trim();
-							var body = GetTrashSmsAlertBody(name, recycle);
+								ViewBag.Message += $"alerting trash for customer:{mainName} on {ExtractEmailFromString(customer.address1)}\r\n";
+								_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings.GoogleSettings);
+							}
+							else
+							{
+								var names = mainName.Split(';');
+								var emails = customer.address1.Split(';');
 
-							ViewBag.Message += $"alerting trash for customer:{name} on {ExtractEmailFromString(customer.address1)}\r\n";
-							_sendGmail.SendSMS(ExtractEmailFromString(customer.address1), body, _appSettings.GoogleSettings);
+								var i = 0;
+								foreach (var name in names)
+								{
+									var body = GetTrashSmsAlertBody(name, recycle);
+									var email = emails[i];
+									i++;
+
+									ViewBag.Message += $"alerting trash for customer:{name} on {ExtractEmailFromString(email)}\r\n";
+									_sendGmail.SendSMS(ExtractEmailFromString(email), body, _appSettings.GoogleSettings);
+								}
+							}
 						}
 
 						//sent alert to name 2
 						if (!string.IsNullOrWhiteSpace(ExtractEmailFromString(customer.address2)))
 						{
-							var name = customer.last_name?? "".ToUpper().Trim();
-							var body = GetTrashSmsAlertBody(name, recycle);
+							var mainName = customer.last_name ?? "".ToUpper().Trim();
+							if (!mainName.Contains(";"))
+							{
+								var body = GetTrashSmsAlertBody(mainName, recycle);
 
-							ViewBag.Message += $"alerting trash for customer:{name} on {ExtractEmailFromString(customer.address2)}\r\n";
-							_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
+								ViewBag.Message += $"alerting trash for customer:{mainName} on {ExtractEmailFromString(customer.address2)}\r\n";
+								_sendGmail.SendSMS(ExtractEmailFromString(customer.address2), body, _appSettings.GoogleSettings);
+							}
+							else
+							{
+								var names = mainName.Split(';');
+								var emails = customer.address2.Split(';');
+
+								var i = 0;
+								foreach (var name in names)
+								{
+									var body = GetTrashSmsAlertBody(name, recycle);
+									var email = emails[i];
+									i++;
+
+									ViewBag.Message += $"alerting trash for customer:{name} on {ExtractEmailFromString(email)}\r\n";
+									_sendGmail.SendSMS(ExtractEmailFromString(email), body, _appSettings.GoogleSettings);
+								}
+							}
 						}
 
 						#endregion
