@@ -91,13 +91,13 @@
 					@Html.ActionLink(item.Key.name, "Ledger", new { item.Key.id })
 				</td>
 				<td>
-					@Html.ActionLink(item.Value.ending_balance.ToString(), "Ledger", new { item.Key.id })
+					@Html.ActionLink(item.Value.ending_balance.ToString(), "Ledger", new { item.Key.id, reverseOrder = true })
 				</td>
 				<td>
-					| @Html.ActionLink(lastPayment?.total.ToString() ?? "none", "Ledger", new { item.Key.id })
+					| @Html.ActionLink(lastPayment?.total.ToString() ?? "none", "Ledger", new { item.Key.id, reverseOrder = true })
 				</td>
 				<td>
-					| @Html.ActionLink(lastPayment?.date.Value.ToISODateFormat() ?? "none", "Ledger", new { item.Key.id })
+					| @Html.ActionLink(lastPayment?.date.Value.ToISODateFormat() ?? "none", "Ledger", new { item.Key.id, reverseOrder = true })
 				</td>
 				<td>
 					| @(daysSinceLaspayment.Days.ToString())
@@ -107,7 +107,7 @@
 					{ @(daysSinceLastFullyPaidInvoice.Days) }
 				</td>
 				<td>
-					@*Html.ActionLink("Ledger", "Ledger", new { item.Key.id })*@
+					@*Html.ActionLink("Ledger", "Ledger", new { item.Key.id, reverseOrder = true })*@
 				</td>
 			</tr>
 		}

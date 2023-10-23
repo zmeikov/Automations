@@ -18,8 +18,6 @@ namespace WaveAccountingIntegration.Controllers
 {
 	public class BusinessProcessingMahayagController : BaseController
 	{
-		private static MemoryCache memoryCache;
-
 		public ActionResult AutoPinResetAndText(DayOfWeek day = DayOfWeek.Sunday)
 		{
 			var messages = new ConcurrentBag<string>();
@@ -353,9 +351,33 @@ namespace WaveAccountingIntegration.Controllers
 
 			var customer = _restService.Get<Customer>(
 				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/{id}/").Result;
-			
-			var statement = GetStatement(id, getItems:(string.IsNullOrWhiteSpace(form) || form.Contains("Court")), getOnlyLastPayment:false);
-			//    statement = GetStatement(id, string.IsNullOrWhiteSpace(form) || form.Contains("Court"));
+
+			string serializedObject = "";
+			TransactionHistory statement = null;
+			var key = $"TransactionHistory-{customer.id}";
+
+			try
+			{
+				if (memoryCache.TryGetValue(key, out serializedObject))
+				{
+					statement = JsonConvert.DeserializeObject<TransactionHistory>(serializedObject);
+				}
+				else
+				{
+					statement = GetStatement(id, getItems: (string.IsNullOrWhiteSpace(form) || form.Contains("Court")), getOnlyLastPayment: false);
+					//    statement = GetStatement(id, string.IsNullOrWhiteSpace(form) || form.Contains("Court"));
+
+					memoryCache.Set(
+						key,
+						JsonConvert.SerializeObject(statement),
+						new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(120))
+					);
+				}
+			}
+			catch (Exception ex)
+			{
+
+			}
 
 			var trxHistory = statement.transaction_history.FirstOrDefault();
 
@@ -1156,13 +1178,6 @@ namespace WaveAccountingIntegration.Controllers
 		private Dictionary<Customer, Transaction_History> Customers(ulong? narrowByCustomerId = 0, bool? inactive = false)
 		{
 			var toReturn = new Dictionary<Customer, Transaction_History>();
-
-			if (memoryCache == null)
-				memoryCache = new MemoryCache(new MemoryCacheOptions
-				{
-
-				});
-
 			var customers = new List<Customer>();
 
 			if(inactive == true)

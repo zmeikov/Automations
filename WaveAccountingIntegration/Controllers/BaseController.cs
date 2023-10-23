@@ -5,6 +5,7 @@ using System.Security.Authentication;
 using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using Common.Services;
+using Microsoft.Extensions.Caching.Memory;
 using WaveAccountingIntegration.Models;
 using WaveAccountingIntegration.Services;
 
@@ -21,10 +22,18 @@ namespace WaveAccountingIntegration.Controllers
 		public AppSettings _appSettings;
 		public Dictionary<string, string> _headers;
 
-		
+		public static MemoryCache memoryCache;
+
 
 		public BaseController()
 		{
+			if (memoryCache == null)
+				memoryCache = new MemoryCache(new MemoryCacheOptions
+				{
+
+				});
+
+
 			ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11;
 
 			_sendGmail = new SendGmail();
