@@ -19,22 +19,32 @@
 		using (Html.BeginForm("BroadcastMessage", "BusinessProcessingMahayag"))
 		{
 			<div>
-				Message*:
+				Message *:
 				<p>
 					@Html.TextArea("message")
 				</p>
 			</div>
 			<div>
-				nameStartsWith:
+				nameStartsWith parts separated by ',':
 				<p>
 					@Html.TextBox("nameStartsWith")
 				</p>
 			</div>
-
-
+			<div>
+				excludeStartsWith parts separated by ',':
+				<p>
+					@Html.TextBox("excludeStartsWith")
+				</p>
+			</div>
+			<div>
+				excludeContains parts separated by ',':
+				<p>
+					@Html.TextBox("excludeContains")
+				</p>
+			</div>
 
 			<p>
-				<button type = "submit" class="btn btn-default" id="submit">submit</button>
+				<button type="submit" class="btn btn-default" id="submit">submit</button>
 			</p>
 		}
 	}

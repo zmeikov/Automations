@@ -131,16 +131,16 @@ namespace WaveAccountingIntegration.Controllers
 				var lastPayment = customerKvp.Value.events.Where(x => x.event_type == "payment").OrderByDescending(x => x.date).FirstOrDefault();
 				var lastInvoice = customerKvp.Value.events.Where(x => x.event_type == "invoice" && x.total > 0).OrderByDescending(x => x.date).First();
 				var invoiceDue = _restService.Get<Invoice>(lastInvoice.invoice.url).Result;
-				var daysSinceLastPayment = (DateTime.Now - (lastPayment?.date?? DateTime.Now.AddYears(-10))).Days;
+				//var daysSinceLastPayment = (DateTime.Now - (lastPayment?.date?? DateTime.Now.AddYears(-10))).Days;
 
 				if (
 					daysSinceLastSmsAlert >= minDaysBetweenAlerts &&
-					daysSinceLastPayment >= 7 &&
+					//daysSinceLastPayment >= 7 &&
 					lastInvoice.date <= DateTime.Today.Date.AddDays(-5) &&
 					DateTime.Now.Hour >= 10 &&
 					DateTime.Now.Hour < 20 &&
-					DateTime.Now.DayOfWeek != DayOfWeek.Saturday &&
-					DateTime.Now.DayOfWeek != DayOfWeek.Sunday &&
+					//DateTime.Now.DayOfWeek != DayOfWeek.Saturday &&
+					//DateTime.Now.DayOfWeek != DayOfWeek.Sunday &&
 					custSettings.SendSmsAlerts == true &&
 					customerKvp.Value.ending_balance >= 65
 				)
@@ -218,7 +218,7 @@ namespace WaveAccountingIntegration.Controllers
 					             $"daysSinceLastSmsAlert: {daysSinceLastSmsAlert:00}, " +
 					             $"minDaysBetweenAlerts: {minDaysBetweenAlerts:00}, " +
 								 $"lastInvoice.date: {lastInvoice.date.Value.ToUSADateFormat()}, " +
-					             $"daysSinceLastPayment: {daysSinceLastPayment}, " +
+					             //$"daysSinceLastPayment: {daysSinceLastPayment}, " +
 					             $"SendSmsAlerts: {custSettings.SendSmsAlerts}, " +
 					             //$"DateTime.Now.DayOfWeek: {DateTime.Now.DayOfWeek} (not between Mon to Fri), " +
 					             $"DateTime.Now.Hour: {DateTime.Now.Hour} (not between 10 and 20), " +
@@ -233,7 +233,7 @@ namespace WaveAccountingIntegration.Controllers
 			return View();
 		}
 
-		public ActionResult BroadcastMessage(string message, string nameStartsWith)
+		public ActionResult BroadcastMessage(string message, string nameStartsWith, string excludeStartsWith, string excludeContains)
 		{
 			if (string.IsNullOrEmpty(message))
 			{
@@ -241,11 +241,33 @@ namespace WaveAccountingIntegration.Controllers
 				return View();
 			}
 
-			var customersToAlert = GetActiveCustomers().Where(w => !w.name.StartsWith("?"));
+			var customersToAlert = GetActiveCustomers().Where(w => !w.name.ToUpper().StartsWith("?"));
 
 			if (!string.IsNullOrWhiteSpace(nameStartsWith))
 			{
-				customersToAlert = customersToAlert.Where(w => w.name.StartsWith(nameStartsWith));
+				var parts = nameStartsWith.Split(',');
+				foreach (var part in parts)
+				{
+					customersToAlert = customersToAlert.Where(w => w.name.ToUpper().StartsWith(part.ToUpper()));
+				}
+			}
+
+			if (!string.IsNullOrWhiteSpace(excludeStartsWith))
+			{
+				var parts = excludeStartsWith.Split(',');
+				foreach (var part in parts)
+				{
+					customersToAlert = customersToAlert.Where(w => !w.name.ToUpper().StartsWith(part.ToUpper()));
+				}
+			}
+
+			if(!string.IsNullOrWhiteSpace(excludeContains))
+			{
+				var parts = excludeContains.Split(',');
+				foreach(var part in parts)
+				{
+					customersToAlert = customersToAlert.Where(w => !w.name.ToUpper().Contains(part.ToUpper().ToUpper()));
+				}
 			}
 
 			var messages = new ConcurrentBag<string>();
