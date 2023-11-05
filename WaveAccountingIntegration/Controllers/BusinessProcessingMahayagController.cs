@@ -131,11 +131,11 @@ namespace WaveAccountingIntegration.Controllers
 				var lastPayment = customerKvp.Value.events.Where(x => x.event_type == "payment").OrderByDescending(x => x.date).FirstOrDefault();
 				var lastInvoice = customerKvp.Value.events.Where(x => x.event_type == "invoice" && x.total > 0).OrderByDescending(x => x.date).First();
 				var invoiceDue = _restService.Get<Invoice>(lastInvoice.invoice.url).Result;
-				//var daysSinceLastPayment = (DateTime.Now - (lastPayment?.date?? DateTime.Now.AddYears(-10))).Days;
+				var daysSinceLastPayment = (DateTime.Now - (lastPayment?.date?? DateTime.Now.AddYears(-10))).Days;
 
 				if (
 					daysSinceLastSmsAlert >= minDaysBetweenAlerts &&
-					//daysSinceLastPayment >= 7 &&
+					daysSinceLastPayment >= 5 &&
 					lastInvoice.date <= DateTime.Today.Date.AddDays(-5) &&
 					DateTime.Now.Hour >= 10 &&
 					DateTime.Now.Hour < 20 &&
@@ -522,7 +522,9 @@ namespace WaveAccountingIntegration.Controllers
 					HideLastPaymentDetails = false,
 					HideStatementUrl = false,
 					StatementUrl = "StatementUrl",
+					MonthlyRentMount = 480,
 					EvictonNoticeDate = DateTime.Parse("2000-01-01"),
+					EvictionNoticeOutByDate = DateTime.Parse("2000-01-01"),
 					EvictionCourtCaseNumber = "________",
 					EvictionCourtAssignedJudge = "________"
 				};
@@ -584,7 +586,12 @@ namespace WaveAccountingIntegration.Controllers
 					
 					if (custSettings.StatementUrl == null) { custSettings.StatementUrl = defaultCustSettings.StatementUrl; messages.Add($"Setting default value StatementUrl to {custSettings.StatementUrl} for customer: {customer.name}"); changesMade = true; }
 
+
+					if (custSettings.MonthlyRentMount == null) { custSettings.MonthlyRentMount = defaultCustSettings.MonthlyRentMount; messages.Add($"Setting default value MonthlyRentMount to {custSettings.MonthlyRentMount} for customer: {customer.name}"); changesMade = true; }
+
 					if (custSettings.EvictonNoticeDate == null) { custSettings.EvictonNoticeDate = defaultCustSettings.EvictonNoticeDate; messages.Add($"Setting default value EvictonNoticeDate to {custSettings.EvictonNoticeDate} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.EvictionNoticeOutByDate == null) { custSettings.EvictionNoticeOutByDate = defaultCustSettings.EvictionNoticeOutByDate; messages.Add($"Setting default value EvictionNoticeOutByDate to {custSettings.EvictionNoticeOutByDate} for customer: {customer.name}"); changesMade = true; }
+
 					if (custSettings.EvictionCourtCaseNumber == null) { custSettings.EvictionCourtCaseNumber = defaultCustSettings.EvictionCourtCaseNumber; messages.Add($"Setting default value EvictionCourtCaseNumber to {custSettings.EvictionCourtCaseNumber} for customer: {customer.name}"); changesMade = true; }
 					if (custSettings.EvictionCourtAssignedJudge == null) { custSettings.EvictionCourtAssignedJudge = defaultCustSettings.EvictionCourtAssignedJudge; messages.Add($"Setting default value EvictionCourtAssignedJudge to {custSettings.EvictionCourtAssignedJudge} for customer: {customer.name}"); changesMade = true; }
 
