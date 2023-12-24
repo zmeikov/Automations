@@ -136,7 +136,7 @@ namespace WaveAccountingIntegration.Controllers
 				if (
 					daysSinceLastSmsAlert >= minDaysBetweenAlerts &&
 					daysSinceLastPayment >= 5 &&
-					lastInvoice.date <= DateTime.Today.Date.AddDays(-5) &&
+					(lastInvoice.date <= DateTime.Today.Date.AddDays(-5) || lastInvoice.date <= DateTime.Today.Date.AddDays(-10)) &&
 					DateTime.Now.Hour >= 10 &&
 					DateTime.Now.Hour < 20 &&
 					//DateTime.Now.DayOfWeek != DayOfWeek.Saturday &&
@@ -392,7 +392,7 @@ namespace WaveAccountingIntegration.Controllers
 					memoryCache.Set(
 						key,
 						JsonConvert.SerializeObject(statement),
-						new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(120))
+						new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromSeconds(60))
 					);
 				}
 			}

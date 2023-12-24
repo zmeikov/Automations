@@ -1035,8 +1035,8 @@
 </div>
 <div class="t m0 x16 h10 ycd ff7 fs3 fc1 sc0 ls0 ws0">
 	@{ 
-		var dateFrom = entry.Value.events?.Where(x => x.event_type == "invoice" && x.invoice.invoice_amount_due > 0).OrderBy(x => x.date).FirstOrDefault().date.Value.ToUSADateFormat();
-		var dateTo = entry.Value.events?.Where(x => x.event_type == "invoice" && x.invoice.invoice_amount_due > 0).OrderBy(x => x.date).LastOrDefault().invoice.due_date.ToUSADateFormat();
+		var dateFrom = (entry.Value.events?.Where(x => x.event_type == "invoice" && x.invoice.invoice_amount_due > 0).OrderBy(x => x.date).FirstOrDefault()?? new WaveAccountingIntegration.Models.Event { date = DateTime.Now }).date.Value.ToUSADateFormat();
+		var dateTo = (entry.Value.events?.Where(x => x.event_type == "invoice" && x.invoice.invoice_amount_due > 0).OrderBy(x => x.date).LastOrDefault() ?? new WaveAccountingIntegration.Models.Event { invoice = new WaveAccountingIntegration.Models.Invoice { due_date = DateTime.Now.ToString() } }).invoice.due_date.ToUSADateFormat();
 	}
  Unpaid/Short paid rent from @dateFrom up to and including @dateTo
 </div>
