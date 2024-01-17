@@ -138,11 +138,11 @@ namespace WaveAccountingIntegration.Controllers
 					daysSinceLastPayment >= 5 &&
 					(lastInvoice.date <= DateTime.Today.Date.AddDays(-5) || lastInvoice.date <= DateTime.Today.Date.AddDays(-10)) &&
 					DateTime.Now.Hour >= 10 &&
-					DateTime.Now.Hour < 20 &&
+					DateTime.Now.Hour < 21 &&
 					//DateTime.Now.DayOfWeek != DayOfWeek.Saturday &&
 					//DateTime.Now.DayOfWeek != DayOfWeek.Sunday &&
 					custSettings.SendSmsAlerts == true &&
-					customerKvp.Value.ending_balance >= 65
+					customerKvp.Value.ending_balance >= 75
 				)
 				{
 					//sent alert to name 1
