@@ -31,10 +31,12 @@ namespace WaveAccountingIntegration.Models
 
 		public string StatementUrl { get; set; }
 
-		public decimal? MonthlyRentMount { get; set; }
+        public decimal? MonthlyRentMount { get; set; }
 		public DateTime? EvictonNoticeDate { get; set; }
 		public DateTime? EvictionNoticeOutByDate { get; set; }
 		public string EvictionCourtCaseNumber { get; set; }
 		public string EvictionCourtAssignedJudge { get; set; }
+        public string EvictionCourtId { get; set; }
+
 	}
 }

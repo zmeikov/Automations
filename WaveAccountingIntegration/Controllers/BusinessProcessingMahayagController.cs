@@ -18,7 +18,8 @@ namespace WaveAccountingIntegration.Controllers
 {
 	public class BusinessProcessingMahayagController : BaseController
 	{
-		public ActionResult AutoPinResetAndText(DayOfWeek day = DayOfWeek.Sunday)
+        private int MAX_LATE_LOCATIONS_ALERTS = 10;
+        public ActionResult AutoPinResetAndText(DayOfWeek day = DayOfWeek.Sunday)
 		{
 			var messages = new ConcurrentBag<string>();
 			var testDateString = "2018-09-22";
@@ -117,7 +118,7 @@ namespace WaveAccountingIntegration.Controllers
 			var messages = new ConcurrentBag<string>();
 
 			var customersWithBalance = lateCustomers.Where(w => w.Value.ending_balance > 0);
-
+            var counter = 1;
 			//Parallel.ForEach(customersWithBalance, (customerKvp) =>
 			foreach(var customerKvp in customersWithBalance)
 			{
@@ -137,12 +138,12 @@ namespace WaveAccountingIntegration.Controllers
 					daysSinceLastSmsAlert >= minDaysBetweenAlerts &&
 					daysSinceLastPayment >= 5 &&
 					(lastInvoice.date <= DateTime.Today.Date.AddDays(-5) || lastInvoice.date <= DateTime.Today.Date.AddDays(-10)) &&
-					DateTime.Now.Hour >= 10 &&
+					DateTime.Now.Hour >= 8 &&
 					DateTime.Now.Hour < 21 &&
 					//DateTime.Now.DayOfWeek != DayOfWeek.Saturday &&
 					//DateTime.Now.DayOfWeek != DayOfWeek.Sunday &&
 					custSettings.SendSmsAlerts == true &&
-					customerKvp.Value.ending_balance >= 75
+					customerKvp.Value.ending_balance >= 35
 				)
 				{
 					//sent alert to name 1
@@ -207,9 +208,36 @@ namespace WaveAccountingIntegration.Controllers
 						}
 					}
 
+                    //sent alerts to supplemantal shipping names 
+                    if (!string.IsNullOrWhiteSpace(customer.shipping_details.city))
+                    {
+                        var names = customer.shipping_details.city.Split(';');
+                        var emails = 
+                            (customer.shipping_details.address1 + 
+                            (string.IsNullOrWhiteSpace(customer.shipping_details.address2) ? "" : $"; {customer.shipping_details.address2}")
+                            ).Split(';').Take(names.Count()).ToList();
+
+                        var i = 0;
+                        foreach (var name in names)
+                        {
+                            var body = GetLateCustomerSmsAlertBody(name.Trim(), customerKvp, lastPayment, invoiceDue, custSettings);
+
+                            var email = emails[i];
+                            i++;
+
+                            messages.Add($"alerting late customer:{name.Trim()} on {ExtractEmailFromString(email)}");
+                            _sendGmail.SendSMS(ExtractEmailFromString(email), body, _appSettings.GoogleSettings);
+                        }
+                    }
+
 					custSettings.LastSmsAlertSent = DateTime.Now;
 					_customerService.SaveUpdatedCustomerSettings(customer, custSettings, _restService);
 
+                    if(++counter > MAX_LATE_LOCATIONS_ALERTS)
+                    {
+                        messages.Add($"Skipping rest as counter {counter} > {MAX_LATE_LOCATIONS_ALERTS}");
+                        break;
+                    }
 				}
 				else
 				{
@@ -343,7 +371,28 @@ namespace WaveAccountingIntegration.Controllers
 							
 					}
 
-					custSettings.LastBrodcastAlertSmsAlertSent = DateTime.Now;
+                    //sent alerts to supplemantal shipping names 
+                    if (!string.IsNullOrWhiteSpace(customer.shipping_details.city))
+                    {
+                        var names = customer.shipping_details.city.Split(';');
+                        var emails =
+                            (customer.shipping_details.address1 +
+                            (string.IsNullOrWhiteSpace(customer.shipping_details.address2) ? "" : $"; {customer.shipping_details.address2}")
+                            ).Split(';').Take(names.Count()).ToList();
+
+                        var i = 0;
+                        foreach (var name in names)
+                        {
+                            var body = $"Hello {name.Trim()}, {message}";
+                            var email = emails[i];
+                            i++;
+
+                            messages.Add($"BrodcastAlert customer:{name.Trim()} on {ExtractEmailFromString(email)}");
+                            _sendGmail.SendSMS(ExtractEmailFromString(email), body, _appSettings.GoogleSettings);
+                        }
+                    }
+
+                    custSettings.LastBrodcastAlertSmsAlertSent = DateTime.Now;
 					_customerService.SaveUpdatedCustomerSettings(customer, custSettings, _restService);
 
 				}
@@ -406,7 +455,7 @@ namespace WaveAccountingIntegration.Controllers
 			if (trxHistory != null)
 				customerStatement.Add(customer, trxHistory);
 
-			var addressId = customer.name.ToUpper().Replace("XXXX", "").Substring(0, customer.name.ToUpper().Replace("XXXX", "").IndexOf('-'));
+			var addressId = customer.name.ToUpper().Replace("XXXX", "").Replace("??","").Substring(0, customer.name.ToUpper().Replace("XXXX", "").Replace("??", "").IndexOf('-'));
 			var address = _appSettings.MahayagAddresses.FirstOrDefault(x => x.Id == addressId);
 			//if (customer.name.Contains('#'))
 			//{
@@ -526,7 +575,8 @@ namespace WaveAccountingIntegration.Controllers
 					EvictonNoticeDate = DateTime.Parse("2000-01-01"),
 					EvictionNoticeOutByDate = DateTime.Parse("2000-01-01"),
 					EvictionCourtCaseNumber = "________",
-					EvictionCourtAssignedJudge = "________"
+					EvictionCourtAssignedJudge = "________",
+					EvictionCourtId = "3DSLC",
 				};
 
 				if (custSettings == null)
@@ -594,6 +644,7 @@ namespace WaveAccountingIntegration.Controllers
 
 					if (custSettings.EvictionCourtCaseNumber == null) { custSettings.EvictionCourtCaseNumber = defaultCustSettings.EvictionCourtCaseNumber; messages.Add($"Setting default value EvictionCourtCaseNumber to {custSettings.EvictionCourtCaseNumber} for customer: {customer.name}"); changesMade = true; }
 					if (custSettings.EvictionCourtAssignedJudge == null) { custSettings.EvictionCourtAssignedJudge = defaultCustSettings.EvictionCourtAssignedJudge; messages.Add($"Setting default value EvictionCourtAssignedJudge to {custSettings.EvictionCourtAssignedJudge} for customer: {customer.name}"); changesMade = true; }
+					if (custSettings.EvictionCourtId == null) { custSettings.EvictionCourtId = defaultCustSettings.EvictionCourtId; messages.Add($"Setting default value EvictionCourtId to {custSettings.EvictionCourtId} for customer: {customer.name}"); changesMade = true; }
 
 					if (changesMade)
 					{
@@ -634,7 +685,11 @@ namespace WaveAccountingIntegration.Controllers
 
 					customer.city = $"{address.Address1}{roomName}, {address.City} {address.State} {address.ZipCode}";
 
-					var updatedCustomerResult =
+                    if(customer.shipping_details.ship_to_contact != customer.name)
+                        customer.shipping_details.ship_to_contact = customer.name;
+
+
+                    var updatedCustomerResult =
 						_restService.Patch<UpdateCustomerResult, Customer>(customer.url, customer);
 
 					if (updatedCustomerResult.IsSuccessStatusCode == false)
@@ -892,9 +947,30 @@ namespace WaveAccountingIntegration.Controllers
 							}
 						}
 
-						#endregion
+                        //sent alerts to supplemantal shipping names 
+                        if (!string.IsNullOrWhiteSpace(customer.shipping_details.city))
+                        {
+                            var names = customer.shipping_details.city.Split(';');
+                            var emails =
+                                (customer.shipping_details.address1 +
+                                (string.IsNullOrWhiteSpace(customer.shipping_details.address2) ? "" : $"; {customer.shipping_details.address2}")
+                                ).Split(';').Take(names.Count()).ToList();
 
-						custSettings.LastTrashSmsAlertSent = DateTime.Now;
+                            var i = 0;
+                            foreach (var name in names)
+                            {
+                                var body = GetTrashSmsAlertBody(name, recycle);
+                                var email = emails[i];
+                                i++;
+
+                                ViewBag.Message += $"alerting trash for customer:{name} on {ExtractEmailFromString(email)}\r\n";
+                                _sendGmail.SendSMS(ExtractEmailFromString(email), body, _appSettings.GoogleSettings);
+                            }
+                        }
+
+                        #endregion
+
+                        custSettings.LastTrashSmsAlertSent = DateTime.Now;
 						_customerService.SaveUpdatedCustomerSettings(customer, custSettings, _restService);
 					}
 					else
@@ -1125,9 +1201,11 @@ namespace WaveAccountingIntegration.Controllers
 		{
 			var dailyRate = custSettings.SignedLeaseAgreement == true ? $"${custSettings.LateFeeDailyAmount}" : $"{custSettings.LateFeePercentRate * 100}%";
 			var lastPmt = (lastPayment != null ? (lastPayment.date != null ? lastPayment.date.Value.ToUSADateFormat() : string.Empty) : string.Empty);
-			var pmtUrl = "http://www.mahayagcbb.com/payment.html";
-			var rentHelpUrl = "http://www.mahayagcbb.com/rent-help.html";
-			var lastPaymentText = (custSettings.HideLastPaymentDetails != null && custSettings.HideLastPaymentDetails == true)
+			var pmtUrl = "https://www.mahayagcbb.com/payment.html";
+			var rentHelpUrl = "https://www.mahayagcbb.com/rent-help.html";
+
+
+			var lastPaymentText = (custSettings.HideLastPaymentDetails == true || string.IsNullOrWhiteSpace(lastPmt))
 				?
 					string.Empty
 				:
@@ -1135,7 +1213,7 @@ namespace WaveAccountingIntegration.Controllers
 					$"was accounted/credited on: {lastPmt}"
 				;
 
-			var statementUrlText = (custSettings.HideStatementUrl != null && custSettings.HideStatementUrl == true)
+			var statementUrlText = (custSettings.HideStatementUrl == true || custSettings.StatementUrl == "StatementUrl")
 				?
 					string.Empty
 				:
@@ -1152,8 +1230,9 @@ namespace WaveAccountingIntegration.Controllers
 					$"If you made a payment in the last 2 to 4 business days it may still not be accounted for so please disregard this message . " +
 					$"If you are ready to make a Payment please follow the instructions here {pmtUrl} . "+
 					$"If you are struggling please look into for possible assistance resources here: {rentHelpUrl} ." +
-					$"IMPORTANT: You must reply to this message every time and let me know when will you make your next payment or else I will pursue eviction. " +
-					$"Delinquent accounts are subject to: {dailyRate}; daily charge for any past due balance! ";
+					$"IMPORTANT: You must reply to this message every time and let me know when will you make your next payment or if we agreed on arrangement, If you do not reply I will pursue eviction. " +
+					//$"Delinquent accounts are subject to: {dailyRate}; daily charge for any past due balance! " +
+					"";
 		}
 
 		private string GetNewlyAddedConsolidatedInvoiceSmsAlertBody(string name, Invoice sourceInv, Invoice targetInvoice, CustomerSettings custSettings, decimal amountAdded, string itemsAdded, TransactionHistory statement, string action)
@@ -1401,7 +1480,7 @@ namespace WaveAccountingIntegration.Controllers
 			foreach (var pmt in allCustInvPayments)
 			{
 				DateTime? creditonDifferentDate = null;
-				if (pmt.memo.Contains("creditDate"))
+				if (pmt.memo.ToUpper().Contains("creditDate".ToUpper()))
 				{
 					try
 					{

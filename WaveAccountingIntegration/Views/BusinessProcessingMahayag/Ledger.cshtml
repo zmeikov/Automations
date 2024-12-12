@@ -227,7 +227,12 @@
 			<td>
 				| @if (item.event_type != "payment")
 				{
-					@:  @(item.invoice.items.Where(x => x.description.ToUpper().Contains(" 20") || x.description.ToUpper().Contains("delete me when all bill are added".ToUpper())).Sum(x => x.price * x.quantity).ToString("0.##"))
+					@:  @(item.invoice.items.Where(x => 
+                        x.description.ToUpper().Contains(" 20")|| 
+                        x.product.name.Contains("utils") || 
+                        //x.description.ToUpper().Contains("delete me when all bill are added".ToUpper()
+                        x.description.ToUpper().Contains("delete me when all bill".ToUpper()
+                    )).Sum(x => x.price * x.quantity).ToString("0.##"))
 				}
 			</td>
 			<td>
@@ -265,6 +270,7 @@
 				{
 					@: @(item.invoice.items.Where(x => (x.product.name.ToUpper().Contains("EV ORDER SERVICE")) || (x.description.ToUpper().Contains("SL SHER") && x.product.name.ToUpper().Contains("MISC"))).Sum(x => x.price * x.quantity).ToString("0.##"))
 				}
+            </td>
 			<td>
 				| @if (item.event_type != "payment")
 				{
