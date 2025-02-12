@@ -19,11 +19,11 @@ for /f "tokens=*" %%x in (c:\users\todor.peykov\temp.txt) do (
 )
 echo %var[1]%
 
-if %var[1]% gtr 2500 echo "filesize is more than 2500"
-if %var[1]% lss 2500 echo "filesize is less than 2500"
+if %var[1]% gtr 1500 echo "filesize is more than 1500"
+if %var[1]% lss 1500 echo "filesize is less than 1500"
 
-if %var[1]% lss 2500 del RequestHeaders.txt
-if %var[1]% lss 2500 copy RequestHeaders_backup.txt RequestHeaders.txt
+if %var[1]% lss 1500 del RequestHeaders.txt
+if %var[1]% lss 1500 copy RequestHeaders_backup.txt RequestHeaders.txt
 
 
 del C:\Users\todor.peykov\Dropbox\SyncTargets\Code\C#\Web\Automations\WaveAccountingIntegration\App_Data\RequestHeaders_backup.txt

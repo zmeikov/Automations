@@ -18,7 +18,7 @@ namespace WaveAccountingIntegration.Controllers
 {
 	public class BusinessProcessingMahayagController : BaseController
 	{
-        private int MAX_LATE_LOCATIONS_ALERTS = 10;
+        private int MAX_LATE_LOCATIONS_ALERTS = 3;
         public ActionResult AutoPinResetAndText(DayOfWeek day = DayOfWeek.Sunday)
 		{
 			var messages = new ConcurrentBag<string>();
@@ -1530,7 +1530,7 @@ namespace WaveAccountingIntegration.Controllers
 			var allCustomers = _restService.Get<List<Customer>>(
 				$"https://api.waveapps.com/businesses/{_appSettings.MahayagBusinessGuid}/customers/").Result;
 
-			var activeCustomers = allCustomers.Where(x => !x.name.StartsWith("XX")).ToList();
+			var activeCustomers = allCustomers.Where(x => !x.name.ToUpper().StartsWith("XX")).ToList();
 
 			return activeCustomers;
 		}
