@@ -45,7 +45,7 @@ namespace WaveAccountingIntegration.Services
 
 			var updatedCustomerResult = _restService.Patch<Customer, Customer>(customer.url, customer);
 
-			Thread.Sleep(5000);
+			Thread.Sleep(1500);
 
 			return updatedCustomerResult;
 		}

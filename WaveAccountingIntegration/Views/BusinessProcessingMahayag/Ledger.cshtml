@@ -256,7 +256,7 @@
 			<td>
 				| @if (item.event_type != "payment")
 				{
-					@:  @(item.invoice.items.Where(x => x.product.name.ToUpper().Contains("CREDIT") && x.description.ToUpper().Contains("CREDIT FOR")).Sum(x => x.price * x.quantity).ToString("0.##"))
+					@:  @(item.invoice.items.Where(x => x.product.name.ToUpper().StartsWith("CREDIT") /*&& x.description.ToUpper().Contains("CREDIT")*/).Sum(x => x.price * x.quantity).ToString("0.##"))
 				}
 			</td>
 			<td>
