@@ -19,6 +19,7 @@ namespace WaveAccountingIntegration.Controllers
 	public class BusinessProcessingMahayagController : BaseController
 	{
         private int MAX_LATE_LOCATIONS_ALERTS = 3;
+        private int MAX_TRASH_LOCATIONS_ALERTS = 3;
         public ActionResult AutoPinResetAndText(DayOfWeek day = DayOfWeek.Sunday)
 		{
 			var messages = new ConcurrentBag<string>();
@@ -874,6 +875,7 @@ namespace WaveAccountingIntegration.Controllers
 			ViewBag.Message = "RemindTrashDay\r\n";
 
 			var activeCustomers = GetActiveCustomers();
+            var counter = 1;
 
 			foreach (var customer in activeCustomers.Where(x => x.name.StartsWith(propertyId)))
 			{
@@ -972,7 +974,21 @@ namespace WaveAccountingIntegration.Controllers
 
                         custSettings.LastTrashSmsAlertSent = DateTime.Now;
 						_customerService.SaveUpdatedCustomerSettings(customer, custSettings, _restService);
-					}
+
+
+                        if (++counter > MAX_TRASH_LOCATIONS_ALERTS)
+                        {
+                            ViewBag.Message +=$"Skipping rest as counter {counter} > {MAX_TRASH_LOCATIONS_ALERTS}\r\n";
+                            break;
+                        }
+
+                        if (customer.name.Contains("#"))
+                        {
+                            ViewBag.Message += $"adding +1 to counter {counter} since customer.name.Contains('#')\r\n";
+                            counter++;
+                            break;
+                        }
+                    }
 					else
 					{
 						ViewBag.Message += $"skipping trash for customer:{customer.name.Substring(0,10)} because " +
